@@ -1,0 +1,212 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FuncionEntity</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.infraestructure.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: FuncionEntity (pe.edu.upeu.ProyectLP2.infraestructure.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FuncionEntity</td>
+<td class="coverageStat">
+  <span class="percent">
+    7,1%
+  </span>
+  <span class="absValue">
+    (1/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5%
+  </span>
+  <span class="absValue">
+    (1/20)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FuncionEntity$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">FuncionEntity$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    7,1%
+  </span>
+  <span class="absValue">
+    (1/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5%
+  </span>
+  <span class="absValue">
+    (1/20)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.infraestructure.entity;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;funcion&quot;)
+&nbsp;@JsonIgnoreProperties({&quot;tickets&quot;})
+&nbsp;public class FuncionEntity {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long idFuncion;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.EAGER)
+&nbsp;    @JoinColumn(name = &quot;id_pelicula&quot;, nullable = false)
+&nbsp;    private PeliculaEntity pelicula;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.EAGER)
+&nbsp;    @JoinColumn(name = &quot;id_sala&quot;, nullable = false)
+&nbsp;    private SalaEntity sala;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private LocalDateTime fecha;
+&nbsp;
+&nbsp;    @Column(nullable = false, precision = 10, scale = 2)
+&nbsp;    private BigDecimal precio;
+&nbsp;
+&nbsp;    @OneToMany(mappedBy = &quot;funcion&quot;, cascade = CascadeType.ALL, orphanRemoval = true)
+&nbsp;    private List&lt;TicketEntity&gt; Tickets;
+&nbsp;
+<b class="fc">&nbsp;    public FuncionEntity() {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;    public FuncionEntity(Long idFuncion, PeliculaEntity pelicula, SalaEntity sala, LocalDateTime fecha, BigDecimal precio, List&lt;TicketEntity&gt; tickets) {</b>
+<b class="nc">&nbsp;        this.idFuncion = idFuncion;</b>
+<b class="nc">&nbsp;        this.pelicula = pelicula;</b>
+<b class="nc">&nbsp;        this.sala = sala;</b>
+<b class="nc">&nbsp;        this.fecha = fecha;</b>
+<b class="nc">&nbsp;        this.precio = precio;</b>
+<b class="nc">&nbsp;        Tickets = tickets;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getIdFuncion() {
+<b class="nc">&nbsp;        return idFuncion;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIdFuncion(Long idFuncion) {
+<b class="nc">&nbsp;        this.idFuncion = idFuncion;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PeliculaEntity getPelicula() {
+<b class="nc">&nbsp;        return pelicula;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPelicula(PeliculaEntity pelicula) {
+<b class="nc">&nbsp;        this.pelicula = pelicula;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public SalaEntity getSala() {
+<b class="nc">&nbsp;        return sala;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSala(SalaEntity sala) {
+<b class="nc">&nbsp;        this.sala = sala;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public LocalDateTime getFecha() {
+<b class="nc">&nbsp;        return fecha;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setFecha(LocalDateTime fecha) {
+<b class="nc">&nbsp;        this.fecha = fecha;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public BigDecimal getPrecio() {
+<b class="nc">&nbsp;        return precio;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPrecio(BigDecimal precio) {
+<b class="nc">&nbsp;        this.precio = precio;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;TicketEntity&gt; getTickets() {
+<b class="nc">&nbsp;        return Tickets;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTickets(List&lt;TicketEntity&gt; tickets) {
+<b class="nc">&nbsp;        Tickets = tickets;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

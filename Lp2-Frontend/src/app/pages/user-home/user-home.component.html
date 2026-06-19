@@ -1,0 +1,86 @@
+<div class="user-home-container">
+  <!-- Header para usuarios -->
+  <nav class="navbar navbar-dark bg-danger shadow-sm">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        <i class="bi bi-film me-2"></i>CineApp - Usuario
+      </span>
+      <div class="d-flex align-items-center text-white">
+        <button class="btn btn-outline-light btn-sm me-2" routerLink="/user/mis-tickets">
+          <i class="bi bi-ticket-perforated me-1"></i>Mis Tickets
+        </button>
+        <span class="me-3">
+          <i class="bi bi-person-circle me-2"></i>{{ currentUser?.nombre }}
+        </span>
+        <button class="btn btn-outline-light btn-sm" (click)="logout()">
+          <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mt-4">
+    <div class="welcome-section mb-4">
+      <h2 class="text-center mb-2">BIENVENIDO A CINE ONLINE</h2>
+      <p class="text-center">Explora nuestro catálogo de películas disponibles</p>
+    </div>
+
+    <!-- Lista de películas -->
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let pelicula of peliculas">
+        <div class="card h-100 shadow-sm movie-card">
+          <!-- Póster de la película -->
+          <div class="movie-poster-container">
+            <img 
+              *ngIf="pelicula.poster" 
+              [src]="pelicula.poster" 
+              class="card-img-top movie-poster" 
+              [alt]="pelicula.titulo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="movie-poster-placeholder" [style.display]="pelicula.poster ? 'none' : 'flex'">
+              <i class="bi bi-film"></i>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <h5 class="card-title text-warning">{{ pelicula.titulo }}</h5>
+            <p class="card-text text-muted mb-2">
+              <i class="bi bi-tag me-2"></i>{{ pelicula.genero }}
+            </p>
+            <p class="card-text text-muted mb-2">
+              <i class="bi bi-clock me-2"></i>{{ pelicula.duracion }} minutos
+            </p>
+            <p class="card-text">
+              <small class="text-muted">{{ pelicula.descripcion }}</small>
+            </p>
+            
+            <!-- Botón para ver trailer -->
+            <a 
+              *ngIf="pelicula.trailer" 
+              [href]="pelicula.trailer" 
+              target="_blank" 
+              class="btn btn-outline-danger btn-sm w-100 mb-2">
+              <i class="bi bi-play-circle me-1"></i>Ver Tráiler
+            </a>
+          </div>
+          <div class="card-footer bg-transparent">
+            <small class="text-muted">
+              <i class="bi bi-calendar3 me-1"></i>
+              Estrenada: {{ pelicula.fechaEstreno }}
+            </small>
+            <button class="btn btn-danger btn-sm w-100 mt-2" (click)="verFunciones(pelicula)">
+              <i class="bi bi-ticket-perforated me-1"></i>Ver Funciones
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay películas -->
+    <div *ngIf="peliculas.length === 0" class="text-center mt-5">
+      <i class="bi bi-film" style="font-size: 4rem; color: #ccc;"></i>
+      <p class="text-muted mt-3">No hay películas disponibles en este momento</p>
+    </div>
+  </div>
+</div>

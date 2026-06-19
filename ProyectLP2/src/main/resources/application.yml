@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ProyectLP2
+  datasource:
+    url: jdbc:mysql://localhost:3306/cine?serverTimezone=America/Lima&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8082
+logging:
+  level:
+    org:
+      hibernate:
+        sql: debug
+security:
+  jwt:
+    secret-key: Y2luZW1hcHJveWVjdGxwMnVwZXVzZWN1cml0eWtleWJhc2U2NGVuY29kaW5nMjAyNQ==
+    expiration-time: 300000

@@ -1,0 +1,265 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PeliculaEntity</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.infraestructure.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: PeliculaEntity (pe.edu.upeu.ProyectLP2.infraestructure.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PeliculaEntity</td>
+<td class="coverageStat">
+  <span class="percent">
+    4,2%
+  </span>
+  <span class="absValue">
+    (1/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2,9%
+  </span>
+  <span class="absValue">
+    (1/35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PeliculaEntity$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">PeliculaEntity$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    4,2%
+  </span>
+  <span class="absValue">
+    (1/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2,9%
+  </span>
+  <span class="absValue">
+    (1/35)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.infraestructure.entity;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;pelicula&quot;)
+&nbsp;public class PeliculaEntity {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long idPelicula;
+&nbsp;
+&nbsp;    @Column(nullable = false, length = 100)
+&nbsp;    private String titulo;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private String genero;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Integer duracion;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private String formato;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private String idioma;
+&nbsp;
+&nbsp;    @Column(length = 250)
+&nbsp;    private String poster; // URL o ruta de la imagen
+&nbsp;
+&nbsp;    @Column(length = 100)
+&nbsp;    private String director;
+&nbsp;
+&nbsp;    @Column(nullable = false, length = 200)
+&nbsp;    private String descripcion;
+&nbsp;
+&nbsp;    @Column(length = 50)
+&nbsp;    private String trailer;
+&nbsp;
+&nbsp;    @OneToMany(mappedBy = &quot;pelicula&quot;, cascade = CascadeType.ALL, orphanRemoval = true)
+&nbsp;    private List&lt;FuncionEntity&gt; funciones;
+&nbsp;
+<b class="fc">&nbsp;    public PeliculaEntity() {</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public PeliculaEntity(Long idPelicula, String titulo, String genero, Integer duracion, String formato, String idioma, String descripcion, String poster, String director, String trailer, List&lt;FuncionEntity&gt; funciones) {</b>
+<b class="nc">&nbsp;        this.idPelicula = idPelicula;</b>
+<b class="nc">&nbsp;        this.titulo = titulo;</b>
+<b class="nc">&nbsp;        this.genero = genero;</b>
+<b class="nc">&nbsp;        this.duracion = duracion;</b>
+<b class="nc">&nbsp;        this.formato = formato;</b>
+<b class="nc">&nbsp;        this.idioma = idioma;</b>
+<b class="nc">&nbsp;        this.descripcion = descripcion;</b>
+<b class="nc">&nbsp;        this.poster = poster;</b>
+<b class="nc">&nbsp;        this.director = director;</b>
+<b class="nc">&nbsp;        this.trailer = trailer;</b>
+<b class="nc">&nbsp;        this.funciones = funciones;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getIdPelicula() {
+<b class="nc">&nbsp;        return idPelicula;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIdPelicula(Long idPelicula) {
+<b class="nc">&nbsp;        this.idPelicula = idPelicula;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getTitulo() {
+<b class="nc">&nbsp;        return titulo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTitulo(String titulo) {
+<b class="nc">&nbsp;        this.titulo = titulo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getGenero() {
+<b class="nc">&nbsp;        return genero;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setGenero(String genero) {
+<b class="nc">&nbsp;        this.genero = genero;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Integer getDuracion() {
+<b class="nc">&nbsp;        return duracion;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDuracion(Integer duracion) {
+<b class="nc">&nbsp;        this.duracion = duracion;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getFormato() {
+<b class="nc">&nbsp;        return formato;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setFormato(String formato) {
+<b class="nc">&nbsp;        this.formato = formato;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getIdioma() {
+<b class="nc">&nbsp;        return idioma;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIdioma(String idioma) {
+<b class="nc">&nbsp;        this.idioma = idioma;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getPoster() {
+<b class="nc">&nbsp;        return poster;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPoster(String poster) {
+<b class="nc">&nbsp;        this.poster = poster;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDirector() {
+<b class="nc">&nbsp;        return director;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDirector(String director) {
+<b class="nc">&nbsp;        this.director = director;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDescripcion() {
+<b class="nc">&nbsp;        return descripcion;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDescripcion(String descripcion) {
+<b class="nc">&nbsp;        this.descripcion = descripcion;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getTrailer() {
+<b class="nc">&nbsp;        return trailer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTrailer(String trailer) {
+<b class="nc">&nbsp;        this.trailer = trailer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;FuncionEntity&gt; getFunciones() {
+<b class="nc">&nbsp;        return funciones;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setFunciones(List&lt;FuncionEntity&gt; funciones) {
+<b class="nc">&nbsp;        this.funciones = funciones;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

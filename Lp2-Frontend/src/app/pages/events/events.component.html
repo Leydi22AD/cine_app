@@ -1,0 +1,157 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4 text-warning fw-bold">Panel de Administración</h2>
+  <hr class="border-warning">
+
+  <!-- 🔹 TABLA DE EVENTOS -->
+  <h5 class="text-warning fw-bold mb-3 text-center">Eventos</h5>
+  <div class="row mb-3">
+    <div class="col-md-8">
+      <input type="text" class="form-control" [(ngModel)]="searchEventName" placeholder="Buscar evento por nombre...">
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-danger w-100" (click)="goToNewEvent()">Nuevo Evento +</button>
+    </div>
+  </div>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>#</th>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Fecha</th>
+          <th>Ubicación</th>
+          <th>Organizador</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr *ngIf="filteredEvents.length === 0">
+          <td colspan="7" class="text-center text-muted">No se encontraron eventos.</td>
+        </tr>
+        <tr *ngFor="let event of filteredEvents; index as i">
+          <td>{{ i + 1 }}</td>
+          <td><img [src]="event.imageUrl" alt="Evento" class="img-thumbnail" width="70" /></td>
+          <td>{{ event.name }}</td>
+          <td>{{ event.date | date:'short' }}</td>
+          <td>{{ event.location }}</td>
+          <td>{{ event.organizer }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteEvent(event.id, event.name)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🔹 TABLA DE FUNCIONES -->
+  <h5 class="text-success fw-bold mb-3 text-center">Funciones</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>#</th>
+          <th>Película</th>
+          <th>Sala</th>
+          <th>Fecha</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr *ngIf="funciones.length === 0">
+          <td colspan="5" class="text-center text-muted">No hay funciones registradas.</td>
+        </tr>
+        <tr *ngFor="let f of funciones; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ f.pelicula?.titulo }}</td>
+          <td>{{ f.sala?.numero }}</td>
+          <td>{{ f.fecha | date:'short' }}</td>
+          <td>{{ f.precio | currency:'USD' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🔹 TABLA DE PELÍCULAS -->
+  <h5 class="text-success fw-bold mb-3 text-center">Películas</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>#</th>
+          <th>Título</th>
+          <th>Género</th>
+          <th>Duración (min)</th>
+          <th>Idioma</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr *ngIf="peliculas.length === 0">
+          <td colspan="5" class="text-center text-muted">No hay películas registradas.</td>
+        </tr>
+        <tr *ngFor="let p of peliculas; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ p.titulo }}</td>
+          <td>{{ p.genero }}</td>
+          <td>{{ p.duracion }}</td>
+          <td>{{ p.idioma }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🔹 TABLA DE SALAS -->
+  <h5 class="text-success fw-bold mb-3 text-center">Salas</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>#</th>
+          <th>Número</th>
+          <th>Filas</th>
+          <th>Columnas</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr *ngIf="salas.length === 0">
+          <td colspan="4" class="text-center text-muted">No hay salas registradas.</td>
+        </tr>
+        <tr *ngFor="let s of salas; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ s.numero }}</td>
+          <td>{{ s.filas }}</td>
+          <td>{{ s.columnas }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🔹 TABLA DE TICKETS -->
+  <h5 class="text-success fw-bold mb-3 text-center">Tickets</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>#</th>
+          <th>Función</th>
+          <th>Cliente</th>
+          <th>Precio Unitario</th>
+          <th>Fecha de Compra</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr *ngIf="tickets.length === 0">
+          <td colspan="5" class="text-center text-muted">No hay tickets registrados.</td>
+        </tr>
+        <tr *ngFor="let t of tickets; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ t.funcion?.pelicula?.titulo }}</td>
+          <td>{{ t.cliente?.nombre }}</td>
+          <td>{{ t.precioUnitario | currency:'USD' }}</td>
+          <td>{{ t.fechaCompra | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PeliculaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a> &gt; <span class="el_source">PeliculaController.java</span></div><h1>PeliculaController.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.upeu.ProyectLP2.domain.model.Pelicula;
+import pe.edu.upeu.ProyectLP2.domain.port.in.PeliculaUseCase;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.PeliculaDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/api/v1/peliculas&quot;)
+public class PeliculaController {
+
+    private final PeliculaUseCase peliculaUseCase;
+
+<span class="fc" id="L20">    public PeliculaController(PeliculaUseCase peliculaUseCase) {</span>
+<span class="fc" id="L21">        this.peliculaUseCase = peliculaUseCase;</span>
+<span class="fc" id="L22">    }</span>
+
+        // Listar todas las películas
+        @GetMapping
+        public ResponseEntity&lt;List&lt;PeliculaDto.PeliculaResponse&gt;&gt; listarPeliculas() {
+<span class="fc" id="L27">        List&lt;PeliculaDto.PeliculaResponse&gt; peliculas = peliculaUseCase.listarPeliculas()</span>
+<span class="fc" id="L28">            .stream()</span>
+<span class="fc" id="L29">            .map(this::mapToPeliculaResponse)</span>
+<span class="fc" id="L30">            .collect(Collectors.toList());</span>
+<span class="fc" id="L31">        return ResponseEntity.ok(peliculas);</span>
+        }
+
+        // Crear nueva película (soporta POST en '/api/v1/peliculas' y '/api/v1/peliculas/crear')
+        @PostMapping(value = {&quot;&quot;, &quot;/crear&quot;})
+        public ResponseEntity&lt;PeliculaDto.PeliculaResponse&gt; crearPelicula(
+            @RequestBody PeliculaDto.PeliculaRequest request) {
+
+<span class="fc" id="L39">        Pelicula pelicula = new Pelicula();</span>
+<span class="fc" id="L40">        pelicula.setTitulo(request.titulo());</span>
+<span class="fc" id="L41">        pelicula.setGenero(request.genero());</span>
+<span class="fc" id="L42">        pelicula.setDuracion(request.duracion());</span>
+<span class="fc" id="L43">        pelicula.setFormato(request.formato());</span>
+<span class="fc" id="L44">        pelicula.setIdioma(request.idioma());</span>
+<span class="fc" id="L45">        pelicula.setPoster(request.poster());</span>
+<span class="fc" id="L46">        pelicula.setDirector(request.director());</span>
+<span class="fc" id="L47">        pelicula.setDescripcion(request.descripcion());</span>
+<span class="fc" id="L48">        pelicula.setTrailer(request.trailer());</span>
+
+<span class="fc" id="L50">        Pelicula creada = peliculaUseCase.registrarPelicula(pelicula);</span>
+
+<span class="fc" id="L52">        return new ResponseEntity&lt;&gt;(mapToPeliculaResponse(creada), HttpStatus.CREATED);</span>
+    }
+
+    // Obtener película por id
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;PeliculaDto.PeliculaResponse&gt; obtenerPeliculaPorId(@PathVariable Long id) {
+<span class="nc" id="L58">        return peliculaUseCase.obtenerPeliculaPorId(id)</span>
+<span class="nc" id="L59">                .map(pelicula -&gt; ResponseEntity.ok(mapToPeliculaResponse(pelicula)))</span>
+<span class="nc" id="L60">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+    // Actualizar película
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;PeliculaDto.PeliculaResponse&gt; actualizarPelicula(
+            @PathVariable Long id,
+            @RequestBody PeliculaDto.PeliculaRequest request) {
+
+<span class="nc" id="L68">        Pelicula pelicula = new Pelicula();</span>
+<span class="nc" id="L69">        pelicula.setTitulo(request.titulo());</span>
+<span class="nc" id="L70">        pelicula.setGenero(request.genero());</span>
+<span class="nc" id="L71">        pelicula.setDuracion(request.duracion());</span>
+<span class="nc" id="L72">        pelicula.setFormato(request.formato());</span>
+<span class="nc" id="L73">        pelicula.setIdioma(request.idioma());</span>
+<span class="nc" id="L74">        pelicula.setPoster(request.poster());</span>
+<span class="nc" id="L75">        pelicula.setDirector(request.director());</span>
+<span class="nc" id="L76">        pelicula.setDescripcion(request.descripcion());</span>
+<span class="nc" id="L77">        pelicula.setTrailer(request.trailer());</span>
+
+
+
+<span class="nc" id="L81">        return peliculaUseCase.actualizarPelicula(id, pelicula)</span>
+<span class="nc" id="L82">                .map(p -&gt; ResponseEntity.ok(mapToPeliculaResponse(p)))</span>
+<span class="nc" id="L83">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Eliminar película
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; eliminarPelicula(@PathVariable Long id) {
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">        if (peliculaUseCase.eliminarPelicula(id)) {</span>
+<span class="fc" id="L90">            return ResponseEntity.noContent().build(); // 204</span>
+        } else {
+<span class="nc" id="L92">            return ResponseEntity.notFound().build(); // 404</span>
+        }
+    }
+
+    // Buscar películas por título
+    @GetMapping(&quot;/buscar/{titulo}&quot;)
+    public ResponseEntity&lt;List&lt;PeliculaDto.PeliculaResponse&gt;&gt; buscarPeliculasPorTitulo(@PathVariable String titulo) {
+<span class="fc" id="L99">        List&lt;PeliculaDto.PeliculaResponse&gt; peliculas = peliculaUseCase.buscarPeliculasPorTitulo(titulo)</span>
+<span class="fc" id="L100">                .stream()</span>
+<span class="fc" id="L101">                .map(this::mapToPeliculaResponse)</span>
+<span class="fc" id="L102">                .collect(Collectors.toList());</span>
+<span class="fc" id="L103">        return ResponseEntity.ok(peliculas);</span>
+    }
+    // Mapeo de Domain -&gt; DTO Response
+    private PeliculaDto.PeliculaResponse mapToPeliculaResponse(Pelicula pelicula) {
+<span class="fc" id="L107">        return new PeliculaDto.PeliculaResponse(</span>
+<span class="fc" id="L108">                pelicula.getIdPelicula(),</span>
+<span class="fc" id="L109">                pelicula.getTitulo(),</span>
+<span class="fc" id="L110">                pelicula.getGenero(),</span>
+<span class="fc" id="L111">                pelicula.getDuracion(),</span>
+<span class="fc" id="L112">                pelicula.getFormato(),</span>
+<span class="fc" id="L113">                pelicula.getIdioma(),</span>
+<span class="fc" id="L114">                pelicula.getPoster(),</span>
+<span class="fc" id="L115">                pelicula.getDirector(),</span>
+<span class="fc" id="L116">                pelicula.getDescripcion(),</span>
+<span class="fc" id="L117">                pelicula.getTrailer()</span>
+
+        );
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

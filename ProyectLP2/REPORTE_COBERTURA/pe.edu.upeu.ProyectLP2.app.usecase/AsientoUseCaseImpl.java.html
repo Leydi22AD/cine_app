@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AsientoUseCaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.app.usecase</a> &gt; <span class="el_source">AsientoUseCaseImpl.java</span></div><h1>AsientoUseCaseImpl.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.app.usecase;
+
+import org.springframework.stereotype.Service;
+import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
+import pe.edu.upeu.ProyectLP2.domain.port.in.AsientoUseCase;
+import pe.edu.upeu.ProyectLP2.domain.port.on.AsientoRepositoryPort;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class AsientoUseCaseImpl implements AsientoUseCase {
+
+    private final AsientoRepositoryPort asientoRepositoryPort;
+
+<span class="fc" id="L16">    public AsientoUseCaseImpl(AsientoRepositoryPort asientoRepositoryPort) {</span>
+<span class="fc" id="L17">        this.asientoRepositoryPort = asientoRepositoryPort;</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public Asiento crearAsiento(Asiento asiento) {
+<span class="fc" id="L22">        return asientoRepositoryPort.save(asiento);</span>
+    }
+
+    @Override
+    public Optional&lt;Asiento&gt; actualizarAsiento(Long id, Asiento asiento) {
+<span class="fc" id="L27">        return asientoRepositoryPort.findById(id).map(existing -&gt; {</span>
+<span class="fc" id="L28">            asiento.setIdAsiento(id); // mantener ID</span>
+<span class="fc" id="L29">            return asientoRepositoryPort.update(id , asiento);</span>
+        });
+    }
+
+    @Override
+    public boolean eliminarAsiento(Long id) {
+<span class="fc" id="L35">        return asientoRepositoryPort.findById(id).map(a -&gt; {</span>
+<span class="fc" id="L36">            asientoRepositoryPort.deleteById(id);</span>
+<span class="fc" id="L37">            return true;</span>
+<span class="fc" id="L38">        }).orElse(false);    }</span>
+
+    @Override
+    public Optional&lt;Asiento&gt; obtenerAsientoPorId(Long id) {
+<span class="fc" id="L42">        return asientoRepositoryPort.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Asiento&gt; listarAsientosPorSala(Long salaId) {
+<span class="fc" id="L47">        return asientoRepositoryPort.findBySalaId(salaId);</span>
+    }
+
+    @Override
+    public List&lt;Asiento&gt; findAll() {
+<span class="fc" id="L52">        return asientoRepositoryPort.findAll();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

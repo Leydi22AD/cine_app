@@ -1,0 +1,77 @@
+/* --- ESTILO GENERAL DEL HEADER --- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: var(--color-primario);
+  color: var(--color-texto-claro);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.bg-danger {
+  background-color: #d32f2f !important;
+}
+
+.logo a {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--color-texto-claro);
+  text-decoration: none;
+}
+
+.main-nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.main-nav a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 16px;
+  padding-bottom: 5px;
+  transition: color 0.3s ease;
+}
+
+.main-nav a:hover {
+  color: var(--color-texto-claro);
+}
+
+.active-link {
+  color: var(--color-texto-claro);
+  font-weight: bold;
+  border-bottom: 3px solid var(--color-acento);
+}
+
+/* --- PERSONALIZACIÓN DEL BUSCADOR (input + botón) --- */
+form.d-flex .form-control {
+  background-color: #ffffff !important; /* fondo blanco */
+  color: #222 !important; /* texto oscuro */
+  border: 2px solid #ffd700 !important; /* borde amarillo */
+  border-radius: 6px; /* bordes redondeados suaves */
+  transition: all 0.3s ease;
+}
+
+form.d-flex .form-control:focus {
+  border-color: #ffc107 !important; /* tono más oscuro al enfocar */
+  box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+}
+
+/* --- BOTÓN BUSCAR --- */
+form.d-flex .btn {
+  background-color: #ffd700 !important; /* fondo amarillo */
+  color: #b71c1c !important; /* texto rojo oscuro */
+  border: 2px solid #ffd700 !important; /* borde amarillo */
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+form.d-flex .btn:hover {
+  background-color: #b71c1c !important; /* rojo oscuro al pasar mouse */
+  color: #ffd700 !important; /* texto amarillo */
+  border-color: #b71c1c !important;
+}

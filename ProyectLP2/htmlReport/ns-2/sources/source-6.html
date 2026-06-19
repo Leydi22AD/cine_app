@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UsuarioUseCaseImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.app.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: UsuarioUseCaseImpl (pe.edu.upeu.ProyectLP2.app.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UsuarioUseCaseImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12,5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    13,3%
+  </span>
+  <span class="absValue">
+    (2/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.app.usecase;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.exception.UsuarioAlreadyExistsException;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.in.UsuarioUseCase;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.on.UsuarioRepositoryPort;
+&nbsp;import pe.edu.upeu.ProyectLP2.infraestructure.entity.UsuarioEntity;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class UsuarioUseCaseImpl implements UsuarioUseCase {
+&nbsp;
+&nbsp;
+&nbsp;    // Inyectamos el puerto de repositorio para comunicarnos con la capa de persistencia
+&nbsp;    private final UsuarioRepositoryPort usuarioRepositoryPort;
+&nbsp;
+<b class="fc">&nbsp;    public UsuarioUseCaseImpl(UsuarioRepositoryPort usuarioRepositoryPort) {</b>
+<b class="fc">&nbsp;        this.usuarioRepositoryPort = usuarioRepositoryPort;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Usuario registrarUsuario(Usuario usuario) {
+&nbsp;        // Validar que no exista un usuario con el mismo email
+&nbsp;
+&nbsp;        // Validar que no exista un usuario con el mismo email antes de guardar
+<b class="nc">&nbsp;        if (usuarioRepositoryPort.findByEmail(usuario.getEmail()).isPresent()) {</b>
+&nbsp;            // Si ya existe, lanzamos una excepción personalizada
+<b class="nc">&nbsp;            throw new UsuarioAlreadyExistsException(&quot;Ya existe un usuario con el email: &quot; + usuario.getEmail());</b>
+&nbsp;        }
+&nbsp;        // Si no existe, lo guardamos en el repositorio
+<b class="nc">&nbsp;        return usuarioRepositoryPort.save(usuario);    }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Usuario&gt; actualizarUsuario(Long id, Usuario usuario) {
+&nbsp;        try{
+&nbsp;            // Usamos el repositorio para actualizar los datos del usuario
+<b class="nc">&nbsp;            Usuario clienteAc = usuarioRepositoryPort.update(id,usuario);</b>
+&nbsp;
+&nbsp;            // Retornamos el usuario actualizado envuelto en un Optional
+<b class="nc">&nbsp;            return Optional.of(clienteAc);</b>
+&nbsp;        } catch (Exception e) {
+&nbsp;            // Si ocurre un error (ejemplo: no existe el usuario), devolvemos un Optional vacío
+<b class="nc">&nbsp;            return Optional.empty();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean eliminarUsuario(Long id) {
+&nbsp;
+&nbsp;        // Primero buscamos si existe el usuario con ese id
+<b class="nc">&nbsp;        return usuarioRepositoryPort.findById(id).map(u -&gt; {</b>
+&nbsp;
+&nbsp;            // Si existe, lo eliminamos
+<b class="nc">&nbsp;            usuarioRepositoryPort.deleteById(id);</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        }).orElse(false);    }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Usuario&gt; listarUsuarios() {
+<b class="nc">&nbsp;        return usuarioRepositoryPort.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Usuario&gt; obtenerUsuarioPorId(Long id) {
+<b class="nc">&nbsp;        return usuarioRepositoryPort.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Usuario&gt; obtenerUsuarioPorEmail(String email) {
+<b class="nc">&nbsp;        return usuarioRepositoryPort.findByEmail(email);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

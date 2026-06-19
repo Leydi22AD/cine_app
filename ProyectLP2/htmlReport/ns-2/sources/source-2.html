@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FuncionUseCaseImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.app.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: FuncionUseCaseImpl (pe.edu.upeu.ProyectLP2.app.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FuncionUseCaseImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12,5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10%
+  </span>
+  <span class="absValue">
+    (2/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.app.usecase;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.exception.FuncionAlreadyExistsException;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.in.FuncionUseCase;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.on.FuncionRepositoryPort;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class FuncionUseCaseImpl implements FuncionUseCase {
+&nbsp;
+&nbsp;    private final FuncionRepositoryPort funcionRepositoryPort;
+&nbsp;
+<b class="fc">&nbsp;    public FuncionUseCaseImpl(FuncionRepositoryPort funcionRepositoryPort) {</b>
+<b class="fc">&nbsp;        this.funcionRepositoryPort = funcionRepositoryPort;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Funcion crearFuncion(Funcion funcion) {
+&nbsp;        // Buscamos en la base de datos todas las funciones de la película actual
+<b class="nc">&nbsp;        List&lt;Funcion&gt; existentes = funcionRepositoryPort.findByPeliculaId(</b>
+<b class="nc">&nbsp;                funcion.getPelicula().getIdPelicula()</b>
+&nbsp;        );
+&nbsp;
+&nbsp;        // Verificamos si ya existe una función en la misma sala, fecha y hora
+<b class="nc">&nbsp;        boolean yaExiste = existentes.stream().anyMatch(f -&gt;</b>
+<b class="nc">&nbsp;                f.getSala().getIdSala().equals(funcion.getSala().getIdSala()) &amp;&amp;</b>
+<b class="nc">&nbsp;                        f.getFecha().equals(funcion.getFecha())</b>
+&nbsp;        );
+&nbsp;        // Si ya existe una función con esas características, lanzamos una excepción
+<b class="nc">&nbsp;        if (yaExiste) {</b>
+<b class="nc">&nbsp;            throw new FuncionAlreadyExistsException(</b>
+&nbsp;                    &quot;Ya existe una función para esta película en la sala &quot; +
+<b class="nc">&nbsp;                            funcion.getSala().getIdSala() + &quot; en la fecha y hora indicada.&quot;</b>
+&nbsp;            );
+&nbsp;        }
+&nbsp;        // Si no existe duplicado, guardamos la función en la base de datos
+<b class="nc">&nbsp;        return funcionRepositoryPort.save(funcion);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Funcion&gt; actualizarFuncion(Long id, Funcion funcion) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Funcion funcionActualizada = funcionRepositoryPort.update(id, funcion);</b>
+<b class="nc">&nbsp;            return Optional.of(funcionActualizada);</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            return Optional.empty();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Funcion&gt; obtenerFuncionPorId(Long id) {
+<b class="nc">&nbsp;        return funcionRepositoryPort.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean eliminarFuncion(Long id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            funcionRepositoryPort.deleteById(id);</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Funcion&gt; listarFunciones() {
+<b class="nc">&nbsp;        return funcionRepositoryPort.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Funcion&gt; listarFuncionesPorPelicula(Long peliculaId) {
+<b class="nc">&nbsp;        return funcionRepositoryPort.findByPeliculaId(peliculaId);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

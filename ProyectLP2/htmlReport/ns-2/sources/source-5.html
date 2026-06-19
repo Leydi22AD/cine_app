@@ -1,0 +1,179 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TicketUseCaseImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.app.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: TicketUseCaseImpl (pe.edu.upeu.ProyectLP2.app.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TicketUseCaseImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12,5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11,1%
+  </span>
+  <span class="absValue">
+    (2/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.app.usecase;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Ticket;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.in.TicketUseCase;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.on.TicketRepositoryPort;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class TicketUseCaseImpl implements TicketUseCase {
+&nbsp;
+&nbsp;    public final TicketRepositoryPort ticketRepositoryPort;
+&nbsp;
+<b class="fc">&nbsp;    public TicketUseCaseImpl(TicketRepositoryPort ticketRepositoryPort) {</b>
+<b class="fc">&nbsp;        this.ticketRepositoryPort = ticketRepositoryPort;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Ticket crearTicket(Ticket ticket) {
+<b class="nc">&nbsp;        if (ticket.getFuncion() != null &amp;&amp; ticket.getFuncion().getPrecio() != null) {</b>
+<b class="nc">&nbsp;            ticket.setPrecioUnitario(ticket.getFuncion().getPrecio());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return ticketRepositoryPort.save(ticket);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Ticket&gt; obtenerTicketPorId(Long id) {
+<b class="nc">&nbsp;        return ticketRepositoryPort.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Ticket&gt; listarTickets() {
+<b class="nc">&nbsp;        return ticketRepositoryPort.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Ticket&gt; actualizarTicket(Long id, Ticket ticket) {
+<b class="nc">&nbsp;        Optional&lt;Ticket&gt; existing = ticketRepositoryPort.findById(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (existing.isEmpty()) {</b>
+<b class="nc">&nbsp;            return Optional.empty();</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        ticket.setIdTicket(id);</b>
+<b class="nc">&nbsp;        return ticketRepositoryPort.update(id, ticket);    }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Ticket&gt; listarTicketsPorFuncion(Long funcionId) {
+<b class="nc">&nbsp;        return ticketRepositoryPort.findByFuncionId(funcionId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean anularTicket(Long id) {
+<b class="nc">&nbsp;        return ticketRepositoryPort.findById(id)</b>
+<b class="nc">&nbsp;                .map(ticket -&gt; {</b>
+<b class="nc">&nbsp;                    ticketRepositoryPort.deleteById(id);</b>
+<b class="nc">&nbsp;                    return true;</b>
+&nbsp;                })
+<b class="nc">&nbsp;                .orElse(false);    }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

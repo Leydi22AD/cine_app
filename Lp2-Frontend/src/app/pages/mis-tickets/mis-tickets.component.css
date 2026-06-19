@@ -1,0 +1,38 @@
+.mis-tickets-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.ticket-card {
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ticket-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(211, 47, 47, 0.2) !important;
+}
+
+.card-header.bg-danger {
+  background-color: #d32f2f !important;
+}
+
+.text-warning {
+  color: #ffd700 !important;
+}
+
+.btn-danger {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.btn-danger:hover {
+  background-color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+.spinner-border.text-danger {
+  color: #d32f2f !important;
+  width: 3rem;
+  height: 3rem;
+}

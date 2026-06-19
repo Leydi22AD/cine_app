@@ -1,0 +1,51 @@
+<div class="container py-5">
+
+  <!-- Sección de bienvenida -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-warning text-uppercase mb-3">Bienvenido a Cine Online</h1>
+    <p class="fs-5 text-warning">
+      Administra tus películas, funciones y tickets de manera rápida, moderna y eficiente.
+    </p>
+    <hr class="border-warning opacity-100 mx-auto" style="width: 60px;">
+  </div>
+
+  <!-- Tarjetas de acciones principales -->
+  <div class="row g-4">
+    <!-- Películas -->
+    <div class="col-md-4">
+      <div class="card h-100 border-danger">
+        <div class="card-body text-center">
+          <i class="bi bi-film fs-1 text-warning"></i>
+          <h5 class="fw-bold mt-3 text-warning">Películas</h5>
+          <p class="text-muted mb-3">Gestiona la cartelera y los estrenos del cine.</p>
+          <button class="btn btn-danger w-100" (click)="navegarAPelicula()">Crear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Funciones -->
+    <div class="col-md-4">
+      <div class="card h-100 border-danger">
+        <div class="card-body text-center">
+          <i class="bi bi-calendar-event fs-1 text-warning"></i>
+          <h5 class="fw-bold mt-3 text-warning">Funciones</h5>
+          <p class="text-muted mb-3">Programa las proyecciones y horarios.</p>
+          <button class="btn btn-danger w-100" (click)="navegarAFuncion()">Crear</button>
+        </div>
+      </div>
+    </div>
+
+        <!-- Salas -->
+    <div class="col-md-4">
+      <div class="card h-100 border-danger">
+        <div class="card-body text-center">
+          <i class="bi bi-door-open fs-1 text-warning"></i>
+          <h5 class="fw-bold mt-3 text-warning">Salas</h5>
+          <p class="text-muted mb-3">Administra las salas de proyección y su capacidad.</p>
+          <button class="btn btn-danger w-100" (click)="navegarASala()">Crear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div> 

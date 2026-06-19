@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SalaUseCaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.app.usecase</a> &gt; <span class="el_source">SalaUseCaseImpl.java</span></div><h1>SalaUseCaseImpl.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.app.usecase;
+
+import org.springframework.stereotype.Service;
+import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
+import pe.edu.upeu.ProyectLP2.domain.model.Sala;
+import pe.edu.upeu.ProyectLP2.domain.exception.AsientoAlreadyExistsException;
+import pe.edu.upeu.ProyectLP2.domain.port.in.SalaUseCase;
+import pe.edu.upeu.ProyectLP2.domain.port.on.AsientoRepositoryPort;
+import pe.edu.upeu.ProyectLP2.domain.port.on.SalaRepositoryPort;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class SalaUseCaseImpl implements SalaUseCase {
+
+    private final SalaRepositoryPort salaRepositoryPort;
+    private final AsientoRepositoryPort asientoRepositoryPort;
+
+<span class="fc" id="L20">    public SalaUseCaseImpl(SalaRepositoryPort salaRepositoryPort, AsientoRepositoryPort asientoRepositoryPort) {</span>
+<span class="fc" id="L21">        this.salaRepositoryPort = salaRepositoryPort;</span>
+<span class="fc" id="L22">        this.asientoRepositoryPort = asientoRepositoryPort;</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public Sala registrarSala(Sala sala) {
+        // Guardamos directamente la sala (ya viene con cine asignado)
+<span class="fc" id="L28">        Sala salaSaved = salaRepositoryPort.save(sala);</span>
+        
+        // Generamos automáticamente los asientos según filas y columnas
+<span class="fc" id="L31">        generarAsientos(salaSaved);</span>
+        
+<span class="fc" id="L33">        return salaSaved;</span>
+    }
+    
+    private void generarAsientos(Sala sala) {
+        // Evitar NPE y valores inválidos
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        int filas = sala.getFilas() == null ? 0 : sala.getFilas();</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        int columnas = sala.getColumnas() == null ? 0 : sala.getColumnas();</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int fila = 0; fila &lt; filas; fila++) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            for (int columna = 1; columna &lt;= columnas; columna++) {</span>
+<span class="fc" id="L43">                Asiento asiento = new Asiento();</span>
+<span class="fc" id="L44">                asiento.setFila(fila + 1); // 1, 2, 3...</span>
+<span class="fc" id="L45">                asiento.setColumna(columna); // 1, 2, 3...</span>
+<span class="fc" id="L46">                asiento.setEstado(&quot;LIBRE&quot;);</span>
+<span class="fc" id="L47">                asiento.setSala(sala);</span>
+
+                try {
+<span class="fc" id="L50">                    asientoRepositoryPort.save(asiento);</span>
+<span class="nc" id="L51">                } catch (AsientoAlreadyExistsException e) {</span>
+                    // Si por alguna razón ya existe, continuar con el siguiente asiento
+                    // (evita que una excepción interrumpa la generación completa)
+<span class="fc" id="L54">                }</span>
+            }
+        }
+<span class="fc" id="L57">    }</span>
+
+    @Override
+    public Optional&lt;Sala&gt; actualizarSala(Long id, Sala sala) {
+<span class="nc" id="L61">        return salaRepositoryPort.findById(id).map(existingSala -&gt; {</span>
+<span class="nc" id="L62">        sala.setIdSala(id); // mantenemos el ID</span>
+<span class="nc" id="L63">        return salaRepositoryPort.update(id, sala);</span>
+    });
+    }
+
+    @Override
+    public boolean eliminarSala(Long id) {
+<span class="fc" id="L69">        return salaRepositoryPort.findById(id).map(sala -&gt; {</span>
+<span class="fc" id="L70">            salaRepositoryPort.deleteById(id);</span>
+<span class="fc" id="L71">            return true;</span>
+<span class="fc" id="L72">        }).orElse(false);</span>
+    }
+
+    @Override
+    public Optional&lt;Sala&gt; obtenerSalaPorId(Long id) {
+<span class="fc" id="L77">        return salaRepositoryPort.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Sala&gt; listarSalas() {
+<span class="fc" id="L82">        return salaRepositoryPort.findAll();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

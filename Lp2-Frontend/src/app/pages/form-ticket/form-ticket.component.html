@@ -1,0 +1,38 @@
+<div class="container mt-4">
+  <h3 class="text-center mb-4 text-success fw-bold">Registrar Ticket</h3>
+  <form (ngSubmit)="guardarTicket()" #ticketForm="ngForm" class="card p-4 shadow form-green">
+    <div class="mb-3">
+      <label class="form-label text-success">Función</label>
+      <select class="form-control" [(ngModel)]="ticket.idFuncion" name="idFuncion" required>
+        <option [ngValue]="null">Seleccione una función</option>
+        <option *ngFor="let funcion of funciones" [ngValue]="funcion.idFuncion">
+          Función #{{ funcion.idFuncion }} - {{ funcion.fecha }}
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-success">ID Asiento</label>
+      <input type="number" class="form-control" [(ngModel)]="ticket.idAsiento" name="idAsiento" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-success">ID Cliente</label>
+      <input type="number" class="form-control" [(ngModel)]="ticket.idCliente" name="idCliente" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-success">Precio Unitario (S/.)</label>
+      <input type="number" step="0.01" class="form-control" [(ngModel)]="ticket.precioUnitario" name="precioUnitario" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-success">Fecha de Compra</label>
+      <input type="datetime-local" class="form-control" [(ngModel)]="ticket.fechaCompra" name="fechaCompra" required>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100" [disabled]="!ticketForm.valid">
+      Guardar Ticket
+    </button>
+  </form>
+</div>

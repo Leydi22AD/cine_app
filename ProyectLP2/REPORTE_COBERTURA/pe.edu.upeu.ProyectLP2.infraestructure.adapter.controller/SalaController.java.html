@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SalaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a> &gt; <span class="el_source">SalaController.java</span></div><h1>SalaController.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.upeu.ProyectLP2.domain.model.Sala;
+import pe.edu.upeu.ProyectLP2.domain.port.in.SalaUseCase;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.SalaDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;api/v1/salas&quot;)
+public class SalaController {
+
+    private final SalaUseCase salaUseCase;
+
+<span class="fc" id="L19">    public SalaController(SalaUseCase salaUseCase) {</span>
+<span class="fc" id="L20">        this.salaUseCase = salaUseCase;</span>
+<span class="fc" id="L21">    }</span>
+
+    // Listar todas las salas
+    @GetMapping
+    public ResponseEntity&lt;List&lt;SalaDto.SalaResponse&gt;&gt; listarSalas() {
+<span class="fc" id="L26">        List&lt;SalaDto.SalaResponse&gt; salas = salaUseCase.listarSalas()</span>
+<span class="fc" id="L27">                .stream()</span>
+<span class="fc" id="L28">                .map(this::mapToSalaResponse)</span>
+<span class="fc" id="L29">                .collect(Collectors.toList());</span>
+<span class="fc" id="L30">        return ResponseEntity.ok(salas);</span>
+    }
+
+    // Crear nueva sala (soporta POST en '/api/v1/salas' y '/api/v1/salas/crear')
+    @PostMapping(value = {&quot;&quot;, &quot;/crear&quot;})
+    public ResponseEntity&lt;SalaDto.SalaResponse&gt; createSala(@RequestBody SalaDto.SalaRequest salaRequest) {
+<span class="fc" id="L36">        Sala sala = new Sala();</span>
+<span class="fc" id="L37">        sala.setNumero(salaRequest.numero());</span>
+<span class="fc" id="L38">        sala.setFilas(salaRequest.filas());</span>
+<span class="fc" id="L39">        sala.setColumnas(salaRequest.columnas());</span>
+
+
+
+<span class="fc" id="L43">        Sala createdSala = salaUseCase.registrarSala(sala);</span>
+
+<span class="fc" id="L45">        return new ResponseEntity&lt;&gt;(mapToSalaResponse(createdSala), HttpStatus.CREATED);</span>
+    }
+
+    // Obtener sala por id
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;SalaDto.SalaResponse&gt; getSalaById(@PathVariable Long id) {
+<span class="nc" id="L51">        return salaUseCase.obtenerSalaPorId(id)</span>
+<span class="nc" id="L52">                .map(sala -&gt; ResponseEntity.ok(mapToSalaResponse(sala)))</span>
+<span class="nc" id="L53">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Actualizar sala
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;SalaDto.SalaResponse&gt; updateSala(
+            @PathVariable Long id,
+            @RequestBody SalaDto.SalaRequest request) {
+
+<span class="nc" id="L62">        Sala sala = new Sala();</span>
+<span class="nc" id="L63">        sala.setNumero(request.numero());</span>
+<span class="nc" id="L64">        sala.setFilas(request.filas());</span>
+<span class="nc" id="L65">        sala.setColumnas(request.columnas());</span>
+
+<span class="nc" id="L67">        return salaUseCase.actualizarSala(id, sala)</span>
+<span class="nc" id="L68">                .map(updated -&gt; ResponseEntity.ok(mapToSalaResponse(updated)))</span>
+<span class="nc" id="L69">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Eliminar sala
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteSala(@PathVariable Long id) {
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (salaUseCase.eliminarSala(id)) {</span>
+<span class="fc" id="L76">            return ResponseEntity.noContent().build(); // 204</span>
+        } else {
+<span class="nc" id="L78">            return ResponseEntity.notFound().build(); // 404</span>
+        }
+    }
+
+    // Endpoint temporal para regenerar asientos de una sala
+    @PostMapping(&quot;/{id}/regenerar-asientos&quot;)
+    public ResponseEntity&lt;String&gt; regenerarAsientos(@PathVariable Long id) {
+<span class="nc" id="L85">        return salaUseCase.obtenerSalaPorId(id)</span>
+<span class="nc" id="L86">            .map(sala -&gt; {</span>
+<span class="nc" id="L87">                salaUseCase.registrarSala(sala); // Esto regenerará los asientos</span>
+<span class="nc" id="L88">                return ResponseEntity.ok(&quot;Asientos regenerados para sala &quot; + id);</span>
+            })
+<span class="nc" id="L90">            .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Método de ayuda para mapear de Domain a Response
+    private SalaDto.SalaResponse mapToSalaResponse(Sala sala) {
+
+
+<span class="fc" id="L97">        return new SalaDto.SalaResponse(</span>
+<span class="fc" id="L98">                sala.getIdSala(),</span>
+<span class="fc" id="L99">                sala.getNumero(),</span>
+<span class="fc" id="L100">                sala.getFilas(),</span>
+<span class="fc" id="L101">                sala.getColumnas()</span>
+
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

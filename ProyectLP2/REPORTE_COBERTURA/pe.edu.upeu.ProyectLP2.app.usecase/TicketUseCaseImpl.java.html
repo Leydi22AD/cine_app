@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TicketUseCaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.app.usecase</a> &gt; <span class="el_source">TicketUseCaseImpl.java</span></div><h1>TicketUseCaseImpl.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.app.usecase;
+
+import org.springframework.stereotype.Service;
+import pe.edu.upeu.ProyectLP2.domain.model.Ticket;
+import pe.edu.upeu.ProyectLP2.domain.port.in.TicketUseCase;
+import pe.edu.upeu.ProyectLP2.domain.port.on.TicketRepositoryPort;
+import pe.edu.upeu.ProyectLP2.domain.exception.AsientoAlreadyExistsException; // O la excepción que mapee a tu 409
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class TicketUseCaseImpl implements TicketUseCase {
+
+    public final TicketRepositoryPort ticketRepositoryPort;
+
+<span class="fc" id="L17">    public TicketUseCaseImpl(TicketRepositoryPort ticketRepositoryPort) {</span>
+<span class="fc" id="L18">        this.ticketRepositoryPort = ticketRepositoryPort;</span>
+<span class="fc" id="L19">    }</span>
+    @Override
+    public Ticket crearTicket(Ticket ticket) {
+<span class="pc bpc" id="L22" title="2 of 6 branches missed.">        if (ticket.getAsiento() != null &amp;&amp; ticket.getAsiento().getIdAsiento() != null &amp;&amp; ticket.getFuncion() != null) {</span>
+<span class="fc" id="L23">            Long asientoId = ticket.getAsiento().getIdAsiento();</span>
+<span class="fc" id="L24">            Long funcionId = ticket.getFuncion().getIdFuncion();</span>
+
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">            if (funcionId != null) {</span>
+<span class="fc" id="L27">                List&lt;Ticket&gt; ticketsExistentes = ticketRepositoryPort.findByFuncionId(funcionId);</span>
+<span class="fc" id="L28">                boolean yaOcupado = ticketsExistentes.stream()</span>
+<span class="pc bnc" id="L29" title="All 4 branches missed.">                        .anyMatch(t -&gt; t.getAsiento() != null &amp;&amp; asientoId.equals(t.getAsiento().getIdAsiento()));</span>
+
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">                if (yaOcupado) {</span>
+<span class="nc" id="L32">                    throw new pe.edu.upeu.ProyectLP2.domain.exception.AsientoAlreadyExistsException(&quot;El asiento ya está ocupado.&quot;);</span>
+                }
+            }
+        }
+
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">        if (ticket.getFuncion() != null &amp;&amp; ticket.getFuncion().getPrecio() != null) {</span>
+<span class="fc" id="L38">            ticket.setPrecioUnitario(ticket.getFuncion().getPrecio());</span>
+        }
+
+<span class="fc" id="L41">        return ticketRepositoryPort.save(ticket);</span>
+    }
+
+    @Override
+    public Optional&lt;Ticket&gt; obtenerTicketPorId(Long id) {
+<span class="fc" id="L46">        return ticketRepositoryPort.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Ticket&gt; listarTickets() {
+<span class="fc" id="L51">        return ticketRepositoryPort.findAll();</span>
+    }
+
+    @Override
+    public Optional&lt;Ticket&gt; actualizarTicket(Long id, Ticket ticket) {
+<span class="fc" id="L56">        Optional&lt;Ticket&gt; existing = ticketRepositoryPort.findById(id);</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (existing.isEmpty()) {</span>
+<span class="fc" id="L59">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L62">        ticket.setIdTicket(id);</span>
+<span class="fc" id="L63">        return ticketRepositoryPort.update(id, ticket);</span>
+    }
+
+    @Override
+    public List&lt;Ticket&gt; listarTicketsPorFuncion(Long funcionId) {
+<span class="fc" id="L68">        return ticketRepositoryPort.findByFuncionId(funcionId);</span>
+    }
+
+    @Override
+    public boolean anularTicket(Long id) {
+<span class="fc" id="L73">        return ticketRepositoryPort.findById(id)</span>
+<span class="fc" id="L74">                .map(ticket -&gt; {</span>
+<span class="fc" id="L75">                    ticketRepositoryPort.deleteById(id);</span>
+<span class="fc" id="L76">                    return true;</span>
+                })
+<span class="fc" id="L78">                .orElse(false);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

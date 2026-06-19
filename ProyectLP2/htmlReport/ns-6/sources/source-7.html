@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UsuarioController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UsuarioController (pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UsuarioController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12,5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5,3%
+  </span>
+  <span class="absValue">
+    (2/38)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+&nbsp;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.in.UsuarioUseCase;
+&nbsp;import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.UsuarioDto;
+&nbsp;import pe.edu.upeu.ProyectLP2.infraestructure.entity.Rol;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/usuarios&quot;)
+&nbsp;public class UsuarioController {
+&nbsp;
+&nbsp;    // Dependencia hacia la capa de casos de uso (lógica de negocio).
+&nbsp;    private final UsuarioUseCase usuarioUseCase;
+&nbsp;
+<b class="fc">&nbsp;    public UsuarioController(UsuarioUseCase usuarioUseCase) {</b>
+<b class="fc">&nbsp;        this.usuarioUseCase = usuarioUseCase;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 🔹 Crear usuario
+&nbsp;    @PostMapping(&quot;/crear&quot;)
+&nbsp;    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; crearUsuario(@RequestBody UsuarioDto.UsuarioRequest request) {
+&nbsp;
+&nbsp;        // Convertimos el DTO de request a objeto de dominio Usuario
+<b class="nc">&nbsp;        Usuario usuario = new Usuario();</b>
+<b class="nc">&nbsp;        usuario.setNombre(request.nombre());</b>
+<b class="nc">&nbsp;        usuario.setEmail(request.email());</b>
+<b class="nc">&nbsp;        usuario.setPassword(request.password());</b>
+&nbsp;
+&nbsp;        // Si el rol viene vacío, por defecto se asigna ADMIN
+<b class="nc">&nbsp;        usuario.setRol(request.rol() != null ? request.rol() : Rol.CLIENTE);</b>
+&nbsp;
+&nbsp;        // Llamamos al caso de uso para registrar al usuario
+<b class="nc">&nbsp;        Usuario creado = usuarioUseCase.registrarUsuario(usuario);</b>
+&nbsp;
+&nbsp;        // Convertimos el objeto de dominio a DTO de respuesta
+<b class="nc">&nbsp;        UsuarioDto.UsuarioResponse response = mapToUsuarioResponse(creado);</b>
+&nbsp;
+&nbsp;        // Retornamos con código 201 (CREATED)
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(response, HttpStatus.CREATED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //  Listar todos
+&nbsp;    @GetMapping
+&nbsp;    public ResponseEntity&lt;List&lt;UsuarioDto.UsuarioResponse&gt;&gt; listarUsuarios() {
+&nbsp;
+&nbsp;        // Obtenemos los usuarios desde el caso de uso
+<b class="nc">&nbsp;        List&lt;UsuarioDto.UsuarioResponse&gt; usuarios = usuarioUseCase.listarUsuarios()</b>
+<b class="nc">&nbsp;                .stream()</b>
+&nbsp;                // Convertimos cada Usuario a DTO Response
+<b class="nc">&nbsp;                .map(this::mapToUsuarioResponse)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;        // Retornamos la lista con código 200 (OK)
+<b class="nc">&nbsp;        return ResponseEntity.ok(usuarios);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 🔹 Buscar por ID
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; obtenerUsuarioPorId(@PathVariable Long id) {
+&nbsp;
+&nbsp;        // Buscamos en la capa de negocio y convertimos a Response
+<b class="nc">&nbsp;        return usuarioUseCase.obtenerUsuarioPorId(id)</b>
+<b class="nc">&nbsp;                .map(usuario -&gt; ResponseEntity.ok(mapToUsuarioResponse(usuario)))</b>
+&nbsp;
+&nbsp;                // Si no existe, retornamos 404 (Not Found)
+<b class="nc">&nbsp;                .orElse(ResponseEntity.notFound().build());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 🔹 Actualizar
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; actualizarUsuario(
+&nbsp;            @PathVariable Long id,
+&nbsp;            @RequestBody UsuarioDto.UsuarioRequest request) {
+&nbsp;
+&nbsp;        // Convertimos el request en un objeto de dominio
+<b class="nc">&nbsp;        Usuario usuario = new Usuario();</b>
+<b class="nc">&nbsp;        usuario.setIdUsuario(id);</b>
+<b class="nc">&nbsp;        usuario.setNombre(request.nombre());</b>
+<b class="nc">&nbsp;        usuario.setEmail(request.email());</b>
+<b class="nc">&nbsp;        usuario.setPassword(request.password());</b>
+<b class="nc">&nbsp;        usuario.setRol(request.rol() != null ? request.rol() : Rol.ADMIN);</b>
+&nbsp;
+&nbsp;        // Llamamos al caso de uso para actualizarlo
+<b class="nc">&nbsp;        return usuarioUseCase.actualizarUsuario(id, usuario)</b>
+<b class="nc">&nbsp;                .map(u -&gt; ResponseEntity.ok(mapToUsuarioResponse(u)))</b>
+<b class="nc">&nbsp;                .orElse(ResponseEntity.notFound().build());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 🔹 Eliminar
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; eliminarUsuario(@PathVariable Long id) {
+<b class="nc">&nbsp;        if (usuarioUseCase.eliminarUsuario(id)) {</b>
+&nbsp;            // Si se eliminó, devolvemos 204 (No Content)
+<b class="nc">&nbsp;            return ResponseEntity.noContent().build();</b>
+&nbsp;        } else {
+&nbsp;            // Si no existe, devolvemos 404
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    @GetMapping(&quot;/email/{email}&quot;)
+&nbsp;    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; obtenerUsuarioPorEmail(@PathVariable String email) {
+<b class="nc">&nbsp;        return usuarioUseCase.obtenerUsuarioPorEmail(email)</b>
+&nbsp;
+&nbsp;                // Si existe, devolvemos 200 con el usuario
+<b class="nc">&nbsp;                .map(usuario -&gt; ResponseEntity.ok(mapToUsuarioResponse(usuario)))</b>
+&nbsp;
+&nbsp;                // Si no existe, devolvemos 404
+<b class="nc">&nbsp;                .orElse(ResponseEntity.notFound().build());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // 🔹 Método privado de utilidad que convierte un objeto de dominio Usuario en un DTO Response
+&nbsp;    private UsuarioDto.UsuarioResponse mapToUsuarioResponse(Usuario usuario) {
+<b class="nc">&nbsp;        return new UsuarioDto.UsuarioResponse(</b>
+<b class="nc">&nbsp;                usuario.getIdUsuario(),</b>
+<b class="nc">&nbsp;                usuario.getNombre(),</b>
+<b class="nc">&nbsp;                usuario.getEmail(),</b>
+<b class="nc">&nbsp;                usuario.getRol()</b>
+&nbsp;        );
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

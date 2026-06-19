@@ -1,0 +1,99 @@
+<div class="mis-tickets-container">
+  <!-- Header -->
+  <nav class="navbar navbar-dark bg-danger shadow-sm">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        <i class="bi bi-ticket-perforated me-2"></i>Mis Tickets
+      </span>
+      <div class="d-flex align-items-center text-white">
+        <span class="me-3">
+          <i class="bi bi-person-circle me-2"></i>{{ currentUser?.nombre }}
+        </span>
+        <button class="btn btn-outline-light btn-sm me-2" (click)="volverAlInicio()">
+          <i class="bi bi-house me-1"></i>Inicio
+        </button>
+        <button class="btn btn-outline-light btn-sm" (click)="logout()">
+          <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mt-4">
+    <div class="text-center mb-4">
+      <h2 class="text-warning">Mis Tickets Comprados</h2>
+      <p class="text-muted">Aquí puedes ver todos tus tickets de cine</p>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center mt-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="text-muted mt-3">Cargando tus tickets...</p>
+    </div>
+
+    <!-- Mensaje si no hay tickets -->
+    <div *ngIf="!loading && tickets.length === 0" class="text-center mt-5">
+      <i class="bi bi-ticket-perforated" style="font-size: 5rem; color: #ffd700;"></i>
+      <h4 class="text-warning mt-3">No tienes tickets comprados</h4>
+      <p class="text-muted">¡Explora nuestra cartelera y compra tu primer ticket!</p>
+      <button class="btn btn-danger mt-3" (click)="volverAlInicio()">
+        <i class="bi bi-film me-2"></i>Ver Películas
+      </button>
+    </div>
+
+    <!-- Lista de tickets -->
+    <div *ngIf="!loading && tickets.length > 0" class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let ticket of tickets">
+        <div class="card h-100 shadow-sm ticket-card">
+          <div class="card-header bg-danger text-white">
+            <h6 class="mb-0">
+              <i class="bi bi-ticket-perforated me-2"></i>
+              Ticket #{{ ticket.idTicket || ticket.id }}
+            </h6>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title text-warning">
+              {{ ticket.funcion?.pelicula?.titulo || 'Película no disponible' }}
+            </h5>
+            <hr>
+            <p class="mb-2">
+              <i class="bi bi-calendar3 text-warning me-2"></i>
+              <strong>Fecha:</strong> {{ ticket.funcion?.fecha || 'N/A' }}
+            </p>
+            <p class="mb-2">
+              <i class="bi bi-clock text-warning me-2"></i>
+              <strong>Horario:</strong> {{ ticket.funcion?.horario || 'N/A' }}
+            </p>
+            <p class="mb-2">
+              <i class="bi bi-building text-warning me-2"></i>
+              <strong>Sala:</strong> {{ ticket.funcion?.sala?.numero || 'N/A' }}
+            </p>
+            <p class="mb-2">
+              <i class="bi bi-geo-alt text-warning me-2"></i>
+              <strong>Asiento:</strong> 
+              Fila {{ ticket.asiento?.fila || '?' }}, 
+              Columna {{ ticket.asiento?.columna || '?' }}
+            </p>
+            <p class="mb-2">
+              <i class="bi bi-cash text-warning me-2"></i>
+              <strong>Precio:</strong> S/ {{ ticket.precioUnitario || ticket.funcion?.precio || '0.00' }}
+            </p>
+            <p class="mb-0">
+              <i class="bi bi-calendar-check text-warning me-2"></i>
+              <strong>Comprado:</strong> {{ ticket.fechaCompra | date:'short' }}
+            </p>
+          </div>
+          <div class="card-footer bg-light">
+            <small class="text-muted">
+              <i class="bi bi-check-circle text-success me-1"></i>
+              Ticket válido
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

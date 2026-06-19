@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FuncionUseCaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.app.usecase</a> &gt; <span class="el_source">FuncionUseCaseImpl.java</span></div><h1>FuncionUseCaseImpl.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.app.usecase;
+
+import org.springframework.stereotype.Service;
+import pe.edu.upeu.ProyectLP2.domain.exception.FuncionAlreadyExistsException;
+import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
+import pe.edu.upeu.ProyectLP2.domain.port.in.FuncionUseCase;
+import pe.edu.upeu.ProyectLP2.domain.port.on.FuncionRepositoryPort;
+
+import java.util.List;
+import java.util.Optional;
+
+
+@Service
+public class FuncionUseCaseImpl implements FuncionUseCase {
+
+    private final FuncionRepositoryPort funcionRepositoryPort;
+
+<span class="fc" id="L18">    public FuncionUseCaseImpl(FuncionRepositoryPort funcionRepositoryPort) {</span>
+<span class="fc" id="L19">        this.funcionRepositoryPort = funcionRepositoryPort;</span>
+<span class="fc" id="L20">    }</span>
+
+    @Override
+    public Funcion crearFuncion(Funcion funcion) {
+        // Buscamos en la base de datos todas las funciones de la película actual
+<span class="fc" id="L25">        List&lt;Funcion&gt; existentes = funcionRepositoryPort.findByPeliculaId(</span>
+<span class="fc" id="L26">                funcion.getPelicula().getIdPelicula()</span>
+        );
+
+        // Verificamos si ya existe una función en la misma sala, fecha y hora
+<span class="fc" id="L30">        boolean yaExiste = existentes.stream().anyMatch(f -&gt;</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">                f.getSala().getIdSala().equals(funcion.getSala().getIdSala()) &amp;&amp;</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">                        f.getFecha().equals(funcion.getFecha())</span>
+        );
+        // Si ya existe una función con esas características, lanzamos una excepción
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (yaExiste) {</span>
+<span class="fc" id="L36">            throw new FuncionAlreadyExistsException(</span>
+                    &quot;Ya existe una función para esta película en la sala &quot; +
+<span class="fc" id="L38">                            funcion.getSala().getIdSala() + &quot; en la fecha y hora indicada.&quot;</span>
+            );
+        }
+        // Si no existe duplicado, guardamos la función en la base de datos
+<span class="fc" id="L42">        return funcionRepositoryPort.save(funcion);</span>
+    }
+
+    @Override
+    public Optional&lt;Funcion&gt; actualizarFuncion(Long id, Funcion funcion) {
+        try {
+<span class="fc" id="L48">            Funcion funcionActualizada = funcionRepositoryPort.update(id, funcion);</span>
+<span class="fc" id="L49">            return Optional.of(funcionActualizada);</span>
+<span class="fc" id="L50">        } catch (Exception e) {</span>
+<span class="fc" id="L51">            return Optional.empty();</span>
+        }
+    }
+
+    @Override
+    public Optional&lt;Funcion&gt; obtenerFuncionPorId(Long id) {
+<span class="fc" id="L57">        return funcionRepositoryPort.findById(id);</span>
+    }
+
+    @Override
+    public boolean eliminarFuncion(Long id) {
+        try {
+<span class="fc" id="L63">            funcionRepositoryPort.deleteById(id);</span>
+<span class="fc" id="L64">            return true;</span>
+<span class="fc" id="L65">        } catch (Exception e) {</span>
+<span class="fc" id="L66">            return false;</span>
+        }
+    }
+
+    @Override
+    public List&lt;Funcion&gt; listarFunciones() {
+<span class="fc" id="L72">        return funcionRepositoryPort.findAll();</span>
+    }
+
+
+    @Override
+    public List&lt;Funcion&gt; listarFuncionesPorPelicula(Long peliculaId) {
+<span class="fc" id="L78">        return funcionRepositoryPort.findByPeliculaId(peliculaId);</span>
+    }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

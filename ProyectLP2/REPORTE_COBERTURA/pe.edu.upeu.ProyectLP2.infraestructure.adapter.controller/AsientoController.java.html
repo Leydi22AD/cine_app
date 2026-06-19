@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AsientoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a> &gt; <span class="el_source">AsientoController.java</span></div><h1>AsientoController.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.upeu.ProyectLP2.app.usecase.AsientoUseCaseImpl;
+import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
+import pe.edu.upeu.ProyectLP2.domain.model.Sala;
+import pe.edu.upeu.ProyectLP2.domain.port.in.AsientoUseCase;
+import pe.edu.upeu.ProyectLP2.domain.port.in.SalaUseCase;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.AsientoDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/api/v1/asientos&quot;)
+public class AsientoController {
+
+    private final AsientoUseCase asientoUseCase;
+    private final SalaUseCase salaUseCase;
+
+<span class="fc" id="L24">    public AsientoController(AsientoUseCase asientoUseCase, SalaUseCase salaUseCase) {</span>
+<span class="fc" id="L25">        this.asientoUseCase = asientoUseCase;</span>
+<span class="fc" id="L26">        this.salaUseCase = salaUseCase;</span>
+<span class="fc" id="L27">    }</span>
+
+    // ✅ Crear asiento
+    @PostMapping(&quot;/crear&quot;)
+    public ResponseEntity&lt;AsientoDto.AsientoResponse&gt; createAsiento(
+            @RequestBody AsientoDto.AsientoRequest request) {
+
+
+        // 🔹 1. Buscar la sala en BD por su id
+<span class="fc" id="L36">        Sala sala = salaUseCase.obtenerSalaPorId(request.salaId())</span>
+<span class="pc" id="L37">                .orElseThrow(() -&gt; new RuntimeException(&quot;Sala no encontrada con ID: &quot; + request.salaId()));</span>
+
+        // 🔹 2. Crear el asiento y asignarle la sala
+<span class="fc" id="L40">        Asiento asiento = new Asiento();</span>
+<span class="fc" id="L41">        asiento.setFila(request.fila());</span>
+<span class="fc" id="L42">        asiento.setColumna(request.columna());</span>
+<span class="fc" id="L43">        asiento.setEstado(request.estado());</span>
+<span class="fc" id="L44">        asiento.setSala(sala);</span>
+
+        // 🔹 3. Guardar
+<span class="nc" id="L47">        Asiento creado = asientoUseCase.crearAsiento(asiento);</span>
+
+        // 🔹 4. Devolver respuesta con sala y cine completos
+<span class="nc" id="L50">        return ResponseEntity.status(HttpStatus.CREATED).body(mapToAsientoResponse(creado));</span>
+    }
+
+    // ✅ Obtener asiento por ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;AsientoDto.AsientoResponse&gt; getAsientoById(@PathVariable Long id) {
+<span class="nc" id="L56">        return asientoUseCase.obtenerAsientoPorId(id)</span>
+<span class="nc" id="L57">                .map(a -&gt; ResponseEntity.ok(mapToAsientoResponse(a)))</span>
+<span class="nc" id="L58">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // ✅ Listar asientos por sala
+    @GetMapping(&quot;/sala/{salaId}&quot;)
+    public ResponseEntity&lt;List&lt;AsientoDto.AsientoResponse&gt;&gt; getAsientosBySala(@PathVariable Long salaId) {
+<span class="fc" id="L64">        List&lt;AsientoDto.AsientoResponse&gt; lista = asientoUseCase.listarAsientosPorSala(salaId)</span>
+<span class="fc" id="L65">                .stream()</span>
+<span class="fc" id="L66">                .map(this::mapToAsientoResponse)</span>
+<span class="fc" id="L67">                .collect(Collectors.toList());</span>
+<span class="fc" id="L68">        return ResponseEntity.ok(lista);</span>
+    }
+
+    // ✅ Listar todos los asientos (opcional, pero útil)
+    @GetMapping
+    public ResponseEntity&lt;List&lt;AsientoDto.AsientoResponse&gt;&gt; listarTodos() {
+<span class="fc" id="L74">        List&lt;AsientoDto.AsientoResponse&gt; lista = asientoUseCase.findAll()</span>
+<span class="fc" id="L75">                .stream()</span>
+<span class="fc" id="L76">                .map(this::mapToAsientoResponse)</span>
+<span class="fc" id="L77">                .collect(Collectors.toList());</span>
+<span class="fc" id="L78">        return ResponseEntity.ok(lista);</span>
+    }
+
+    // ✅ Actualizar asiento
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;AsientoDto.AsientoResponse&gt; updateAsiento(
+            @PathVariable Long id,
+            @RequestBody AsientoDto.AsientoRequest request) {
+
+<span class="nc" id="L87">        Sala sala = new Sala();</span>
+<span class="nc" id="L88">        sala.setIdSala(request.salaId());</span>
+
+<span class="nc" id="L90">        Asiento asiento = new Asiento();</span>
+<span class="nc" id="L91">        asiento.setFila(request.fila());</span>
+<span class="nc" id="L92">        asiento.setColumna(request.columna());</span>
+<span class="nc" id="L93">        asiento.setEstado(request.estado());</span>
+<span class="nc" id="L94">        asiento.setSala(sala);</span>
+
+<span class="nc" id="L96">        return asientoUseCase.actualizarAsiento(id, asiento)</span>
+<span class="nc" id="L97">                .map(a -&gt; ResponseEntity.ok(mapToAsientoResponse(a)))</span>
+<span class="nc" id="L98">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // ✅ Eliminar asiento
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteAsiento(@PathVariable Long id) {
+<span class="nc" id="L104">        boolean eliminado = asientoUseCase.eliminarAsiento(id);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        return eliminado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();</span>
+    }
+
+    // 🔧 Mapeador auxiliar (modelo → DTO)
+    private AsientoDto.AsientoResponse mapToAsientoResponse(Asiento asiento) {
+<span class="fc" id="L110">        return new AsientoDto.AsientoResponse(</span>
+<span class="fc" id="L111">                asiento.getIdAsiento(),</span>
+<span class="fc" id="L112">                asiento.getFila(),</span>
+<span class="fc" id="L113">                asiento.getColumna(),</span>
+<span class="fc" id="L114">                asiento.getEstado(),</span>
+<span class="fc" id="L115">                asiento.getSala()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

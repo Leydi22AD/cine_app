@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PeliculaPersistenceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter</a> &gt; <span class="el_source">PeliculaPersistenceAdapter.java</span></div><h1>PeliculaPersistenceAdapter.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter;
+
+
+import org.springframework.stereotype.Component;
+import pe.edu.upeu.ProyectLP2.domain.model.Pelicula;
+import pe.edu.upeu.ProyectLP2.domain.port.on.PeliculaRepositoryPort;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper.PeliculaMapper;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.PeliculaEntity;
+
+import java.util.List;
+import java.util.Optional;
+
+@Component
+public class PeliculaPersistenceAdapter implements PeliculaRepositoryPort {
+
+    private final PeliculaRepository peliculaRepository;
+    private final PeliculaMapper peliculaMapper;
+
+
+<span class="fc" id="L20">    public PeliculaPersistenceAdapter(PeliculaRepository peliculaRepository, PeliculaMapper peliculaMapper) {</span>
+<span class="fc" id="L21">        this.peliculaRepository = peliculaRepository;</span>
+<span class="fc" id="L22">        this.peliculaMapper = peliculaMapper;</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public Pelicula save(Pelicula pelicula) {
+<span class="fc" id="L27">        PeliculaEntity entity = peliculaMapper.toEntity(pelicula);</span>
+<span class="fc" id="L28">        PeliculaEntity saved = peliculaRepository.save(entity);</span>
+<span class="fc" id="L29">        return peliculaMapper.toDomainModel(saved);</span>
+    }
+
+    @Override
+    public Optional&lt;Pelicula&gt; findById(Long id) {
+<span class="fc" id="L34">        return peliculaRepository.findById(id)</span>
+<span class="fc" id="L35">                .map(peliculaMapper::toDomainModel);    }</span>
+
+    @Override
+    public List&lt;Pelicula&gt; findAll() {
+<span class="fc" id="L39">        return peliculaMapper.toDomainModelList(peliculaRepository.findAll());</span>
+    }
+
+
+    @Override
+    public List&lt;Pelicula&gt; findByTitulo(String titulo) {
+<span class="fc" id="L45">        return peliculaMapper.toDomainModelList(peliculaRepository.findByTitulo(titulo));</span>
+    }
+
+    @Override
+    public void deleteById(Long id) {
+<span class="fc" id="L50">        peliculaRepository.deleteById(id);</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    public Pelicula update(Long id, Pelicula pelicula) {
+<span class="nc" id="L55">        PeliculaEntity existing = peliculaRepository.findById(id)</span>
+<span class="nc" id="L56">                .orElseThrow(() -&gt; new RuntimeException(&quot;Película no encontrada con id &quot; + id));</span>
+
+        // copiar campos (sin tocar el id):
+<span class="nc" id="L59">        existing.setTitulo(pelicula.getTitulo());</span>
+<span class="nc" id="L60">        existing.setGenero(pelicula.getGenero());</span>
+<span class="nc" id="L61">        existing.setDuracion(pelicula.getDuracion());</span>
+<span class="nc" id="L62">        existing.setFormato(pelicula.getFormato());</span>
+<span class="nc" id="L63">        existing.setIdioma(pelicula.getIdioma());</span>
+<span class="nc" id="L64">        existing.setPoster(pelicula.getPoster());</span>
+<span class="nc" id="L65">        existing.setDescripcion(pelicula.getDescripcion());</span>
+<span class="nc" id="L66">        existing.setTrailer(pelicula.getTrailer());</span>
+
+<span class="nc" id="L68">        PeliculaEntity saved = peliculaRepository.save(existing);</span>
+<span class="nc" id="L69">        return peliculaMapper.toDomainModel(saved);</span>
+}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

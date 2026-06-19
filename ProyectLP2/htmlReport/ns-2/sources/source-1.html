@@ -1,0 +1,158 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AsientoUseCaseImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.app.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: AsientoUseCaseImpl (pe.edu.upeu.ProyectLP2.app.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AsientoUseCaseImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11,1%
+  </span>
+  <span class="absValue">
+    (1/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15,4%
+  </span>
+  <span class="absValue">
+    (2/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.app.usecase;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.in.AsientoUseCase;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.on.AsientoRepositoryPort;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class AsientoUseCaseImpl implements AsientoUseCase {
+&nbsp;
+&nbsp;    private final AsientoRepositoryPort asientoRepositoryPort;
+&nbsp;
+<b class="fc">&nbsp;    public AsientoUseCaseImpl(AsientoRepositoryPort asientoRepositoryPort) {</b>
+<b class="fc">&nbsp;        this.asientoRepositoryPort = asientoRepositoryPort;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Asiento crearAsiento(Asiento asiento) {
+<b class="nc">&nbsp;        return asientoRepositoryPort.save(asiento);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Asiento&gt; actualizarAsiento(Long id, Asiento asiento) {
+<b class="nc">&nbsp;        return asientoRepositoryPort.findById(id).map(existing -&gt; {</b>
+<b class="nc">&nbsp;            asiento.setIdAsiento(id); // mantener ID</b>
+<b class="nc">&nbsp;            return asientoRepositoryPort.update(id , asiento);</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean eliminarAsiento(Long id) {
+<b class="nc">&nbsp;        return asientoRepositoryPort.findById(id).map(a -&gt; {</b>
+<b class="nc">&nbsp;            asientoRepositoryPort.deleteById(id);</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        }).orElse(false);    }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Asiento&gt; obtenerAsientoPorId(Long id) {
+<b class="nc">&nbsp;        return asientoRepositoryPort.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Asiento&gt; listarAsientosPorSala(Long salaId) {
+<b class="nc">&nbsp;        return asientoRepositoryPort.findBySalaId(salaId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Asiento&gt; findAll() {
+<b class="nc">&nbsp;        return asientoRepositoryPort.findAll();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

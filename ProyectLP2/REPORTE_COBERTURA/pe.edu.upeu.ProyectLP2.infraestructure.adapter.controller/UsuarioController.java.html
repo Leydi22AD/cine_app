@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a> &gt; <span class="el_source">UsuarioController.java</span></div><h1>UsuarioController.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+import pe.edu.upeu.ProyectLP2.domain.port.in.UsuarioUseCase;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.UsuarioDto;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.Rol;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/api/v1/usuarios&quot;)
+public class UsuarioController {
+
+    // Dependencia hacia la capa de casos de uso (lógica de negocio).
+    private final UsuarioUseCase usuarioUseCase;
+
+<span class="fc" id="L21">    public UsuarioController(UsuarioUseCase usuarioUseCase) {</span>
+<span class="fc" id="L22">        this.usuarioUseCase = usuarioUseCase;</span>
+<span class="fc" id="L23">    }</span>
+
+    // 🔹 Crear usuario
+    @PostMapping(&quot;/crear&quot;)
+    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; crearUsuario(@RequestBody UsuarioDto.UsuarioRequest request) {
+
+        // Convertimos el DTO de request a objeto de dominio Usuario
+<span class="nc" id="L30">        Usuario usuario = new Usuario();</span>
+<span class="nc" id="L31">        usuario.setNombre(request.nombre());</span>
+<span class="nc" id="L32">        usuario.setEmail(request.email());</span>
+<span class="nc" id="L33">        usuario.setPassword(request.password());</span>
+
+        // Si el rol viene vacío, por defecto se asigna ADMIN
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        usuario.setRol(request.rol() != null ? request.rol() : Rol.CLIENTE);</span>
+
+        // Llamamos al caso de uso para registrar al usuario
+<span class="nc" id="L39">        Usuario creado = usuarioUseCase.registrarUsuario(usuario);</span>
+
+        // Convertimos el objeto de dominio a DTO de respuesta
+<span class="nc" id="L42">        UsuarioDto.UsuarioResponse response = mapToUsuarioResponse(creado);</span>
+
+        // Retornamos con código 201 (CREATED)
+<span class="nc" id="L45">        return new ResponseEntity&lt;&gt;(response, HttpStatus.CREATED);</span>
+    }
+
+    //  Listar todos
+    @GetMapping
+    public ResponseEntity&lt;List&lt;UsuarioDto.UsuarioResponse&gt;&gt; listarUsuarios() {
+
+        // Obtenemos los usuarios desde el caso de uso
+<span class="nc" id="L53">        List&lt;UsuarioDto.UsuarioResponse&gt; usuarios = usuarioUseCase.listarUsuarios()</span>
+<span class="nc" id="L54">                .stream()</span>
+                // Convertimos cada Usuario a DTO Response
+<span class="nc" id="L56">                .map(this::mapToUsuarioResponse)</span>
+<span class="nc" id="L57">                .collect(Collectors.toList());</span>
+        // Retornamos la lista con código 200 (OK)
+<span class="nc" id="L59">        return ResponseEntity.ok(usuarios);</span>
+    }
+
+    // 🔹 Buscar por ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; obtenerUsuarioPorId(@PathVariable Long id) {
+
+        // Buscamos en la capa de negocio y convertimos a Response
+<span class="nc" id="L67">        return usuarioUseCase.obtenerUsuarioPorId(id)</span>
+<span class="nc" id="L68">                .map(usuario -&gt; ResponseEntity.ok(mapToUsuarioResponse(usuario)))</span>
+
+                // Si no existe, retornamos 404 (Not Found)
+<span class="nc" id="L71">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // 🔹 Actualizar
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; actualizarUsuario(
+            @PathVariable Long id,
+            @RequestBody UsuarioDto.UsuarioRequest request) {
+
+        // Convertimos el request en un objeto de dominio
+<span class="nc" id="L81">        Usuario usuario = new Usuario();</span>
+<span class="nc" id="L82">        usuario.setIdUsuario(id);</span>
+<span class="nc" id="L83">        usuario.setNombre(request.nombre());</span>
+<span class="nc" id="L84">        usuario.setEmail(request.email());</span>
+<span class="nc" id="L85">        usuario.setPassword(request.password());</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        usuario.setRol(request.rol() != null ? request.rol() : Rol.ADMIN);</span>
+
+        // Llamamos al caso de uso para actualizarlo
+<span class="nc" id="L89">        return usuarioUseCase.actualizarUsuario(id, usuario)</span>
+<span class="nc" id="L90">                .map(u -&gt; ResponseEntity.ok(mapToUsuarioResponse(u)))</span>
+<span class="nc" id="L91">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // 🔹 Eliminar
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; eliminarUsuario(@PathVariable Long id) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (usuarioUseCase.eliminarUsuario(id)) {</span>
+            // Si se eliminó, devolvemos 204 (No Content)
+<span class="nc" id="L99">            return ResponseEntity.noContent().build();</span>
+        } else {
+            // Si no existe, devolvemos 404
+<span class="nc" id="L102">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+    @GetMapping(&quot;/email/{email}&quot;)
+    public ResponseEntity&lt;UsuarioDto.UsuarioResponse&gt; obtenerUsuarioPorEmail(@PathVariable String email) {
+<span class="nc" id="L107">        return usuarioUseCase.obtenerUsuarioPorEmail(email)</span>
+
+                // Si existe, devolvemos 200 con el usuario
+<span class="nc" id="L110">                .map(usuario -&gt; ResponseEntity.ok(mapToUsuarioResponse(usuario)))</span>
+
+                // Si no existe, devolvemos 404
+<span class="nc" id="L113">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+
+    // 🔹 Método privado de utilidad que convierte un objeto de dominio Usuario en un DTO Response
+    private UsuarioDto.UsuarioResponse mapToUsuarioResponse(Usuario usuario) {
+<span class="nc" id="L119">        return new UsuarioDto.UsuarioResponse(</span>
+<span class="nc" id="L120">                usuario.getIdUsuario(),</span>
+<span class="nc" id="L121">                usuario.getNombre(),</span>
+<span class="nc" id="L122">                usuario.getEmail(),</span>
+<span class="nc" id="L123">                usuario.getRol()</span>
+        );
+
+    }
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

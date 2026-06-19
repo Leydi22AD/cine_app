@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AsientoMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper</a> &gt; <span class="el_source">AsientoMapperImpl.java</span></div><h1>AsientoMapperImpl.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2026-06-12T13:59:30-0500&quot;,
+    comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)&quot;
+)
+@Component
+<span class="fc" id="L17">public class AsientoMapperImpl implements AsientoMapper {</span>
+
+    @Autowired
+    private SalaMapper salaMapper;
+
+    @Override
+    public Asiento toDomainModel(AsientoEntity entity) {
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if ( entity == null ) {</span>
+<span class="nc" id="L25">            return null;</span>
+        }
+
+<span class="fc" id="L28">        Asiento asiento = new Asiento();</span>
+
+<span class="fc" id="L30">        asiento.setIdAsiento( entity.getIdAsiento() );</span>
+<span class="fc" id="L31">        asiento.setFila( entity.getFila() );</span>
+<span class="fc" id="L32">        asiento.setColumna( entity.getColumna() );</span>
+<span class="fc" id="L33">        asiento.setEstado( entity.getEstado() );</span>
+<span class="fc" id="L34">        asiento.setSala( salaMapper.toDomainModel( entity.getSala() ) );</span>
+
+<span class="fc" id="L36">        return asiento;</span>
+    }
+
+    @Override
+    public AsientoEntity toEntity(Asiento asiento) {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if ( asiento == null ) {</span>
+<span class="nc" id="L42">            return null;</span>
+        }
+
+<span class="fc" id="L45">        AsientoEntity asientoEntity = new AsientoEntity();</span>
+
+<span class="fc" id="L47">        asientoEntity.setIdAsiento( asiento.getIdAsiento() );</span>
+<span class="fc" id="L48">        asientoEntity.setFila( asiento.getFila() );</span>
+<span class="fc" id="L49">        asientoEntity.setEstado( asiento.getEstado() );</span>
+<span class="fc" id="L50">        asientoEntity.setColumna( asiento.getColumna() );</span>
+<span class="fc" id="L51">        asientoEntity.setSala( salaMapper.toEntity( asiento.getSala() ) );</span>
+
+<span class="fc" id="L53">        return asientoEntity;</span>
+    }
+
+    @Override
+    public List&lt;Asiento&gt; toDomainModelList(List&lt;AsientoEntity&gt; entities) {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if ( entities == null ) {</span>
+<span class="nc" id="L59">            return null;</span>
+        }
+
+<span class="fc" id="L62">        List&lt;Asiento&gt; list = new ArrayList&lt;Asiento&gt;( entities.size() );</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for ( AsientoEntity asientoEntity : entities ) {</span>
+<span class="fc" id="L64">            list.add( toDomainModel( asientoEntity ) );</span>
+<span class="fc" id="L65">        }</span>
+
+<span class="fc" id="L67">        return list;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

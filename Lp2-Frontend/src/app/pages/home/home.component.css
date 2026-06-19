@@ -1,0 +1,56 @@
+/* ====== HomeComponent Styles ====== */
+
+/* Sin bordes redondeados */
+.card,
+.btn,
+.img-fluid {
+  border-radius: 0 !important;
+}
+
+/* Tarjetas con sombra suave */
+.card {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Línea separadora decorativa */
+hr {
+  height: 3px;
+  background-color: #ffd700;
+  opacity: 1;
+  border: none;
+}
+
+.text-warning {
+  color: #ffd700 !important;
+}
+
+.border-warning {
+  border-color: #ffd700 !important;
+}
+
+.border-danger {
+  border-color: #d32f2f !important;
+}
+
+.btn-danger {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.btn-danger:hover {
+  background-color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+}

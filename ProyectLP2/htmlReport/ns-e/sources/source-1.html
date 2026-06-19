@@ -1,0 +1,93 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TicketUseCase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.domain.port.in</a>
+</div>
+
+<h1>Coverage Summary for Class: TicketUseCase (pe.edu.upeu.ProyectLP2.domain.port.in)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">TicketUseCase</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.domain.port.in;
+&nbsp;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Sala;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Ticket;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;public interface TicketUseCase {
+&nbsp;
+&nbsp;
+&nbsp;    Ticket crearTicket(Ticket ticket);
+&nbsp;
+&nbsp;    Optional&lt;Ticket&gt; obtenerTicketPorId(Long id);
+&nbsp;
+&nbsp;    List&lt;Ticket&gt; listarTickets();                       // devuelve todos los tickets
+&nbsp;
+&nbsp;    Optional&lt;Ticket&gt; actualizarTicket(Long id, Ticket ticket);
+&nbsp;
+&nbsp;
+&nbsp;    List&lt;Ticket&gt; listarTicketsPorFuncion(Long funcionId); // tickets filtrados por función
+&nbsp;
+&nbsp;    boolean anularTicket(Long id);                      // anular / eliminar                    // anular / eliminar
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

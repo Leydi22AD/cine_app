@@ -1,0 +1,58 @@
+<div class="container mt-4">
+  <h3 class="text-center mb-4 text-warning fw-bold">
+    {{ modoEdicion ? 'Editar Función' : 'Registrar Función' }}
+  </h3>
+
+  <form (ngSubmit)="guardarFuncion()" #funcionForm="ngForm" class="card p-4 shadow form-red">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label text-warning">Película</label>
+        <select class="form-control" [(ngModel)]="funcion.idPelicula" name="pelicula" required>
+          <option [ngValue]="null">Seleccione una película</option>
+          <option *ngFor="let pelicula of peliculas" [ngValue]="pelicula.idPelicula">
+            {{ pelicula.titulo }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label text-warning">Sala</label>
+        <select class="form-control" [(ngModel)]="funcion.idSala" name="sala" required>
+          <option [ngValue]="null">Seleccione una sala</option>
+          <option *ngFor="let sala of salas" [ngValue]="sala.idSala">
+            Sala {{ sala.numero }} ({{ sala.filas }}x{{ sala.columnas }})
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-warning">Fecha</label>
+        <input 
+          type="date" 
+          class="form-control" 
+          [(ngModel)]="funcion.fecha" 
+          name="fecha" 
+          [min]="fechaMinima"
+          required>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-warning">Horario</label>
+        <input 
+          type="time" 
+          class="form-control" 
+          [(ngModel)]="funcion.horario" 
+          name="horario" 
+          required>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-warning">Precio (S/.)</label>
+        <input type="number" step="0.01" class="form-control" [(ngModel)]="funcion.precio" name="precio" required>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-danger w-100" [disabled]="!funcionForm.valid">
+      {{ modoEdicion ? 'Actualizar Función' : 'Guardar Función' }}
+    </button>
+  </form>
+</div>

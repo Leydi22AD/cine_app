@@ -1,0 +1,195 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SalaEntity</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.infraestructure.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: SalaEntity (pe.edu.upeu.ProyectLP2.infraestructure.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SalaEntity</td>
+<td class="coverageStat">
+  <span class="percent">
+    8,3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11,1%
+  </span>
+  <span class="absValue">
+    (2/18)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SalaEntity$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">SalaEntity$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    8,3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11,1%
+  </span>
+  <span class="absValue">
+    (2/18)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.infraestructure.entity;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;sala&quot;)
+&nbsp;public class SalaEntity {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long idSala;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Integer numero;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Integer filas;
+&nbsp;
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Integer columnas;
+&nbsp;
+<b class="fc">&nbsp;    @OneToMany(mappedBy = &quot;sala&quot;, cascade = CascadeType.ALL, orphanRemoval = true)</b>
+&nbsp;    private List&lt;AsientoEntity&gt; asientos = new ArrayList&lt;&gt;();
+&nbsp;
+<b class="fc">&nbsp;    public SalaEntity() {</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public SalaEntity(Long idSala, Integer filas, Integer numero, Integer columnas, List&lt;AsientoEntity&gt; asientos) {</b>
+<b class="nc">&nbsp;        this.idSala = idSala;</b>
+<b class="nc">&nbsp;        this.filas = filas;</b>
+<b class="nc">&nbsp;        this.numero = numero;</b>
+<b class="nc">&nbsp;        this.columnas = columnas;</b>
+<b class="nc">&nbsp;        this.asientos = asientos;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getIdSala() {
+<b class="nc">&nbsp;        return idSala;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIdSala(Long idSala) {
+<b class="nc">&nbsp;        this.idSala = idSala;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Integer getNumero() {
+<b class="nc">&nbsp;        return numero;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setNumero(Integer numero) {
+<b class="nc">&nbsp;        this.numero = numero;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Integer getFilas() {
+<b class="nc">&nbsp;        return filas;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setFilas(Integer filas) {
+<b class="nc">&nbsp;        this.filas = filas;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;AsientoEntity&gt; getAsientos() {
+<b class="nc">&nbsp;        return asientos;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAsientos(List&lt;AsientoEntity&gt; asientos) {
+<b class="nc">&nbsp;        this.asientos = asientos;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Integer getColumnas() {
+<b class="nc">&nbsp;        return columnas;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setColumnas(Integer columnas) {
+<b class="nc">&nbsp;        this.columnas = columnas;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

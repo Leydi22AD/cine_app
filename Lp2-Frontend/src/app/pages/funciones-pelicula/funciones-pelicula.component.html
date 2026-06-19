@@ -1,0 +1,94 @@
+<div class="funciones-container">
+  <!-- Header -->
+  <nav class="navbar navbar-dark bg-danger shadow-sm">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        <i class="bi bi-film me-2"></i>CineApp - Funciones
+      </span>
+      <div class="d-flex align-items-center text-white">
+        <span class="me-3">
+          <i class="bi bi-person-circle me-2"></i>{{ currentUser?.nombre }}
+        </span>
+        <button class="btn btn-outline-light btn-sm" (click)="logout()">
+          <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mt-4">
+    <!-- Info de la película -->
+    <div class="card shadow-sm mb-4" *ngIf="pelicula">
+      <div class="row g-0">
+        <!-- Imagen del póster -->
+        <div class="col-md-3">
+          <img 
+            [src]="pelicula.poster || 'https://via.placeholder.com/300x450?text=Sin+Imagen'" 
+            [alt]="pelicula.titulo"
+            class="img-fluid rounded-start"
+            style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <!-- Información de la película -->
+        <div class="col-md-9">
+          <div class="card-body">
+            <button class="btn btn-outline-warning btn-sm mb-3" (click)="volver()">
+              <i class="bi bi-arrow-left me-1"></i>Volver al catálogo
+            </button>
+            <h3 class="text-warning">{{ pelicula.titulo }}</h3>
+            <p class="text-muted mb-1"><i class="bi bi-tag me-2"></i>{{ pelicula.genero }}</p>
+            <p class="text-muted mb-1"><i class="bi bi-clock me-2"></i>{{ pelicula.duracion }} minutos</p>
+            <p class="text-muted mb-1" *ngIf="pelicula.director"><i class="bi bi-person me-2"></i>Director: {{ pelicula.director }}</p>
+            <p class="text-muted mb-1" *ngIf="pelicula.idioma"><i class="bi bi-translate me-2"></i>{{ pelicula.idioma }}</p>
+            <p class="text-muted">{{ pelicula.descripcion }}</p>
+            <!-- Trailer si existe -->
+            <div *ngIf="pelicula.trailer" class="mt-3">
+              <a [href]="pelicula.trailer" target="_blank" class="btn btn-sm btn-outline-warning">
+                <i class="bi bi-play-circle me-1"></i>Ver Trailer
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de funciones -->
+    <h4 class="mb-3">Funciones Disponibles</h4>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4" *ngFor="let funcion of funciones">
+        <div class="card shadow-sm h-100" [class.card-expirada]="funcion.estaExpirada">
+          <div class="card-body">
+            <h6 class="card-title" [class.text-warning]="!funcion.estaExpirada" [class.text-muted]="funcion.estaExpirada">
+              <i class="bi bi-building me-2"></i>Sala {{ funcion.sala?.numero }}
+              <span *ngIf="funcion.estaExpirada" class="badge bg-secondary ms-2">Expirada</span>
+            </h6>
+            <p class="card-text mb-1">
+              <i class="bi bi-calendar3 me-2"></i>{{ funcion.fecha }}
+            </p>
+            <p class="card-text mb-1">
+              <i class="bi bi-clock me-2"></i>{{ funcion.horario }}
+            </p>
+            <p class="card-text mb-1">
+              <i class="bi bi-cash me-2"></i>S/ {{ funcion.precio }}
+            </p>
+            <button 
+              class="btn w-100 mt-2" 
+              [class.btn-danger]="!funcion.estaExpirada"
+              [class.btn-secondary]="funcion.estaExpirada"
+              [disabled]="funcion.estaExpirada"
+              (click)="seleccionarFuncion(funcion)">
+              <i class="bi bi-box-arrow-in-right me-1"></i>
+              {{ funcion.estaExpirada ? 'Función Expirada' : 'Seleccionar Asientos' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay funciones -->
+    <div *ngIf="funciones.length === 0" class="text-center mt-5">
+      <i class="bi bi-calendar-x" style="font-size: 4rem; color: #ccc;"></i>
+      <p class="text-muted mt-3">No hay funciones disponibles para esta película</p>
+    </div>
+  </div>
+</div>

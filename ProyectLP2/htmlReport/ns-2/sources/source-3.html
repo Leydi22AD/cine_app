@@ -1,0 +1,181 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PeliculaUseCaseImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.app.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: PeliculaUseCaseImpl (pe.edu.upeu.ProyectLP2.app.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PeliculaUseCaseImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14,3%
+  </span>
+  <span class="absValue">
+    (1/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14,3%
+  </span>
+  <span class="absValue">
+    (2/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.app.usecase;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.exception.PeliculaAlreadyExistsException;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Pelicula;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.in.PeliculaUseCase;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.on.PeliculaRepositoryPort;
+&nbsp;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class PeliculaUseCaseImpl implements PeliculaUseCase {
+&nbsp;
+&nbsp;    private final PeliculaRepositoryPort peliculaRepositoryPort;
+&nbsp;
+<b class="fc">&nbsp;    public PeliculaUseCaseImpl(PeliculaRepositoryPort peliculaRepositoryPort) {</b>
+<b class="fc">&nbsp;        this.peliculaRepositoryPort = peliculaRepositoryPort;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Pelicula registrarPelicula(Pelicula pelicula) {
+&nbsp;        // Verificamos si ya existe una película con el mismo título en el mismo cine
+&nbsp;
+<b class="nc">&nbsp;        return peliculaRepositoryPort.save(pelicula);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Pelicula&gt; actualizarPelicula(Long id, Pelicula pelicula) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Pelicula peliculaAc = peliculaRepositoryPort.update(id, pelicula);</b>
+<b class="nc">&nbsp;            return Optional.of(peliculaAc);</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            return Optional.empty();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Pelicula&gt; obtenerPeliculaPorId(Long id) {
+<b class="nc">&nbsp;        return peliculaRepositoryPort.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Pelicula&gt; buscarPeliculasPorTitulo(String titulo) {
+<b class="nc">&nbsp;        return peliculaRepositoryPort.findByTitulo(titulo);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Pelicula&gt; listarPeliculas() {
+<b class="nc">&nbsp;        return peliculaRepositoryPort.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean eliminarPelicula(Long id) {
+<b class="nc">&nbsp;        Optional&lt;Pelicula&gt; pelicula = peliculaRepositoryPort.findById(id);</b>
+<b class="nc">&nbsp;        if (pelicula.isPresent()) {</b>
+<b class="nc">&nbsp;            peliculaRepositoryPort.deleteById(id);</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return false; // No existe → false</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

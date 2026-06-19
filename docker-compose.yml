@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  product_app:
+    build:
+      context: ./ProyectLP2
+      dockerfile: Dockerfile
+    container_name: product_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-ecommerce-prod
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-ecommerce-prod:3306/ecommerce_lp2_prod?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  frontend:
+    build:
+      context: ./Lp2-Frontend
+      dockerfile: Dockerfile
+    container_name: frontend_app
+    ports:
+      - "80:80"
+    depends_on:
+      - product_app
+
+  mysql-ecommerce-prod:
+    image: mysql:8.0
+    container_name: mysql-ecommerce-prod
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_DATABASE=ecommerce_lp2_prod
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

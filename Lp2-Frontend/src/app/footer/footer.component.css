@@ -1,0 +1,8 @@
+.footer{
+    background-color: #b71c1c; /* rojo oscuro */
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 20px 0;
+    font-size: 14px;
+    width: 100%;
+}

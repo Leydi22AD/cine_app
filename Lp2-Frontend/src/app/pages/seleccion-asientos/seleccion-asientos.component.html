@@ -1,0 +1,95 @@
+<div class="asientos-container">
+  <!-- Header -->
+  <nav class="navbar navbar-dark bg-danger shadow-sm">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        <i class="bi bi-ticket-perforated me-2"></i>Compra de Tickets
+      </span>
+      <div class="d-flex align-items-center text-white">
+        <span class="me-3">
+          <i class="bi bi-person-circle me-2"></i>{{ currentUser?.nombre }}
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mt-4" *ngIf="funcion">
+    <!-- Info de la función -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body text-center">
+        <button class="btn btn-outline-warning btn-sm mb-3" (click)="volver()" style="position: absolute; left: 20px; top: 20px;">
+          <i class="bi bi-arrow-left me-1"></i>Volver a funciones
+        </button>
+        
+        <h3 class="text-warning mt-3">{{ funcion.pelicula?.titulo }}</h3>
+        <p class="text-muted mb-3">{{ funcion.pelicula?.descripcion }}</p>
+        
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <p class="mb-2"><i class="bi bi-building me-2"></i><strong>Sala:</strong> {{ sala?.numero }}</p>
+            <p class="mb-2"><i class="bi bi-calendar3 me-2"></i><strong>Fecha:</strong> {{ funcion.fecha }} - {{ funcion.horario }}</p>
+            <p class="mb-2"><i class="bi bi-cash me-2"></i><strong>Precio:</strong> S/ {{ funcion.precio }}</p>
+            <p class="mb-2"><i class="bi bi-check-circle me-2"></i><strong>Asientos disponibles:</strong> {{ asientosDisponibles }} de {{ sala?.filas * sala?.columnas }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mapa visual de asientos -->
+    <div class="card shadow-sm mb-4" *ngIf="matrizAsientos.length > 0">
+      <div class="card-body">
+        <h5 class="text-center text-warning mb-3">
+          <i class="bi bi-diagram-3 me-2"></i>PANTALLA
+        </h5>
+        <div class="pantalla mb-4"></div>
+        
+        <!-- Mapa de asientos -->
+        <div class="mapa-asientos">
+          <div class="fila-asientos" *ngFor="let fila of matrizAsientos; let i = index">
+            <span class="etiqueta-fila">{{ letrasFila[i] }}</span>
+            <div 
+              *ngFor="let asiento of fila" 
+              class="asiento"
+              [class.ocupado]="asiento.estado === 'OCUPADO'"
+              [class.seleccionado]="asiento.seleccionado"
+              (click)="toggleAsiento(asiento)"
+            >
+              <i class="bi" 
+                 [class.bi-circle]="asiento.estado === 'LIBRE' && !asiento.seleccionado"
+                 [class.bi-circle-fill]="asiento.estado === 'OCUPADO'"
+                 [class.bi-check-circle-fill]="asiento.seleccionado"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="leyenda mt-4 d-flex justify-content-center gap-4">
+          <span><i class="bi bi-circle text-secondary"></i> Libre</span>
+          <span><i class="bi bi-circle-fill text-danger"></i> Ocupado</span>
+          <span><i class="bi bi-check-circle-fill text-warning"></i> Seleccionado</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen de compra -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="text-warning mb-3">Resumen de compra</h5>
+        <p><strong>Asientos seleccionados:</strong> {{ asientosSeleccionados.length }}</p>
+        <p><strong>Total:</strong> S/ {{ (asientosSeleccionados.length * funcion.precio).toFixed(2) }}</p>
+
+        <div class="mt-4 text-center">
+          <button 
+            class="btn btn-danger btn-lg px-5"
+            (click)="confirmarCompra()"
+            [disabled]="asientosSeleccionados.length === 0"
+          >
+            <i class="bi bi-ticket-perforated me-2"></i>
+            Generar Ticket
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper</a> &gt; <span class="el_source">UsuarioMapperImpl.java</span></div><h1>UsuarioMapperImpl.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.UsuarioEntity;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2026-06-12T13:59:30-0500&quot;,
+    comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)&quot;
+)
+@Component
+<span class="fc" id="L16">public class UsuarioMapperImpl implements UsuarioMapper {</span>
+
+    @Override
+    public Usuario toDomainModel(UsuarioEntity entity) {
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">        if ( entity == null ) {</span>
+<span class="nc" id="L21">            return null;</span>
+        }
+
+<span class="fc" id="L24">        Usuario usuario = new Usuario();</span>
+
+<span class="fc" id="L26">        usuario.setIdUsuario( entity.getIdUsuario() );</span>
+<span class="fc" id="L27">        usuario.setNombre( entity.getNombre() );</span>
+<span class="fc" id="L28">        usuario.setEmail( entity.getEmail() );</span>
+<span class="fc" id="L29">        usuario.setPassword( entity.getPassword() );</span>
+<span class="fc" id="L30">        usuario.setRol( entity.getRol() );</span>
+
+<span class="fc" id="L32">        return usuario;</span>
+    }
+
+    @Override
+    public UsuarioEntity toEntity(Usuario usuario) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if ( usuario == null ) {</span>
+<span class="nc" id="L38">            return null;</span>
+        }
+
+<span class="fc" id="L41">        UsuarioEntity usuarioEntity = new UsuarioEntity();</span>
+
+<span class="fc" id="L43">        usuarioEntity.setIdUsuario( usuario.getIdUsuario() );</span>
+<span class="fc" id="L44">        usuarioEntity.setNombre( usuario.getNombre() );</span>
+<span class="fc" id="L45">        usuarioEntity.setEmail( usuario.getEmail() );</span>
+<span class="fc" id="L46">        usuarioEntity.setPassword( usuario.getPassword() );</span>
+<span class="fc" id="L47">        usuarioEntity.setRol( usuario.getRol() );</span>
+
+<span class="fc" id="L49">        return usuarioEntity;</span>
+    }
+
+    @Override
+    public List&lt;Usuario&gt; toDomainModelList(List&lt;UsuarioEntity&gt; entities) {
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if ( entities == null ) {</span>
+<span class="nc" id="L55">            return null;</span>
+        }
+
+<span class="nc" id="L58">        List&lt;Usuario&gt; list = new ArrayList&lt;Usuario&gt;( entities.size() );</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        for ( UsuarioEntity usuarioEntity : entities ) {</span>
+<span class="nc" id="L60">            list.add( toDomainModel( usuarioEntity ) );</span>
+<span class="nc" id="L61">        }</span>
+
+<span class="nc" id="L63">        return list;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

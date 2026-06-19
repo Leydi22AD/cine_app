@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PeliculaDto</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: PeliculaDto (pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PeliculaDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PeliculaDto$PeliculaRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PeliculaDto$PeliculaResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto;
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;public record  PeliculaDto() {</b>
+&nbsp;
+&nbsp;    // DTO para la petición (crear/actualizar una película)
+&nbsp;
+<b class="nc">&nbsp;    public record PeliculaRequest(</b>
+&nbsp;
+&nbsp;    String titulo,
+&nbsp;    String genero,
+&nbsp;    Integer duracion,
+&nbsp;    String formato,
+&nbsp;    String idioma,
+&nbsp;    String poster,
+&nbsp;    String director,
+&nbsp;    String descripcion,
+&nbsp;    String trailer
+&nbsp;    ) {}
+&nbsp;
+&nbsp;    // DTO de respuesta (lo que devuelves al cliente)
+<b class="nc">&nbsp;    public record PeliculaResponse(</b>
+&nbsp;            Long idPelicula,
+&nbsp;            String titulo,
+&nbsp;            String genero,
+&nbsp;            Integer duracion,
+&nbsp;            String formato,
+&nbsp;            String idioma,
+&nbsp;            String poster,
+&nbsp;            String director,
+&nbsp;            String descripcion,
+&nbsp;            String trailer
+&nbsp;
+&nbsp;
+&nbsp;    ) {}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

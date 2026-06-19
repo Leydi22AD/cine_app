@@ -1,0 +1,98 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UsuarioUseCase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.domain.port.in</a>
+</div>
+
+<h1>Coverage Summary for Class: UsuarioUseCase (pe.edu.upeu.ProyectLP2.domain.port.in)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">UsuarioUseCase</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.domain.port.in;
+&nbsp;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;// los métodos de las operaciones que podrá realizar un caso de uso sobre &quot;Usuario&quot;
+&nbsp;public interface UsuarioUseCase {
+&nbsp;
+&nbsp;    // Recibe un objeto Usuario y devuelve el mismo usuario ya registrado.
+&nbsp;    Usuario registrarUsuario(Usuario usuario);
+&nbsp;
+&nbsp;    // Recibe el id del usuario y un objeto Usuario con los nuevos datos.
+&nbsp;    // Retorna un Optional que contendrá el usuario actualizado si existe, o vacío si no.
+&nbsp;    Optional&lt;Usuario&gt; actualizarUsuario(Long id, Usuario usuario);
+&nbsp;
+&nbsp;    // Método para eliminar un usuario según su id.
+&nbsp;    boolean eliminarUsuario(Long id);
+&nbsp;
+&nbsp;
+&nbsp;    // Método para listar todos los usuarios registrados.
+&nbsp;    List&lt;Usuario&gt; listarUsuarios();
+&nbsp;
+&nbsp;    // Método para buscar un usuario por su id.
+&nbsp;    Optional&lt;Usuario&gt; obtenerUsuarioPorId(Long id);
+&nbsp;
+&nbsp;    // Método para buscar un usuario por su email.
+&nbsp;    Optional&lt;Usuario&gt; obtenerUsuarioPorEmail(String email);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

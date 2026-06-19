@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioPersistenceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter</a> &gt; <span class="el_source">UsuarioPersistenceAdapter.java</span></div><h1>UsuarioPersistenceAdapter.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Component;
+import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+import pe.edu.upeu.ProyectLP2.domain.port.on.UsuarioRepositoryPort;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper.UsuarioMapper;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.UsuarioEntity;
+
+
+import java.util.List;
+import java.util.Optional;
+
+@Component
+public class UsuarioPersistenceAdapter implements UsuarioRepositoryPort {
+
+    // Repositorio JPA que maneja operaciones con la BD (Spring Data).
+    private final UsuarioRepository usuarioRepository;
+
+    // Mapper que convierte entre entidad (UsuarioEntity) y modelo de dominio (Usuario).
+    private final UsuarioMapper usuarioMapper;
+
+<span class="fc" id="L23">    public UsuarioPersistenceAdapter(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {</span>
+<span class="fc" id="L24">        this.usuarioRepository = usuarioRepository;</span>
+<span class="fc" id="L25">        this.usuarioMapper = usuarioMapper;</span>
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    public Usuario save(Usuario usuario) {
+
+        // Convertimos el objeto de dominio a entidad de persistencia.
+<span class="nc" id="L32">        UsuarioEntity usuarioEntity = usuarioMapper.toEntity(usuario);</span>
+
+        // Guardamos en la BD usando el repositorio JPA.
+<span class="nc" id="L35">        UsuarioEntity savedUsuario = usuarioRepository.save(usuarioEntity);</span>
+
+        // Convertimos la entidad guardada de nuevo a dominio y la retornamos.
+<span class="nc" id="L38">        return usuarioMapper.toDomainModel(savedUsuario);</span>
+
+    }
+
+    @Override
+    public Optional&lt;Usuario&gt; findById(Long id) {
+
+        // Buscamos en la BD y convertimos la entidad encontrada a modelo de dominio.
+<span class="fc" id="L46">        return usuarioRepository.findById(id).map(usuarioMapper::toDomainModel);</span>
+
+    }
+
+    @Override
+    public Optional&lt;Usuario&gt; findByEmail(String email) {
+
+        // Igual que findById, pero buscando por email.
+<span class="fc" id="L54">        return usuarioRepository.findByEmail(email).map(usuarioMapper::toDomainModel);</span>
+    }
+
+    @Override
+    public List&lt;Usuario&gt; findAll() {
+<span class="nc" id="L59">        List&lt;UsuarioEntity&gt; usuarioEntities = usuarioRepository.findAll();</span>
+<span class="nc" id="L60">        return usuarioMapper.toDomainModelList(usuarioEntities);</span>
+
+    }
+
+    @Override
+    public void deleteById(Long id) {
+<span class="nc" id="L66">        usuarioRepository.deleteById(id);</span>
+<span class="nc" id="L67">    }</span>
+
+    @Override
+    public Usuario update(Long id, Usuario c) {
+<span class="nc" id="L71">        UsuarioEntity usuarioEntity = usuarioRepository.findById(id)</span>
+<span class="nc" id="L72">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Usuario no encontrado &quot; + id));</span>
+
+<span class="nc" id="L74">        usuarioEntity.setNombre(c.getNombre());</span>
+<span class="nc" id="L75">        usuarioEntity.setEmail(c.getEmail());</span>
+<span class="nc" id="L76">        usuarioEntity.setPassword(c.getPassword());</span>
+<span class="nc" id="L77">        usuarioEntity.setRol(c.getRol());</span>
+
+<span class="nc" id="L79">        UsuarioEntity updatedUsuario = usuarioRepository.save(usuarioEntity);</span>
+<span class="nc" id="L80">        return usuarioMapper.toDomainModel(updatedUsuario);</span>
+}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

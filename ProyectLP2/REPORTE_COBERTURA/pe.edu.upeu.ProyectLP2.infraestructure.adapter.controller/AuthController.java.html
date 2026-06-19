@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+import pe.edu.upeu.ProyectLP2.domain.port.on.UsuarioRepositoryPort;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.AuthDto;
+import pe.edu.upeu.ProyectLP2.infrastructure.security.JwtService;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.Rol;
+
+import java.util.Optional;
+
+@RestController
+@RequestMapping(&quot;/api/v1/auth&quot;)
+public class AuthController {
+    
+    private final AuthenticationManager authenticationManager;
+    private final UsuarioRepositoryPort usuarioRepositoryPort;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthController(
+            AuthenticationManager authenticationManager,
+            UsuarioRepositoryPort usuarioRepositoryPort,
+            JwtService jwtService,
+            UserDetailsService userDetailsService,
+<span class="fc" id="L34">            PasswordEncoder passwordEncoder) {</span>
+<span class="fc" id="L35">        this.authenticationManager = authenticationManager;</span>
+<span class="fc" id="L36">        this.usuarioRepositoryPort = usuarioRepositoryPort;</span>
+<span class="fc" id="L37">        this.jwtService = jwtService;</span>
+<span class="fc" id="L38">        this.userDetailsService = userDetailsService;</span>
+<span class="fc" id="L39">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L40">    }</span>
+
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;AuthDto.AuthResponse&gt; login(@RequestBody AuthDto.LoginRequest request) {
+        try {
+<span class="fc" id="L45">            System.out.println(&quot;[LOGIN] Intentando login con email: &quot; + request.email());</span>
+            
+            // 1. Autenticar al usuario
+<span class="fc" id="L48">            authenticationManager.authenticate(</span>
+<span class="fc" id="L49">                    new UsernamePasswordAuthenticationToken(request.email(), request.password())</span>
+            );
+
+<span class="fc" id="L52">            System.out.println(&quot;[LOGIN] Autenticación exitosa para: &quot; + request.email());</span>
+
+            // 2. Obtener datos completos del usuario
+<span class="fc" id="L55">            Usuario usuario = usuarioRepositoryPort.findByEmail(request.email())</span>
+<span class="pc" id="L56">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Usuario no encontrado&quot;));</span>
+
+<span class="fc" id="L58">            System.out.println(&quot;[LOGIN] Usuario encontrado - ID: &quot; + usuario.getIdUsuario() + &quot;, Rol: &quot; + usuario.getRol());</span>
+
+            // 3. Generar token JWT
+<span class="fc" id="L61">            UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());</span>
+<span class="fc" id="L62">            String token = jwtService.generateToken(userDetails);</span>
+
+            // 4. Crear respuesta con el token y datos del usuario
+<span class="fc" id="L65">            AuthDto.UsuarioResponse usuarioResponse = AuthDto.UsuarioResponse.fromDomain(usuario);</span>
+<span class="fc" id="L66">            AuthDto.AuthResponse authResponse = new AuthDto.AuthResponse(token, usuarioResponse);</span>
+
+<span class="fc" id="L68">            System.out.println(&quot;[LOGIN] Token generado exitosamente&quot;);</span>
+
+<span class="fc" id="L70">            return ResponseEntity.ok(authResponse);</span>
+<span class="nc" id="L71">        } catch (Exception e) {</span>
+<span class="nc" id="L72">            System.err.println(&quot;[LOGIN ERROR] &quot; + e.getClass().getSimpleName() + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L73">            e.printStackTrace();</span>
+<span class="nc" id="L74">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>
+        }
+    }
+
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;AuthDto.AuthResponse&gt; register(@RequestBody AuthDto.RegisterRequest request) {
+        try {
+<span class="fc" id="L81">            System.out.println(&quot;[REGISTRO] Intentando registrar: &quot; + request.email());</span>
+            
+            // Verificar si el usuario ya existe
+<span class="fc" id="L84">            Optional&lt;Usuario&gt; usuarioExistente = usuarioRepositoryPort.findByEmail(request.email());</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">            if (usuarioExistente.isPresent()) {</span>
+<span class="fc" id="L86">                System.out.println(&quot;[REGISTRO] Email ya existe: &quot; + request.email());</span>
+<span class="fc" id="L87">                return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+            }
+
+<span class="nc" id="L90">            System.out.println(&quot;[REGISTRO] Email disponible, creando usuario...&quot;);</span>
+            
+            // Crear nuevo usuario - SIEMPRE con rol CLIENTE
+<span class="nc" id="L93">            Usuario nuevoUsuario = new Usuario();</span>
+<span class="nc" id="L94">            nuevoUsuario.setNombre(request.nombre());</span>
+<span class="nc" id="L95">            nuevoUsuario.setEmail(request.email());</span>
+<span class="nc" id="L96">            nuevoUsuario.setPassword(passwordEncoder.encode(request.password()));</span>
+<span class="nc" id="L97">            nuevoUsuario.setRol(Rol.CLIENTE); // SIEMPRE CLIENTE al registrarse</span>
+            
+            // Guardar usuario
+<span class="nc" id="L100">            Usuario usuarioGuardado = usuarioRepositoryPort.save(nuevoUsuario);</span>
+<span class="nc" id="L101">            System.out.println(&quot;[REGISTRO] Usuario guardado con ID: &quot; + usuarioGuardado.getIdUsuario());</span>
+
+            // Generar token
+<span class="nc" id="L104">            UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());</span>
+<span class="nc" id="L105">            String token = jwtService.generateToken(userDetails);</span>
+
+            // Crear respuesta
+<span class="nc" id="L108">            AuthDto.UsuarioResponse usuarioResponse = AuthDto.UsuarioResponse.fromDomain(usuarioGuardado);</span>
+<span class="nc" id="L109">            AuthDto.AuthResponse authResponse = new AuthDto.AuthResponse(token, usuarioResponse);</span>
+
+<span class="nc" id="L111">            return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);</span>
+<span class="nc" id="L112">        } catch (Exception e) {</span>
+<span class="nc" id="L113">            System.err.println(&quot;[REGISTRO ERROR] &quot; + e.getMessage());</span>
+<span class="nc" id="L114">            e.printStackTrace();</span>
+<span class="nc" id="L115">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();</span>
+        }
+    }
+
+    @PostMapping(&quot;/validate-token&quot;)
+    public ResponseEntity&lt;AuthDto.AuthResponse&gt; validateToken(@RequestHeader(&quot;Authorization&quot;) String authHeader) {
+        try {
+            // 1. Validar header de autorización
+<span class="nc bnc" id="L123" title="All 4 branches missed.">            if (authHeader == null || !authHeader.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="nc" id="L124">                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>
+            }
+
+<span class="nc" id="L127">            final String jwt = authHeader.substring(7);</span>
+
+            // 2. Extraer el email del token
+<span class="nc" id="L130">            final String userEmail = jwtService.extractUsername(jwt);</span>
+
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            if (userEmail != null) {</span>
+                // 3. Cargar UserDetails
+<span class="nc" id="L134">                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);</span>
+
+                // 4. Validar el token
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                if (jwtService.isTokenValid(jwt, userDetails)) {</span>
+                    // 5. Obtener usuario completo
+<span class="nc" id="L139">                    Usuario usuario = usuarioRepositoryPort.findByEmail(userEmail)</span>
+<span class="nc" id="L140">                            .orElseThrow(() -&gt; new RuntimeException(&quot;Usuario no encontrado&quot;));</span>
+
+                    // 6. Generar nuevo token
+<span class="nc" id="L143">                    String newToken = jwtService.generateToken(userDetails);</span>
+
+                    // 7. Crear respuesta
+<span class="nc" id="L146">                    AuthDto.UsuarioResponse usuarioResponse = AuthDto.UsuarioResponse.fromDomain(usuario);</span>
+<span class="nc" id="L147">                    AuthDto.AuthResponse authResponse = new AuthDto.AuthResponse(newToken, usuarioResponse);</span>
+
+<span class="nc" id="L149">                    return ResponseEntity.ok(authResponse);</span>
+                }
+            }
+
+<span class="nc" id="L153">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>
+<span class="nc" id="L154">        } catch (Exception e) {</span>
+<span class="nc" id="L155">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

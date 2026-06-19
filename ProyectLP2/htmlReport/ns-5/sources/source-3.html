@@ -1,0 +1,176 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PeliculaPersistenceAdapter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">pe.edu.upeu.ProyectLP2.infraestructure.adapter</a>
+</div>
+
+<h1>Coverage Summary for Class: PeliculaPersistenceAdapter (pe.edu.upeu.ProyectLP2.infraestructure.adapter)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PeliculaPersistenceAdapter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14,3%
+  </span>
+  <span class="absValue">
+    (1/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    13%
+  </span>
+  <span class="absValue">
+    (3/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package pe.edu.upeu.ProyectLP2.infraestructure.adapter;
+&nbsp;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.model.Pelicula;
+&nbsp;import pe.edu.upeu.ProyectLP2.domain.port.on.PeliculaRepositoryPort;
+&nbsp;import pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper.PeliculaMapper;
+&nbsp;import pe.edu.upeu.ProyectLP2.infraestructure.entity.PeliculaEntity;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Component
+&nbsp;public class PeliculaPersistenceAdapter implements PeliculaRepositoryPort {
+&nbsp;
+&nbsp;    private final PeliculaRepository peliculaRepository;
+&nbsp;    private final PeliculaMapper peliculaMapper;
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    public PeliculaPersistenceAdapter(PeliculaRepository peliculaRepository, PeliculaMapper peliculaMapper) {</b>
+<b class="fc">&nbsp;        this.peliculaRepository = peliculaRepository;</b>
+<b class="fc">&nbsp;        this.peliculaMapper = peliculaMapper;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Pelicula save(Pelicula pelicula) {
+<b class="nc">&nbsp;        PeliculaEntity entity = peliculaMapper.toEntity(pelicula);</b>
+<b class="nc">&nbsp;        PeliculaEntity saved = peliculaRepository.save(entity);</b>
+<b class="nc">&nbsp;        return peliculaMapper.toDomainModel(saved);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;Pelicula&gt; findById(Long id) {
+<b class="nc">&nbsp;        return peliculaRepository.findById(id)</b>
+<b class="nc">&nbsp;                .map(peliculaMapper::toDomainModel);    }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Pelicula&gt; findAll() {
+<b class="nc">&nbsp;        return peliculaMapper.toDomainModelList(peliculaRepository.findAll());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Pelicula&gt; findByTitulo(String titulo) {
+<b class="nc">&nbsp;        return peliculaMapper.toDomainModelList(peliculaRepository.findByTitulo(titulo));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void deleteById(Long id) {
+<b class="nc">&nbsp;        peliculaRepository.deleteById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Pelicula update(Long id, Pelicula pelicula) {
+<b class="nc">&nbsp;        PeliculaEntity existing = peliculaRepository.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Película no encontrada con id &quot; + id));</b>
+&nbsp;
+&nbsp;        // copiar campos (sin tocar el id):
+<b class="nc">&nbsp;        existing.setTitulo(pelicula.getTitulo());</b>
+<b class="nc">&nbsp;        existing.setGenero(pelicula.getGenero());</b>
+<b class="nc">&nbsp;        existing.setDuracion(pelicula.getDuracion());</b>
+<b class="nc">&nbsp;        existing.setFormato(pelicula.getFormato());</b>
+<b class="nc">&nbsp;        existing.setIdioma(pelicula.getIdioma());</b>
+<b class="nc">&nbsp;        existing.setPoster(pelicula.getPoster());</b>
+<b class="nc">&nbsp;        existing.setDescripcion(pelicula.getDescripcion());</b>
+<b class="nc">&nbsp;        existing.setTrailer(pelicula.getTrailer());</b>
+&nbsp;
+<b class="nc">&nbsp;        PeliculaEntity saved = peliculaRepository.save(existing);</b>
+<b class="nc">&nbsp;        return peliculaMapper.toDomainModel(saved);</b>
+&nbsp;}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-03 16:39</div>
+</div>
+</body>
+</html>

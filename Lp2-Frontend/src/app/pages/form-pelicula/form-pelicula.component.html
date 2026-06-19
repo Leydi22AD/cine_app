@@ -1,0 +1,59 @@
+<div class="container mt-4">
+  <h3 class="text-center mb-4 text-warning fw-bold">
+    {{ modoEdicion ? 'Editar Película' : 'Registrar Película' }}
+  </h3>
+  <form (ngSubmit)="guardarPelicula()" #peliculaForm="ngForm" class="card p-4 shadow form-red">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label text-warning">Título</label>
+        <input type="text" class="form-control" [(ngModel)]="pelicula.titulo" name="titulo" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label text-warning">Director</label>
+        <input type="text" class="form-control" [(ngModel)]="pelicula.director" name="director">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-warning">Género</label>
+        <input type="text" class="form-control" [(ngModel)]="pelicula.genero" name="genero" required>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-warning">Duración (min)</label>
+        <input type="number" class="form-control" [(ngModel)]="pelicula.duracion" name="duracion" required>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-warning">Formato</label>
+        <input type="text" class="form-control" [(ngModel)]="pelicula.formato" name="formato">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label text-warning">Idioma</label>
+        <input type="text" class="form-control" [(ngModel)]="pelicula.idioma" name="idioma">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label text-warning">Poster (URL)</label>
+        <input type="text" class="form-control" [(ngModel)]="pelicula.poster" name="poster">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-warning">Descripción</label>
+      <textarea class="form-control" [(ngModel)]="pelicula.descripcion" name="descripcion" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-warning">Trailer (URL)</label>
+      <input type="text" class="form-control" [(ngModel)]="pelicula.trailer" name="trailer">
+    </div>
+
+    <button type="submit" class="btn btn-danger w-100" [disabled]="!peliculaForm.valid">
+      {{ modoEdicion ? 'Actualizar Película' : 'Guardar Película' }}
+    </button>
+  </form>
+</div>
+
+

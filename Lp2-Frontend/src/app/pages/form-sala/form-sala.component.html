@@ -1,0 +1,23 @@
+<div class="container mt-4">
+  <h3 class="text-center mb-4 text-warning fw-bold">
+    {{ modoEdicion ? 'Editar Sala' : 'Registrar Sala' }}
+  </h3>
+  <form (ngSubmit)="guardarSala()" #salaForm="ngForm" class="card p-4 shadow form-red">
+    <div class="mb-3">
+      <label class="form-label text-warning">Número de Sala</label>
+      <input type="number" class="form-control" [(ngModel)]="sala.numero" name="numero" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label text-warning">Número de Filas</label>
+      <input type="number" class="form-control" [(ngModel)]="sala.filas" name="filas" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label text-warning">Número de Columnas</label>
+      <input type="number" class="form-control" [(ngModel)]="sala.columnas" name="columnas" required>
+    </div>
+
+    <button type="submit" class="btn btn-danger w-100" [disabled]="!salaForm.valid">
+      {{ modoEdicion ? 'Actualizar Sala' : 'Guardar Sala' }}
+    </button>
+  </form>
+</div>

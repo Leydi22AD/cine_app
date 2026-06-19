@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TicketController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller</a> &gt; <span class="el_source">TicketController.java</span></div><h1>TicketController.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
+import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
+import pe.edu.upeu.ProyectLP2.domain.model.Ticket;
+import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
+import pe.edu.upeu.ProyectLP2.domain.port.in.*;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.TicketDto;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.TicketEntity;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/api/v1/tickets&quot;)
+public class TicketController {
+
+    private final TicketUseCase ticketUseCase;
+    private final FuncionUseCase funcionUseCase;
+    private final AsientoUseCase asientoUseCase;
+    private final UsuarioUseCase usuarioUseCase;
+
+<span class="fc" id="L28">    public TicketController(TicketUseCase ticketUseCase, FuncionUseCase funcionUseCase, AsientoUseCase asientoUseCase, UsuarioUseCase usuarioUseCase) {</span>
+<span class="fc" id="L29">        this.ticketUseCase = ticketUseCase;</span>
+<span class="fc" id="L30">        this.funcionUseCase = funcionUseCase;</span>
+<span class="fc" id="L31">        this.asientoUseCase = asientoUseCase;</span>
+<span class="fc" id="L32">        this.usuarioUseCase = usuarioUseCase;</span>
+<span class="fc" id="L33">    }</span>
+
+    // Crear ticket (soporta POST en '/api/v1/tickets' y '/api/v1/tickets/crear')
+    @PostMapping(value = {&quot;&quot;, &quot;/crear&quot;})
+    public ResponseEntity&lt;TicketDto.TicketResponse&gt; crearTicket(@RequestBody TicketDto.TicketRequest request) {
+<span class="fc" id="L38">        var funcion = funcionUseCase.obtenerFuncionPorId(request.funcionId())</span>
+<span class="pc" id="L39">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Función no existe&quot;));</span>
+
+<span class="fc" id="L41">        var asiento = asientoUseCase.obtenerAsientoPorId(request.asientoId())</span>
+<span class="pc" id="L42">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Asiento no existe&quot;));</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (!&quot;LIBRE&quot;.equalsIgnoreCase(asiento.getEstado())) {</span>
+<span class="fc" id="L45">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+        }
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (!asiento.getSala().getIdSala().equals(funcion.getSala().getIdSala())) {</span>
+<span class="nc" id="L48">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();</span>
+        }
+
+<span class="fc" id="L51">        var ticket = new Ticket();</span>
+<span class="fc" id="L52">        ticket.setFuncion(funcion);</span>
+<span class="fc" id="L53">        ticket.setAsiento(asiento);</span>
+
+<span class="fc" id="L55">        var cliente = usuarioUseCase.obtenerUsuarioPorId(request.clienteId())</span>
+<span class="pc" id="L56">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Usuario no existe&quot;));</span>
+<span class="fc" id="L57">        ticket.setCliente(cliente);</span>
+
+<span class="fc" id="L59">        ticket.setPrecioUnitario(funcion.getPrecio());</span>
+<span class="fc" id="L60">        ticket.setFechaCompra(LocalDateTime.now());</span>
+
+        // marcar ocupado
+<span class="fc" id="L63">        asiento.setEstado(&quot;OCUPADO&quot;);</span>
+<span class="fc" id="L64">        asientoUseCase.actualizarAsiento(asiento.getIdAsiento(), asiento);</span>
+
+<span class="fc" id="L66">        var creado = ticketUseCase.crearTicket(ticket);</span>
+<span class="fc" id="L67">        return new ResponseEntity&lt;&gt;(mapToTicketResponse(creado), HttpStatus.CREATED);</span>
+    }
+
+
+    // Listar todos los tickets
+    @GetMapping
+    public ResponseEntity&lt;List&lt;TicketDto.TicketResponse&gt;&gt; listarTodosLosTickets() {
+<span class="fc" id="L74">        List&lt;TicketDto.TicketResponse&gt; tickets = ticketUseCase.listarTickets()</span>
+<span class="fc" id="L75">                .stream()</span>
+<span class="fc" id="L76">                .map(this::mapToTicketResponse)</span>
+<span class="fc" id="L77">                .collect(Collectors.toList());</span>
+<span class="fc" id="L78">        return ResponseEntity.ok(tickets);</span>
+    }
+
+    // Listar tickets por función
+    @GetMapping(&quot;/funcion/{funcionId}&quot;)
+    public ResponseEntity&lt;List&lt;TicketDto.TicketResponse&gt;&gt; listarTicketsPorFuncion(@PathVariable Long funcionId) {
+<span class="nc" id="L84">        List&lt;TicketDto.TicketResponse&gt; tickets = ticketUseCase.listarTicketsPorFuncion(funcionId)</span>
+<span class="nc" id="L85">                .stream()</span>
+<span class="nc" id="L86">                .map(this::mapToTicketResponse)</span>
+<span class="nc" id="L87">                .collect(Collectors.toList());</span>
+<span class="nc" id="L88">        return ResponseEntity.ok(tickets);</span>
+    }
+
+    // Obtener por ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;TicketDto.TicketResponse&gt; obtenerTicketPorId(@PathVariable Long id) {
+<span class="nc" id="L94">        return ticketUseCase.obtenerTicketPorId(id)</span>
+<span class="nc" id="L95">                .map(t -&gt; ResponseEntity.ok(mapToTicketResponse(t)))</span>
+<span class="nc" id="L96">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Eliminar
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; eliminarTicket(@PathVariable Long id) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (ticketUseCase.anularTicket(id)) {</span>
+<span class="nc" id="L103">            return ResponseEntity.noContent().build();</span>
+        }
+<span class="nc" id="L105">        return ResponseEntity.notFound().build();</span>
+    }
+
+    // --- Mapeador auxiliar ---
+    private TicketDto.TicketResponse mapToTicketResponse(Ticket ticket) {
+<span class="fc" id="L110">        return new TicketDto.TicketResponse(</span>
+<span class="fc" id="L111">                ticket.getIdTicket(),</span>
+<span class="fc" id="L112">                ticket.getPrecioUnitario(),</span>
+<span class="fc" id="L113">                ticket.getFechaCompra(),</span>
+<span class="fc" id="L114">                ticket.getFuncion(),</span>
+<span class="fc" id="L115">                ticket.getAsiento(),</span>
+<span class="fc" id="L116">                ticket.getCliente()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

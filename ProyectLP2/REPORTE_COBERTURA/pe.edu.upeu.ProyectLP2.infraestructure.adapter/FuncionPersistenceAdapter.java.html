@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FuncionPersistenceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProyectLP2</a> &gt; <a href="index.source.html" class="el_package">pe.edu.upeu.ProyectLP2.infraestructure.adapter</a> &gt; <span class="el_source">FuncionPersistenceAdapter.java</span></div><h1>FuncionPersistenceAdapter.java</h1><pre class="source lang-java linenums">package pe.edu.upeu.ProyectLP2.infraestructure.adapter;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Component;
+import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
+import pe.edu.upeu.ProyectLP2.domain.port.on.FuncionRepositoryPort;
+import pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper.FuncionMapper;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.FuncionEntity;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.PeliculaEntity;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.SalaEntity;
+
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Component
+public class FuncionPersistenceAdapter implements FuncionRepositoryPort {
+
+    private final FuncionRepository funcionRepository;
+    private final FuncionMapper funcionMapper;
+    private final PeliculaRepository peliculaRepository;
+    private final SalaRepository salaRepository;;
+
+<span class="fc" id="L25">    public FuncionPersistenceAdapter(FuncionRepository funcionRepository, FuncionMapper funcionMapper, PeliculaRepository peliculaRepository, SalaRepository salaRepository) {</span>
+<span class="fc" id="L26">        this.funcionRepository = funcionRepository;</span>
+<span class="fc" id="L27">        this.funcionMapper = funcionMapper;</span>
+<span class="fc" id="L28">        this.peliculaRepository = peliculaRepository;</span>
+<span class="fc" id="L29">        this.salaRepository = salaRepository;</span>
+<span class="fc" id="L30">    }</span>
+
+    @Override
+    public Funcion save(Funcion funcion) {
+<span class="fc" id="L34">        PeliculaEntity peliculaEntity = peliculaRepository.findById(funcion.getPelicula().getIdPelicula())</span>
+<span class="pc" id="L35">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Película no encontrada&quot;));</span>
+
+<span class="fc" id="L37">        SalaEntity salaEntity = salaRepository.findById(funcion.getSala().getIdSala())</span>
+<span class="pc" id="L38">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Sala no encontrada&quot;));</span>
+
+<span class="fc" id="L40">        FuncionEntity entity = funcionMapper.toEntity(funcion);</span>
+<span class="fc" id="L41">        entity.setPelicula(peliculaEntity);</span>
+<span class="fc" id="L42">        entity.setSala(salaEntity);</span>
+
+<span class="fc" id="L44">        FuncionEntity saved = funcionRepository.save(entity);</span>
+<span class="fc" id="L45">        return funcionMapper.toDomainModel(saved);</span>
+    }
+
+    @Override
+    public Funcion update(Long id, Funcion funcion) {
+<span class="nc" id="L50">        FuncionEntity existing = funcionRepository.findById(id)</span>
+<span class="nc" id="L51">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Función no encontrada&quot;));</span>
+
+<span class="nc" id="L53">        existing.setFecha(funcion.getFecha());</span>
+<span class="nc" id="L54">        existing.setPrecio(funcion.getPrecio());</span>
+
+<span class="nc" id="L56">        PeliculaEntity peliculaEntity = peliculaRepository.findById(funcion.getPelicula().getIdPelicula())</span>
+<span class="nc" id="L57">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Película no encontrada&quot;));</span>
+<span class="nc" id="L58">        SalaEntity salaEntity = salaRepository.findById(funcion.getSala().getIdSala())</span>
+<span class="nc" id="L59">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Sala no encontrada&quot;));</span>
+
+<span class="nc" id="L61">        existing.setPelicula(peliculaEntity);</span>
+<span class="nc" id="L62">        existing.setSala(salaEntity);</span>
+
+<span class="nc" id="L64">        FuncionEntity updated = funcionRepository.save(existing);</span>
+<span class="nc" id="L65">        return funcionMapper.toDomainModel(updated);</span>
+    }
+
+    @Override
+    public Optional&lt;Funcion&gt; findById(Long id) {
+<span class="fc" id="L70">        return funcionRepository.findById(id).map(funcionMapper::toDomainModel);</span>
+
+
+    }
+
+    @Override
+    public List&lt;Funcion&gt; findAll() {
+<span class="fc" id="L77">        return funcionMapper.toDomainModelList(funcionRepository.findAll());</span>
+
+
+    }
+
+    @Override
+    public List&lt;Funcion&gt; findByPeliculaId(Long peliculaId) {
+<span class="fc" id="L84">        return funcionMapper.toDomainModelList(funcionRepository.findByPelicula_IdPelicula(peliculaId));</span>
+    }
+
+    @Override
+    public void deleteById(Long id) {
+<span class="nc" id="L89">        funcionRepository.deleteById(id);</span>
+
+<span class="nc" id="L91">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

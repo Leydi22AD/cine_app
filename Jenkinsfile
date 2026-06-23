@@ -24,7 +24,7 @@ pipeline {
         // 📥 Etapa 1: Clonación del repositorio y verificación
         stage('Clone') {
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
+                timeout(time: 20, unit: 'MINUTES') {
                     echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
                     cleanWs()
                     git branch: 'master', url: "${REPO_URL}"

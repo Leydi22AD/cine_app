@@ -1,0 +1,42 @@
+name: CI/CD - Cine App
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compilar Backend
+        working-directory: ProyectLP2
+        run: mvn clean package -DskipTests
+
+      - name: Analizar con SonarQube
+        working-directory: ProyectLP2
+        run: |
+          mvn sonar:sonar \
+          -Dsonar.projectKey=cine_app \
+          -Dsonar.host.url=http://localhost:9000
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+
+      - name: Construir contenedores
+        run: docker compose build
+
+      - name: Desplegar aplicación
+        run: docker compose up -d
+
+      - name: Verificar contenedores
+        run: docker ps

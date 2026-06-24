@@ -1,41 +1,54 @@
 version: '3.8'
 
 services:
-  product_app:
+  # Servicio del Backend
+  backend:
     build:
-      context: ./ProyectLP2
+      context: ./backend_cine
       dockerfile: Dockerfile
-    container_name: product_app
+    container_name: app-cine-backend
+    restart: always
     ports:
-      - "8080:8080"
-    depends_on:
-      - mysql-ecommerce-prod
+      - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-ecommerce-prod:3306/ecommerce_lp2_prod?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=admin123
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/cine?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+    depends_on:
+      - db
+    networks:
+      - cine-network
 
+  # Servicio del Frontend
   frontend:
     build:
-      context: ./Lp2-Frontend
+      context: ./frotend_cine
       dockerfile: Dockerfile
-    container_name: frontend_app
+    container_name: app-cine-frontend
+    restart: always
     ports:
-      - "80:80"
-    depends_on:
-      - product_app
+      - "80:80" # Puerto estándar para HTTP
+    networks:
+      - cine-network
 
-  mysql-ecommerce-prod:
+  # Servicio de la Base de Datos
+  db:
     image: mysql:8.0
-    container_name: mysql-ecommerce-prod
-    ports:
-      - "3306:3306"
+    container_name: mysql-cine
+    restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=admin123
-      - MYSQL_DATABASE=ecommerce_lp2_prod
+      MYSQL_DATABASE: cine
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3309:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - cine-network
 
 volumes:
   mysql_data:
+
+networks:
+  cine-network:
+    driver: bridge

@@ -14,15 +14,15 @@ pipeline {
             steps {
                 echo '🧹 Limpiando y clonando el repositorio principal...'
                 cleanWs()
-                // Clonar el repositorio único que contiene backend y frontend
+                // CORREGIDO: Usar la rama 'master'
                 git branch: 'master', url: 'https://github.com/Leydi22AD/cine_app.git'
             }
         }
 
         stage('Build Backend & Analyze') {
             steps {
-                // Ejecutar los comandos dentro de la subcarpeta del backend
-                dir('backend_cine') {
+                // CORREGIDO: Usar el nombre de carpeta correcto 'ProyectLP2'
+                dir('ProyectLP2') {
                     echo '🔨 Construyendo el backend...'
                     sh 'mvn clean verify -Dspring.profiles.active=test'
 
@@ -36,8 +36,8 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                // Ejecutar los comandos dentro de la subcarpeta del frontend
-                dir('frotend_cine') {
+                // CORREGIDO: Usar el nombre de carpeta correcto 'Lp2-Frontend'
+                dir('Lp2-Frontend') {
                     echo '🎨 Construyendo el frontend...'
                     sh 'npm install'
                     sh 'npm run build -- --configuration production'
@@ -49,7 +49,6 @@ pipeline {
             steps {
                 echo '🚀 Desplegando la aplicación completa...'
                 script {
-                    // El docker-compose.yml en la raíz ya sabe dónde encontrar cada Dockerfile
                     sh "docker-compose -f docker-compose.yml -p ${env.DOCKER_PROJECT_NAME} down -v --remove-orphans || true"
                     sh "docker-compose -f docker-compose.yml -p ${env.DOCKER_PROJECT_NAME} up -d --build"
                 }
@@ -60,8 +59,8 @@ pipeline {
     post {
         always {
             echo '🏁 Pipeline finalizado.'
-            // Recolectar resultados de pruebas del backend
-            junit allowEmptyResults: true, testResults: 'backend_cine/target/surefire-reports/*.xml'
+            // CORREGIDO: Usar la ruta correcta para los resultados de las pruebas
+            junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
         }
         success {
             echo '🎉 ¡Éxito! El pipeline se completó correctamente.'

@@ -4,7 +4,8 @@ services:
   # Servicio del Backend
   backend:
     build:
-      context: ./backend_cine
+      # CORREGIDO: Usar el nombre de carpeta correcto 'ProyectLP2'
+      context: ./ProyectLP2
       dockerfile: Dockerfile
     container_name: app-cine-backend
     restart: always
@@ -22,12 +23,13 @@ services:
   # Servicio del Frontend
   frontend:
     build:
-      context: ./frotend_cine
+      # CORREGIDO: Usar el nombre de carpeta correcto 'Lp2-Frontend'
+      context: ./Lp2-Frontend
       dockerfile: Dockerfile
     container_name: app-cine-frontend
     restart: always
     ports:
-      - "80:80" # Puerto estándar para HTTP
+      - "80:80"
     networks:
       - cine-network
 

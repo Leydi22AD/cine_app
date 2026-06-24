@@ -15,7 +15,7 @@ pipeline {
                 echo '🧹 Limpiando y clonando el repositorio principal...'
                 cleanWs()
                 // Clonar el repositorio único que contiene backend y frontend
-                git branch: 'main', url: 'https://github.com/Leydi22AD/cine_app.git'
+                git branch: 'master', url: 'https://github.com/Leydi22AD/cine_app.git'
             }
         }
 

@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Servicio del Backend para DESARROLLO
+  backend:
+    image: maven:3.9-eclipse-temurin-21 # Usamos una imagen de Maven para ejecutar el código fuente
+    container_name: app-cine-backend-dev
+    working_dir: /app
+    volumes:
+      # Montamos el código fuente del backend directamente en el contenedor
+      - ./backend_cine:/app
+      # Montamos el repositorio local de Maven para cachear dependencias
+      - ~/.m2:/root/.m2
+    command: mvn spring-boot:run # Comando para iniciar el servidor de desarrollo de Spring Boot
+    ports:
+      - "8082:8082" # Puerto de la aplicación
+      - "9999:9999" # Puerto para Debug Remoto (opcional)
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/cine?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+      # Habilitar el Debug Remoto (opcional)
+      MAVEN_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9999
+    depends_on:
+      - db
+    networks:
+      - cine-network
+
+  # Servicio del Frontend para DESARROLLO
+  frontend:
+    image: node:20-alpine # Usamos una imagen de Node para ejecutar el código fuente
+    container_name: app-cine-frontend-dev
+    working_dir: /app
+    volumes:
+      # Montamos el código fuente del frontend
+      - ./frotend_cine:/app
+      # Usamos un volumen para node_modules para evitar conflictos con el local
+      - /app/node_modules
+    command: npm start # Comando para iniciar el servidor de desarrollo de Angular (ng serve)
+    ports:
+      - "4200:4200" # Puerto estándar de 'ng serve'
+    networks:
+      - cine-network
+
+  # Servicio de la Base de Datos (sin cambios)
+  db:
+    image: mysql:8.0
+    container_name: mysql-cine-dev
+    restart: always
+    environment:
+      MYSQL_DATABASE: cine
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_data_dev:/var/lib/mysql
+    networks:
+      - cine-network
+
+volumes:
+  mysql_data_dev:
+  # El volumen de node_modules no necesita ser nombrado
+
+networks:
+  cine-network:
+    driver: bridge

@@ -69,8 +69,8 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS ==='
-                    // Pasamos la URL de la BD de test a Maven
-                    sh "mvn -Dspring.datasource.url=${SPRING_DATASOURCE_URL_TEST} -Dspring.datasource.username=${DB_USER} -Dspring.datasource.password=${DB_PASSWORD} test"
+                    // CORRECCIÓN: Envolver la URL en comillas simples para evitar problemas con '&'
+                    sh "mvn -Dspring.datasource.url='${SPRING_DATASOURCE_URL_TEST}' -Dspring.datasource.username=${DB_USER} -Dspring.datasource.password=${DB_PASSWORD} test"
                     echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
                 }
             }

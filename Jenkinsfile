@@ -1,72 +1,136 @@
+// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (Versión corregida y unificada)
 pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME' // Asegúrate de que 'MAVEN_HOME' esté configurado en Jenkins
+        maven 'MAVEN_HOME'
     }
 
+    // 🔧 Definición de variables globales corregidas para CineApp
     environment {
         DOCKER_PROJECT_NAME = 'cine_app'
+        APP_CONTAINER_NAME = 'product_app'
+        DB_CONTAINER_NAME = 'mysql-ecommerce-prod'
+        DB_NAME = 'ecommerce_lp2_prod'
+        DB_USER = 'root'
+        DB_PASSWORD = 'admin123'
     }
 
     stages {
-        stage('Clone Monorepo') {
+        // 📥 Etapa 1: Clonación del repositorio
+        stage('Clone') {
             steps {
-                echo '🧹 Limpiando y clonando el repositorio principal...'
-                cleanWs()
-                // CORREGIDO: Usar la rama 'master'
-                git branch: 'master', url: 'https://github.com/Leydi22AD/cine_app.git'
-            }
-        }
-
-        stage('Build Backend & Analyze') {
-            steps {
-                // CORREGIDO: Usar el nombre de carpeta correcto 'ProyectLP2'
-                dir('ProyectLP2') {
-                    echo '🔨 Construyendo el backend...'
-                    sh 'mvn clean verify -Dspring.profiles.active=test'
-
-                    echo '📊 Analizando el código del backend con SonarQube...'
-                    withSonarQubeEnv('sonarqube') { // Asegúrate de que 'sonarqube' esté configurado en Jenkins
-                        sh 'mvn sonar:sonar'
-                    }
+                // Aumentando el timeout a 30 minutos para evitar errores
+                timeout(time: 30, unit: 'MINUTES') {
+                    echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
+                    cleanWs()
+                    checkout scm
                 }
             }
         }
 
+        // 🏗️ Etapa 2: Construcción del Backend
+        stage('Build Backend') {
+            steps {
+                dir('ProyectLP2') {
+                    echo '🔨 === INICIO: CONSTRUCCIÓN DEL BACKEND ==='
+                    // Usamos 'package' para generar el JAR, los tests se ejecutan en su propia etapa
+                    sh 'mvn clean package -DskipTests'
+                    echo '✅ === FIN: CONSTRUCCIÓN DEL BACKEND COMPLETADA ==='
+                }
+            }
+        }
+        
+        // 🎨 Etapa 3: Construcción del Frontend
         stage('Build Frontend') {
             steps {
-                // CORREGIDO: Usar el nombre de carpeta correcto 'Lp2-Frontend'
                 dir('Lp2-Frontend') {
-                    echo '🎨 Construyendo el frontend...'
+                    echo '🎨 === INICIO: CONSTRUCCIÓN DEL FRONTEND ==='
                     sh 'npm install'
-                    sh 'npm run build -- --configuration production'
+                    sh 'npm run build'
+                    echo '✅ === FIN: CONSTRUCCIÓN DEL FRONTEND COMPLETADA ==='
                 }
             }
         }
 
-        stage('Deploy Application with Docker Compose') {
+        // 🧪 Etapa 4: Ejecución de Pruebas
+        stage('Test') {
             steps {
-                echo '🚀 Desplegando la aplicación completa...'
-                script {
-                    sh "docker-compose -f docker-compose.yml -p ${env.DOCKER_PROJECT_NAME} down -v --remove-orphans || true"
-                    sh "docker-compose -f docker-compose.yml -p ${env.DOCKER_PROJECT_NAME} up -d --build"
+                dir('ProyectLP2') {
+                    echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS ==='
+                    sh 'mvn test'
+                    echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
                 }
+            }
+        }
+
+        // 📊 Etapa 5: Análisis de Calidad con SonarQube
+        stage('Sonar Analysis') {
+            steps {
+                dir('ProyectLP2') {
+                    echo '📊 === INICIO: ANÁLISIS DE CALIDAD ==='
+                    withSonarQubeEnv('sonarqube') {
+                        sh 'mvn sonar:sonar'
+                    }
+                    echo '✅ === FIN: ANÁLISIS DE CALIDAD COMPLETADO ==='
+                }
+            }
+        }
+
+        // 🎯 Etapa 6: Verificación de Calidad (Quality Gate)
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    echo '🎯 === VERIFICACIÓN DE ESTÁNDARES DE CALIDAD ==='
+                    waitForQualityGate abortPipeline: true
+                    echo '✅ === FIN: VERIFICACIÓN DE CALIDAD COMPLETADA ==='
+                }
+            }
+        }
+
+        // 🚀 Etapa 7: Despliegue de la Aplicación
+        stage('Deploy Application') {
+            steps {
+                echo '🚀 === INICIO: PROCESO DE DESPLIEGUE ==='
+                script {
+                    // 🧹 Limpieza de despliegue anterior
+                    echo '1️⃣ Limpiando despliegue anterior...'
+                    sh "docker-compose -p ${DOCKER_PROJECT_NAME} down -v --remove-orphans || true"
+
+                    // 🏗️ Construcción y levantamiento de servicios
+                    echo '2️⃣ Construyendo y levantando servicios...'
+                    sh "docker-compose -p ${DOCKER_PROJECT_NAME} up -d --build"
+
+                    // 💾 Inicialización de la base de datos (Paso crítico añadido)
+                    echo '3️⃣ Inicializando base de datos...'
+                    sleep(30) // Espera para que el servicio de MySQL esté completamente listo
+                    sh "docker exec -i ${DB_CONTAINER_NAME} mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ProyectLP2/sql/init.sql"
+
+                    // 🔍 Verificación de la base de datos
+                    echo '4️⃣ Verificando estructura de la base de datos...'
+                    sh "docker exec ${DB_CONTAINER_NAME} mysql -u${DB_USER} -p${DB_PASSWORD} -e 'USE ${DB_NAME}; SHOW TABLES;'"
+
+                    // ⏳ Espera y verificación de la aplicación
+                    echo '5️⃣ Mostrando logs de la aplicación:'
+                    sleep(20) // Espera para que la aplicación inicie
+                    sh "docker logs --tail 100 ${APP_CONTAINER_NAME}"
+                }
+                echo '✅ === FIN: DESPLIEGUE COMPLETADO ==='
             }
         }
     }
 
+    // 📝 Acciones post-ejecución
     post {
         always {
-            echo '🏁 Pipeline finalizado.'
-            // CORREGIDO: Usar la ruta correcta para los resultados de las pruebas
+            echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
             junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
         }
         success {
-            echo '🎉 ¡Éxito! El pipeline se completó correctamente.'
+            echo '🎉 ✓ Pipeline completado exitosamente'
         }
         failure {
-            echo '💥 ¡Fallo! El pipeline ha encontrado un error.'
+            echo '💥 ✗ Pipeline falló'
         }
     }
 }

@@ -24,7 +24,7 @@
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
           <stringProp name="HTTPSampler.port">8082</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/api/v1/salas/1</stringProp>
+          <stringProp name="HTTPSampler.path">/api/v1/salas/6905</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -89,29 +89,13 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="peliculas">
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
           <stringProp name="HTTPSampler.port">8082</stringProp>
-          <stringProp name="HTTPSampler.path">/api/v1/peliculas</stringProp>
+          <stringProp name="HTTPSampler.path">/api/v1/pelicula</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-    &quot;titulo&quot;: &quot;Inception&quot;,&#xd;
-    &quot;genero&quot;: &quot;Ciencia Ficción&quot;,&#xd;
-    &quot;duracion&quot;: 148,&#xd;
-    &quot;formato&quot;: &quot;IMAX&quot;,&#xd;
-    &quot;idioma&quot;: &quot;Subtitulado&quot;,&#xd;
-    &quot;poster&quot;: &quot;url_imagen_poster.jpg&quot;,&#xd;
-    &quot;director&quot;: &quot;Christopher Nolan&quot;,&#xd;
-    &quot;descripcion&quot;: &quot;Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños.&quot;,&#xd;
-    &quot;trailer&quot;: &quot;url_video_trailer&quot;&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree/>

@@ -1,5 +1,6 @@
 pe\edu\upeu\ProyectLP2\app\usecase\AsientoUseCaseImpl.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\UsuarioDto.class
+pe\edu\upeu\ProyectLP2\infraestructure\config\DataSourceConfig.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\mapper\UsuarioMapper.class
 pe\edu\upeu\ProyectLP2\domain\port\in\SalaUseCase.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\mapper\FuncionMapper.class
@@ -8,6 +9,7 @@ pe\edu\upeu\ProyectLP2\domain\port\on\TicketRepositoryPort.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\UsuarioPersistenceAdapter.class
 pe\edu\upeu\ProyectLP2\domain\exception\AsientoAlreadyExistsException.class
 pe\edu\upeu\ProyectLP2\app\usecase\TicketUseCaseImpl.class
+pe\edu\upeu\ProyectLP2\infraestructure\security\JwtService.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\AuthController.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\UsuarioRepository.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\SalaDto$SalaResponse.class
@@ -40,7 +42,6 @@ pe\edu\upeu\ProyectLP2\domain\port\in\AsientoUseCase.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\FuncionPersistenceAdapter.class
 pe\edu\upeu\ProyectLP2\infraestructure\entity\Rol.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\TicketPersistenceAdapter.class
-pe\edu\upeu\ProyectLP2\infrastructure\security\JwtService.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\PeliculaDto.class
 pe\edu\upeu\ProyectLP2\infraestructure\config\CorsConfig.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\AsientoDto$AsientoRequest.class
@@ -53,7 +54,6 @@ pe\edu\upeu\ProyectLP2\infraestructure\adapter\mapper\FuncionMapperImpl.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\TicketDto.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\mapper\UsuarioMapperImpl.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\SalaRepository.class
-pe\edu\upeu\ProyectLP2\infrastructure\config\SecurityConfig.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\UsuarioController.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\FuncionRepository.class
 pe\edu\upeu\ProyectLP2\domain\port\in\UsuarioUseCase.class
@@ -69,11 +69,12 @@ pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\AsientoDto$Asiento
 pe\edu\upeu\ProyectLP2\app\usecase\SalaUseCaseImpl.class
 pe\edu\upeu\ProyectLP2\domain\model\Asiento.class
 pe\edu\upeu\ProyectLP2\app\usecase\FuncionUseCaseImpl.class
+pe\edu\upeu\ProyectLP2\infraestructure\security\JwtAuthenticationFilter.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\PeliculaDto$PeliculaResponse.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\SalaDto$SalaRequest.class
 pe\edu\upeu\ProyectLP2\domain\port\in\PeliculaUseCase.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\AuthDto$LoginRequest.class
-pe\edu\upeu\ProyectLP2\infrastructure\config\ApplicationConfig.class
+pe\edu\upeu\ProyectLP2\infraestructure\config\SecurityConfig.class
 pe\edu\upeu\ProyectLP2\domain\model\Sala.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\FuncionDto$PeliculaSimpleDto.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\AuthDto$RegisterRequest.class
@@ -95,7 +96,7 @@ pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\dto\AsientoDto.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\controller\GlobalExceptionHandler.class
 pe\edu\upeu\ProyectLP2\domain\model\Usuario.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\mapper\PeliculaMapperImpl.class
+pe\edu\upeu\ProyectLP2\infraestructure\config\ApplicationConfig.class
 pe\edu\upeu\ProyectLP2\app\usecase\UsuarioUseCaseImpl.class
-pe\edu\upeu\ProyectLP2\infrastructure\security\JwtAuthenticationFilter.class
 pe\edu\upeu\ProyectLP2\infraestructure\adapter\PeliculaPersistenceAdapter.class
 pe\edu\upeu\ProyectLP2\domain\model\Pelicula.class

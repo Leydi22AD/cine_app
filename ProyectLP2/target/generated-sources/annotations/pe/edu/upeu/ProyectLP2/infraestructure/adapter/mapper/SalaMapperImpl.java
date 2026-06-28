@@ -9,8 +9,8 @@ import pe.edu.upeu.ProyectLP2.infraestructure.entity.SalaEntity;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-06-16T20:26:30-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Amazon.com Inc.)"
+    date = "2026-06-23T17:40:10-0500",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
 )
 @Component
 public class SalaMapperImpl implements SalaMapper {

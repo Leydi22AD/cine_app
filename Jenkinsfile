@@ -1,17 +1,20 @@
-// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (Versión corregida y unificada)
+// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (Versión final corregida)
 pipeline {
     agent any
 
+    // 🛠️ Configuración de herramientas necesarias
     tools {
         maven 'MAVEN_HOME'
+        // AÑADIDO: Especificar la herramienta NodeJS para que 'npm' esté disponible
+        nodejs 'NodeJS' 
     }
 
     // 🔧 Definición de variables globales corregidas para CineApp
     environment {
         DOCKER_PROJECT_NAME = 'cine_app'
-        APP_CONTAINER_NAME = 'product_app'
-        DB_CONTAINER_NAME = 'mysql-ecommerce-prod'
-        DB_NAME = 'ecommerce_lp2_prod'
+        APP_CONTAINER_NAME = 'cine_app_backend'
+        DB_CONTAINER_NAME = 'mysql_cine_app_db'
+        DB_NAME = 'cine_app_db'
         DB_USER = 'root'
         DB_PASSWORD = 'admin123'
     }
@@ -34,7 +37,6 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🔨 === INICIO: CONSTRUCCIÓN DEL BACKEND ==='
-                    // Usamos 'package' para generar el JAR, los tests se ejecutan en su propia etapa
                     sh 'mvn clean package -DskipTests'
                     echo '✅ === FIN: CONSTRUCCIÓN DEL BACKEND COMPLETADA ==='
                 }
@@ -101,9 +103,10 @@ pipeline {
                     echo '2️⃣ Construyendo y levantando servicios...'
                     sh "docker-compose -p ${DOCKER_PROJECT_NAME} up -d --build"
 
-                    // 💾 Inicialización de la base de datos (Paso crítico añadido)
+                    // 💾 Inicialización de la base de datos
                     echo '3️⃣ Inicializando base de datos...'
                     sleep(30) // Espera para que el servicio de MySQL esté completamente listo
+                    // CORREGIDO: Usando la ruta correcta al script SQL si está dentro de ProyectLP2
                     sh "docker exec -i ${DB_CONTAINER_NAME} mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ProyectLP2/sql/init.sql"
 
                     // 🔍 Verificación de la base de datos

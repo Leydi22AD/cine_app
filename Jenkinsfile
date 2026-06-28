@@ -65,9 +65,9 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS ==='
-                    // CORRECCIÓN FINAL: Usar un bloque de script multilínea para manejar caracteres especiales
+                    // CORRECCIÓN FINAL: Usar host.docker.internal para la comunicación entre contenedores
                     sh """
-                        mvn -Dspring.datasource.url='jdbc:mysql://localhost:3307/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
+                        mvn -Dspring.datasource.url='jdbc:mysql://host.docker.internal:3307/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                             -Dspring.datasource.username=${DB_USER} \\
                             -Dspring.datasource.password=${DB_PASSWORD} \\
                             test

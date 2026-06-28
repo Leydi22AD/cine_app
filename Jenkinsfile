@@ -1,15 +1,12 @@
-// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (Versión final corregida)
+// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (con DB para tests)
 pipeline {
     agent any
 
-    // 🛠️ Configuración de herramientas necesarias
     tools {
         maven 'MAVEN_HOME'
-        // AÑADIDO: Especificar la herramienta NodeJS para que 'npm' esté disponible
         nodejs 'NodeJS' 
     }
 
-    // 🔧 Definición de variables globales corregidas para CineApp
     environment {
         DOCKER_PROJECT_NAME = 'cine_app'
         APP_CONTAINER_NAME = 'cine_app_backend'
@@ -17,13 +14,13 @@ pipeline {
         DB_NAME = 'cine_app_db'
         DB_USER = 'root'
         DB_PASSWORD = 'admin123'
+        // URL de la BD para los tests, usando el nombre del servicio de docker-compose
+        SPRING_DATASOURCE_URL_TEST = "jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
     }
 
     stages {
-        // 📥 Etapa 1: Clonación del repositorio
         stage('Clone') {
             steps {
-                // Aumentando el timeout a 30 minutos para evitar errores
                 timeout(time: 30, unit: 'MINUTES') {
                     echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
                     cleanWs()
@@ -32,7 +29,6 @@ pipeline {
             }
         }
 
-        // 🏗️ Etapa 2: Construcción del Backend
         stage('Build Backend') {
             steps {
                 dir('ProyectLP2') {
@@ -43,13 +39,11 @@ pipeline {
             }
         }
         
-        // 🎨 Etapa 3: Construcción del Frontend
         stage('Build Frontend') {
             steps {
                 dir('Lp2-Frontend') {
                     echo '🎨 === INICIO: CONSTRUCCIÓN DEL FRONTEND ==='
                     sh 'npm install'
-                    // CORRECCIÓN: Añadir permisos de ejecución al CLI de Angular
                     sh 'chmod +x ./node_modules/.bin/ng'
                     sh 'npm run build'
                     echo '✅ === FIN: CONSTRUCCIÓN DEL FRONTEND COMPLETADA ==='
@@ -57,18 +51,41 @@ pipeline {
             }
         }
 
-        // 🧪 Etapa 4: Ejecución de Pruebas
+        // ETAPA NUEVA: Levantar la BD para las pruebas
+        stage('Start Services for Test') {
+            steps {
+                echo '🐳 === INICIO: LEVANTANDO SERVICIOS PARA TESTS ==='
+                // Levanta solo la BD y sus dependencias
+                sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
+                echo '⏳ Esperando que la base de datos esté lista...'
+                // Script simple para esperar a que el puerto 3306 esté disponible
+                sh 'sleep 30'
+                echo '✅ === FIN: SERVICIOS PARA TESTS LISTOS ==='
+            }
+        }
+
+        // ETAPA MODIFICADA: Ejecutar pruebas contra la BD de Docker
         stage('Test') {
             steps {
                 dir('ProyectLP2') {
                     echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS ==='
-                    sh 'mvn test'
+                    // Pasamos la URL de la BD de test a Maven
+                    sh "mvn -Dspring.datasource.url=${SPRING_DATASOURCE_URL_TEST} -Dspring.datasource.username=${DB_USER} -Dspring.datasource.password=${DB_PASSWORD} test"
                     echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
                 }
             }
         }
 
-        // 📊 Etapa 5: Análisis de Calidad con SonarQube
+        // ETAPA NUEVA: Detener los servicios de prueba
+        stage('Stop Test Services') {
+            steps {
+                echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='
+                // Damos de baja el entorno de pruebas
+                sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test down -v"
+                echo '✅ === FIN: SERVICIOS DE TEST DETENIDOS ==='
+            }
+        }
+
         stage('Sonar Analysis') {
             steps {
                 dir('ProyectLP2') {
@@ -81,7 +98,6 @@ pipeline {
             }
         }
 
-        // 🎯 Etapa 6: Verificación de Calidad (Quality Gate)
         stage('Quality Gate') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
@@ -92,32 +108,26 @@ pipeline {
             }
         }
 
-        // 🚀 Etapa 7: Despliegue de la Aplicación
+        // ETAPA FINAL: Despliegue completo de la aplicación
         stage('Deploy Application') {
             steps {
-                echo '🚀 === INICIO: PROCESO DE DESPLIEGUE ==='
+                echo '🚀 === INICIO: PROCESO DE DESPLIEGUE FINAL ==='
                 script {
-                    // 🧹 Limpieza de despliegue anterior
                     echo '1️⃣ Limpiando despliegue anterior...'
                     sh "docker-compose -p ${DOCKER_PROJECT_NAME} down -v --remove-orphans || true"
 
-                    // 🏗️ Construcción y levantamiento de servicios
                     echo '2️⃣ Construyendo y levantando servicios...'
                     sh "docker-compose -p ${DOCKER_PROJECT_NAME} up -d --build"
 
-                    // 💾 Inicialización de la base de datos
                     echo '3️⃣ Inicializando base de datos...'
-                    sleep(30) // Espera para que el servicio de MySQL esté completamente listo
-                    // CORREGIDO: Usando la ruta correcta al script SQL si está dentro de ProyectLP2
+                    sleep(30)
                     sh "docker exec -i ${DB_CONTAINER_NAME} mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ProyectLP2/sql/init.sql"
 
-                    // 🔍 Verificación de la base de datos
                     echo '4️⃣ Verificando estructura de la base de datos...'
                     sh "docker exec ${DB_CONTAINER_NAME} mysql -u${DB_USER} -p${DB_PASSWORD} -e 'USE ${DB_NAME}; SHOW TABLES;'"
 
-                    // ⏳ Espera y verificación de la aplicación
                     echo '5️⃣ Mostrando logs de la aplicación:'
-                    sleep(20) // Espera para que la aplicación inicie
+                    sleep(20)
                     sh "docker logs --tail 100 ${APP_CONTAINER_NAME}"
                 }
                 echo '✅ === FIN: DESPLIEGUE COMPLETADO ==='
@@ -125,11 +135,12 @@ pipeline {
         }
     }
 
-    // 📝 Acciones post-ejecución
     post {
         always {
             echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
             junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
+            // Asegurarse de que los contenedores de test se detengan incluso si hay un fallo
+            sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test down -v || true"
         }
         success {
             echo '🎉 ✓ Pipeline completado exitosamente'

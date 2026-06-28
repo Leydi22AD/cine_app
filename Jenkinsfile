@@ -14,8 +14,6 @@ pipeline {
         DB_NAME = 'cine_app_db'
         DB_USER = 'root'
         DB_PASSWORD = 'admin123'
-        // CORRECCIÓN: URL de la BD para los tests, apuntando a localhost y al puerto expuesto 3307
-        SPRING_DATASOURCE_URL_TEST = "jdbc:mysql://localhost:3307/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
     }
 
     stages {
@@ -55,10 +53,8 @@ pipeline {
         stage('Start Services for Test') {
             steps {
                 echo '🐳 === INICIO: LEVANTANDO SERVICIOS PARA TESTS ==='
-                // Levanta solo la BD y sus dependencias
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
-                // Script simple para esperar a que el puerto 3307 esté disponible
                 sh 'sleep 30'
                 echo '✅ === FIN: SERVICIOS PARA TESTS LISTOS ==='
             }
@@ -69,8 +65,13 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS ==='
-                    // CORRECCIÓN: Envolver la URL en comillas simples para evitar problemas con '&'
-                    sh "mvn -Dspring.datasource.url='${SPRING_DATASOURCE_URL_TEST}' -Dspring.datasource.username=${DB_USER} -Dspring.datasource.password=${DB_PASSWORD} test"
+                    // CORRECCIÓN FINAL: Usar un bloque de script multilínea para manejar caracteres especiales
+                    sh """
+                        mvn -Dspring.datasource.url='jdbc:mysql://localhost:3307/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
+                            -Dspring.datasource.username=${DB_USER} \\
+                            -Dspring.datasource.password=${DB_PASSWORD} \\
+                            test
+                    """
                     echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
                 }
             }
@@ -80,7 +81,6 @@ pipeline {
         stage('Stop Test Services') {
             steps {
                 echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='
-                // Damos de baja el entorno de pruebas
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test down -v"
                 echo '✅ === FIN: SERVICIOS DE TEST DETENIDOS ==='
             }

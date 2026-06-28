@@ -30,7 +30,8 @@ services:
     image: mysql:8.0
     container_name: mysql_cine_app_db
     ports:
-      - "3306:3306"
+      # CORRECCIÓN: Exponer en el puerto 3307 para evitar conflictos
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=admin123
       - MYSQL_DATABASE=cine_app_db

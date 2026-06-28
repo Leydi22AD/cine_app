@@ -14,8 +14,8 @@ pipeline {
         DB_NAME = 'cine_app_db'
         DB_USER = 'root'
         DB_PASSWORD = 'admin123'
-        // URL de la BD para los tests, usando el nombre del servicio de docker-compose
-        SPRING_DATASOURCE_URL_TEST = "jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+        // CORRECCIÓN: URL de la BD para los tests, apuntando a localhost y al puerto expuesto 3307
+        SPRING_DATASOURCE_URL_TEST = "jdbc:mysql://localhost:3307/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
     }
 
     stages {
@@ -58,7 +58,7 @@ pipeline {
                 // Levanta solo la BD y sus dependencias
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
-                // Script simple para esperar a que el puerto 3306 esté disponible
+                // Script simple para esperar a que el puerto 3307 esté disponible
                 sh 'sleep 30'
                 echo '✅ === FIN: SERVICIOS PARA TESTS LISTOS ==='
             }

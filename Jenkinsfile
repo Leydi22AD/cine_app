@@ -49,6 +49,8 @@ pipeline {
                 dir('Lp2-Frontend') {
                     echo '🎨 === INICIO: CONSTRUCCIÓN DEL FRONTEND ==='
                     sh 'npm install'
+                    // CORRECCIÓN: Añadir permisos de ejecución al CLI de Angular
+                    sh 'chmod +x ./node_modules/.bin/ng'
                     sh 'npm run build'
                     echo '✅ === FIN: CONSTRUCCIÓN DEL FRONTEND COMPLETADA ==='
                 }

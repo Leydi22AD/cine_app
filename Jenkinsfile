@@ -70,15 +70,15 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Ejecutar pruebas con la configuración de volumen simplificada
+        // ETAPA CORREGIDA: Se inyecta la ruta absoluta del código al contenedor
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
                 // PASO DE DEPURACIÓN: Listar archivos para ver la estructura interna
-                sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner ls -laR /app"
+                sh "CODE_PATH=${env.WORKSPACE}/ProyectLP2 docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner ls -laR /app"
                 
                 sh """
-                    docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
+                    CODE_PATH=${env.WORKSPACE}/ProyectLP2 docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
                     mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\

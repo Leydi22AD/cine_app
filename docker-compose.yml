@@ -29,8 +29,6 @@ services:
   mysql_cine_app:
     image: mysql:8.0
     container_name: mysql_cine_app_db
-    # El puerto 3307 es para acceso desde tu máquina. 
-    # El puerto interno sigue siendo 3306.
     ports:
       - "3307:3306"
     environment:
@@ -39,16 +37,15 @@ services:
     volumes:
       - mysql_cine_data:/var/lib/mysql
 
-  # SERVICIO CORREGIDO: Contenedor temporal para ejecutar las pruebas de Maven
+  # SERVICIO CORREGIDO: El volumen ahora se pasa como una variable de entorno
   test-runner:
     image: maven:3.9.6-eclipse-temurin-21
     volumes:
-      # Montamos SOLO el código del backend en /app
-      - ./ProyectLP2:/app
+      # La ruta del código fuente se inyecta desde el Jenkinsfile
+      - ${CODE_PATH}:/app
       # Montamos el repositorio local de Maven para no descargar dependencias cada vez
       - /var/jenkins_home/.m2:/root/.m2
     working_dir: /app
-    # Este servicio depende de que la BD esté lista
     depends_on:
       - mysql_cine_app
 

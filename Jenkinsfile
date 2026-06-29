@@ -1,4 +1,4 @@
-// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (con DB para tests)
+// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (Versión Final)
 pipeline {
     agent any
 
@@ -49,35 +49,36 @@ pipeline {
             }
         }
 
-        // ETAPA NUEVA: Levantar la BD para las pruebas
-        stage('Start Services for Test') {
+        stage('Start DB for Test') {
             steps {
-                echo '🐳 === INICIO: LEVANTANDO SERVICIOS PARA TESTS ==='
+                echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
-                sh 'sleep 30'
-                echo '✅ === FIN: SERVICIOS PARA TESTS LISTOS ==='
+                sh '''
+                timeout 120s bash -c 'until docker exec $(docker ps -q -f "name=cine_app-test-mysql_cine_app-1") mysqladmin ping -h"127.0.0.1" --silent; do
+                    echo "Esperando a la base de datos...";
+                    sleep 2;
+                done'
+                '''
+                echo '✅ === FIN: BASE DE DATOS PARA TESTS LISTA ==='
             }
         }
 
-        // ETAPA MODIFICADA: Ejecutar pruebas contra la BD de Docker
         stage('Test') {
             steps {
-                dir('ProyectLP2') {
-                    echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS ==='
-                    // CORRECCIÓN FINAL: Usar host.docker.internal para la comunicación entre contenedores
-                    sh """
-                        mvn -Dspring.datasource.url='jdbc:mysql://host.docker.internal:3307/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
-                            -Dspring.datasource.username=${DB_USER} \\
-                            -Dspring.datasource.password=${DB_PASSWORD} \\
-                            test
-                    """
-                    echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
-                }
+                echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
+                // CORRECCIÓN: Ejecutar mvn test DENTRO del contenedor test-runner
+                sh """
+                    docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
+                    mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
+                        -Dspring.datasource.username=${DB_USER} \\
+                        -Dspring.datasource.password=${DB_PASSWORD} \\
+                        test
+                """
+                echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
             }
         }
 
-        // ETAPA NUEVA: Detener los servicios de prueba
         stage('Stop Test Services') {
             steps {
                 echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='
@@ -108,7 +109,6 @@ pipeline {
             }
         }
 
-        // ETAPA FINAL: Despliegue completo de la aplicación
         stage('Deploy Application') {
             steps {
                 echo '🚀 === INICIO: PROCESO DE DESPLIEGUE FINAL ==='
@@ -139,7 +139,6 @@ pipeline {
         always {
             echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
             junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
-            // Asegurarse de que los contenedores de test se detengan incluso si hay un fallo
             sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test down -v || true"
         }
         success {

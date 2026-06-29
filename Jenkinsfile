@@ -60,7 +60,6 @@ pipeline {
                 echo '⏳ Esperando que la base de datos esté lista...'
                 sh '''
                     set -e
-                    // Usamos el mismo nombre de proyecto para encontrar el contenedor
                     CONTAINER_ID=$(docker-compose -f docker-compose.yml -p cine_app-test ps -q mysql_cine_app)
                     if [ -z "$CONTAINER_ID" ]; then
                         echo "Error: No se pudo encontrar el contenedor de la base de datos."

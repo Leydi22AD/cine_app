@@ -80,7 +80,7 @@ pipeline {
                 // Copiamos el script al contexto de build para que el Dockerfile.test lo pueda usar
                 sh 'cp wait-for-it.sh ProyectLP2/'
                 
-                // Forzamos la reconstrucción de la imagen de test para asegurar que los cambios se apliquen
+                // Forzamos la reconstrucción de la imagen de test SIN CACHÉ para asegurar que los cambios se apliquen
                 sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test build --no-cache test-runner"
 
                 sh """

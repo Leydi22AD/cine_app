@@ -73,7 +73,7 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Se llama al script con su ruta absoluta
+        // ETAPA FINAL: Forzar la reconstrucción de la imagen de test y usar la ruta absoluta del script
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
@@ -81,7 +81,7 @@ pipeline {
                 sh 'cp wait-for-it.sh ProyectLP2/'
                 
                 sh """
-                    docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
+                    docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --build --rm test-runner \\
                     /bin/sh -c "/usr/local/bin/wait-for-it.sh ${DB_CONTAINER_NAME} 3306 -- \\
                     mvn -Dspring.datasource.url='jdbc:mysql://${DB_CONTAINER_NAME}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\

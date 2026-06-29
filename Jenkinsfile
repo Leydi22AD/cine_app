@@ -74,12 +74,12 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Usa ambos archivos de compose e inyecta la variable
+        // ETAPA CORREGIDA: Se elimina la variable CODE_PATH y se confía en la ruta relativa
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
                 sh """
-                    CODE_PATH=${env.WORKSPACE}/ProyectLP2 docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
+                    docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
                     mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\

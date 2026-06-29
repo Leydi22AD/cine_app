@@ -2,12 +2,15 @@ version: '3.8'
 
 services:
   test-runner:
-    image: maven:3.9.6-eclipse-temurin-21
+    # En lugar de 'image', usamos 'build' para crear una imagen personalizada
+    build:
+      context: ./ProyectLP2  # El contexto es la carpeta del backend
+      dockerfile: Dockerfile.test # Usamos el Dockerfile que creamos
+    # Ya no necesitamos 'volumes' para el código, porque está dentro de la imagen
     volumes:
-      # La ruta del código fuente se inyecta desde el Jenkinsfile
-      - ${CODE_PATH}:/app
-      # Montamos el repositorio local de Maven para no descargar dependencias cada vez
+      # Mantenemos el volumen para el caché de Maven, para acelerar las builds
       - /var/jenkins_home/.m2:/root/.m2
+    # El working_dir ya está definido en el Dockerfile, pero lo dejamos por claridad
     working_dir: /app
     depends_on:
       - mysql_cine_app

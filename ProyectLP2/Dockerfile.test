@@ -1,0 +1,11 @@
+# Usamos la imagen oficial de Maven como base
+FROM maven:3.9.6-eclipse-temurin-21
+
+# Establecemos el directorio de trabajo en /app
+WORKDIR /app
+
+# Copiamos todo el código fuente del proyecto (el contexto de build) a /app
+COPY . .
+
+# El comando por defecto será ejecutar los tests, pero lo sobreescribiremos desde el Jenkinsfile.
+# Este Dockerfile solo se encarga de tener el código listo.

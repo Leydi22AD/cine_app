@@ -7,7 +7,6 @@ host="$1"
 shift
 port="$1"
 shift
-cmd="$@"
 
 until nc -z "$host" "$port"; do
   >&2 echo "MySQL no está disponible - esperando..."
@@ -15,4 +14,5 @@ until nc -z "$host" "$port"; do
 done
 
 >&2 echo "MySQL está listo - ejecutando comando"
-exec $cmd
+# La línea corregida: exec "$@" ejecuta los argumentos restantes como un comando.
+exec "$@"

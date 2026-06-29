@@ -1,4 +1,4 @@
-// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (Versión Final)
+// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (con DB para tests)
 pipeline {
     agent any
 
@@ -54,7 +54,6 @@ pipeline {
                 echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
-                // CORRECCIÓN FINAL: Obtener dinámicamente el ID del contenedor para la espera
                 sh '''
                     set -e
                     CONTAINER_ID=$(docker-compose -p cine_app-test ps -q mysql_cine_app)
@@ -71,9 +70,13 @@ pipeline {
             }
         }
 
+        // ETAPA MODIFICADA: Ejecutar pruebas contra la BD de Docker
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
+                // PASO DE DEPURACIÓN: Listar archivos para ver la estructura interna
+                sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner ls -laR /app"
+                
                 sh """
                     docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
                     mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
@@ -85,6 +88,7 @@ pipeline {
             }
         }
 
+        // ETAPA NUEVA: Detener los servicios de prueba
         stage('Stop Test Services') {
             steps {
                 echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='

@@ -52,8 +52,6 @@ pipeline {
             }
         }
 
-        // La etapa 'Start DB for Test' se elimina. Docker Compose lo hará automáticamente.
-
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
@@ -70,21 +68,6 @@ pipeline {
                         test
                 """
                 echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
-            }
-        }
-
-        stage('Stop Test Services') {
-            // Esta etapa es importante para limpiar los servicios de prueba después de la ejecución
-            when {
-                anyOf {
-                    success()
-                    failure()
-                }
-            }
-            steps {
-                echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='
-                sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v --remove-orphans || true"
-                echo '✅ === FIN: SERVICIOS DE TEST DETENIDOS ==='
             }
         }
 
@@ -140,8 +123,7 @@ pipeline {
         always {
             echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
             junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
-            // La limpieza de los servicios de test ya se hace en la etapa 'Stop Test Services'
-            // pero lo dejamos aquí como una doble seguridad en caso de que algo falle.
+            // La limpieza de los servicios de test se hace aquí, en el bloque 'always'
             sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v --remove-orphans || true"
         }
         success {

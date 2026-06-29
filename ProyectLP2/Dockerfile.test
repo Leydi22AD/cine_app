@@ -1,11 +1,15 @@
 # Usamos la imagen oficial de Maven como base
 FROM maven:3.9.6-eclipse-temurin-21
 
+# Instalar netcat, que es necesario para el script de espera
+RUN apt-get update && apt-get install -y netcat
+
 # Establecemos el directorio de trabajo en /app
 WORKDIR /app
 
+# Copiamos el script de espera y le damos permisos de ejecución
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
+
 # Copiamos todo el código fuente del proyecto (el contexto de build) a /app
 COPY . .
-
-# El comando por defecto será ejecutar los tests, pero lo sobreescribiremos desde el Jenkinsfile.
-# Este Dockerfile solo se encarga de tener el código listo.

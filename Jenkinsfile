@@ -73,16 +73,20 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Se usa el nombre del contenedor de la BD en la URL de conexión
+        // ETAPA CORREGIDA: Usa el script wait-for-it.sh para sincronizar con la BD
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
+                // Copiamos el script al contexto de build para que el Dockerfile.test lo pueda usar
+                sh 'cp wait-for-it.sh ProyectLP2/'
+                
                 sh """
                     docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
+                    /bin/sh -c "wait-for-it.sh ${DB_CONTAINER_NAME} 3306 -- \\
                     mvn -Dspring.datasource.url='jdbc:mysql://${DB_CONTAINER_NAME}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\
-                        test
+                        test"
                 """
                 echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
             }

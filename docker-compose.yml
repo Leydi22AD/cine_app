@@ -9,7 +9,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql_cine_app
+      mysql_cine_app:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_cine_app:3306/cine_app_db?useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
@@ -36,6 +37,11 @@ services:
       - MYSQL_DATABASE=cine_app_db
     volumes:
       - mysql_cine_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-padmin123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mysql_cine_data:

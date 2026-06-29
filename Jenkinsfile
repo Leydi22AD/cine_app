@@ -52,53 +52,38 @@ pipeline {
             }
         }
 
-        stage('Start DB for Test') {
-            steps {
-                echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
-                sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
-                echo '⏳ Esperando que la base de datos esté lista...'
-                sh '''
-                    set -e
-                    CONTAINER_ID=$(docker-compose -f docker-compose.yml -p cine_app-test ps -q mysql_cine_app)
-                    if [ -z "$CONTAINER_ID" ]; then
-                        echo "Error: No se pudo encontrar el contenedor de la base de datos."
-                        exit 1
-                    fi
-                    timeout 120s bash -c "until docker exec $CONTAINER_ID mysqladmin ping -u'root' -p'admin123' --silent; do
-                        echo 'Esperando a la base de datos...';
-                        sleep 2;
-                    done"
-                '''
-                echo '✅ === FIN: BASE DE DATOS PARA TESTS LISTA ==='
-            }
-        }
+        // La etapa 'Start DB for Test' se elimina. Docker Compose lo hará automáticamente.
 
-        // ETAPA FINAL: Forzar la reconstrucción de la imagen de test y usar la ruta absoluta del script
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
-                // Copiamos el script al contexto de build para que el Dockerfile.test lo pueda usar
-                sh 'cp wait-for-it.sh ProyectLP2/'
                 
-                // Forzamos la reconstrucción de la imagen de test SIN CACHÉ para asegurar que los cambios se apliquen
+                // Forzamos la reconstrucción de la imagen de test para asegurar que los cambios se apliquen
                 sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test build --no-cache test-runner"
 
+                // Docker-compose 'run' ahora esperará a que la DB esté 'healthy' gracias a 'depends_on'
                 sh """
                     docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
-                    /bin/sh -c "/usr/local/bin/wait-for-it.sh ${DB_CONTAINER_NAME} 3306 -- \\
                     mvn -Dspring.datasource.url='jdbc:mysql://${DB_CONTAINER_NAME}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\
-                        test"
+                        test
                 """
                 echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
             }
         }
 
         stage('Stop Test Services') {
+            // Esta etapa es importante para limpiar los servicios de prueba después de la ejecución
+            when {
+                anyOf {
+                    success()
+                    failure()
+                }
+            }
             steps {
                 echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='
-                sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v"
+                sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v --remove-orphans || true"
                 echo '✅ === FIN: SERVICIOS DE TEST DETENIDOS ==='
             }
         }
@@ -155,8 +140,9 @@ pipeline {
         always {
             echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
             junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
-            // Aseguramos que se usen los archivos correctos para limpiar todo
-            sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v || true"
+            // La limpieza de los servicios de test ya se hace en la etapa 'Stop Test Services'
+            // pero lo dejamos aquí como una doble seguridad en caso de que algo falle.
+            sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v --remove-orphans || true"
         }
         success {
             echo '🎉 ✓ Pipeline completado exitosamente'

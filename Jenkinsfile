@@ -54,8 +54,9 @@ pipeline {
                 echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
+                // CORRECCIÓN: Usar el nombre del contenedor y pasar las credenciales correctamente
                 sh '''
-                timeout 120s bash -c 'until docker exec $(docker ps -q -f "name=cine_app-test-mysql_cine_app-1") mysqladmin ping -h"127.0.0.1" --silent; do
+                timeout 120s bash -c 'until docker exec cine_app-test-mysql_cine_app-1 mysqladmin ping -u"${DB_USER}" -p"${DB_PASSWORD}" --silent; do
                     echo "Esperando a la base de datos...";
                     sleep 2;
                 done'
@@ -67,7 +68,6 @@ pipeline {
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
-                // CORRECCIÓN: Ejecutar mvn test DENTRO del contenedor test-runner
                 sh """
                     docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
                     mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\

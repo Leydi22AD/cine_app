@@ -52,7 +52,6 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Usa solo el archivo de compose principal
         stage('Start DB for Test') {
             steps {
                 echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
@@ -74,13 +73,13 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Se elimina la variable CODE_PATH y se confía en la ruta relativa
+        // ETAPA CORREGIDA: Se usa el nombre del contenedor de la BD en la URL de conexión
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
                 sh """
                     docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
-                    mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
+                    mvn -Dspring.datasource.url='jdbc:mysql://${DB_CONTAINER_NAME}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\
                         test
@@ -89,7 +88,6 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Usa el archivo de compose principal para detener los servicios
         stage('Stop Test Services') {
             steps {
                 echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='

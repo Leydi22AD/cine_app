@@ -39,15 +39,15 @@ services:
     volumes:
       - mysql_cine_data:/var/lib/mysql
 
-  # NUEVO SERVICIO: Contenedor temporal para ejecutar las pruebas de Maven
+  # SERVICIO CORREGIDO: Contenedor temporal para ejecutar las pruebas de Maven
   test-runner:
     image: maven:3.9.6-eclipse-temurin-21
     volumes:
-      # Montamos el código del proyecto en /app
-      - .:/app
+      # Montamos SOLO el código del backend en /app
+      - ./ProyectLP2:/app
       # Montamos el repositorio local de Maven para no descargar dependencias cada vez
       - /var/jenkins_home/.m2:/root/.m2
-    working_dir: /app/ProyectLP2
+    working_dir: /app
     # Este servicio depende de que la BD esté lista
     depends_on:
       - mysql_cine_app

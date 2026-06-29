@@ -70,7 +70,7 @@ pipeline {
             }
         }
 
-        // ETAPA MODIFICADA: Ejecutar pruebas contra la BD de Docker
+        // ETAPA CORREGIDA: Ejecutar pruebas con la configuración de volumen simplificada
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
@@ -79,7 +79,7 @@ pipeline {
                 
                 sh """
                     docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
-                    mvn -f /app/ProyectLP2/pom.xml -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
+                    mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\
                         test

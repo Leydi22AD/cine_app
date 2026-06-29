@@ -37,17 +37,5 @@ services:
     volumes:
       - mysql_cine_data:/var/lib/mysql
 
-  # SERVICIO CORREGIDO: El volumen ahora se pasa como una variable de entorno
-  test-runner:
-    image: maven:3.9.6-eclipse-temurin-21
-    volumes:
-      # La ruta del código fuente se inyecta desde el Jenkinsfile
-      - ${CODE_PATH}:/app
-      # Montamos el repositorio local de Maven para no descargar dependencias cada vez
-      - /var/jenkins_home/.m2:/root/.m2
-    working_dir: /app
-    depends_on:
-      - mysql_cine_app
-
 volumes:
   mysql_cine_data:

@@ -14,6 +14,9 @@ pipeline {
         DB_NAME = 'cine_app_db'
         DB_USER = 'root'
         DB_PASSWORD = 'admin123'
+        // Definimos los nombres de los archivos de compose para usarlos fácilmente
+        COMPOSE_FILE = 'docker-compose.yml'
+        COMPOSE_TEST_FILE = 'docker-compose.test.yml'
     }
 
     stages {
@@ -49,14 +52,16 @@ pipeline {
             }
         }
 
+        // ETAPA CORREGIDA: Usa solo el archivo de compose principal
         stage('Start DB for Test') {
             steps {
                 echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
-                sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
+                sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
                 sh '''
                     set -e
-                    CONTAINER_ID=$(docker-compose -p cine_app-test ps -q mysql_cine_app)
+                    // Usamos el mismo nombre de proyecto para encontrar el contenedor
+                    CONTAINER_ID=$(docker-compose -f docker-compose.yml -p cine_app-test ps -q mysql_cine_app)
                     if [ -z "$CONTAINER_ID" ]; then
                         echo "Error: No se pudo encontrar el contenedor de la base de datos."
                         exit 1
@@ -70,15 +75,12 @@ pipeline {
             }
         }
 
-        // ETAPA CORREGIDA: Se inyecta la ruta absoluta del código al contenedor
+        // ETAPA CORREGIDA: Usa ambos archivos de compose e inyecta la variable
         stage('Test') {
             steps {
                 echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
-                // PASO DE DEPURACIÓN: Listar archivos para ver la estructura interna
-                sh "CODE_PATH=${env.WORKSPACE}/ProyectLP2 docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner ls -laR /app"
-                
                 sh """
-                    CODE_PATH=${env.WORKSPACE}/ProyectLP2 docker-compose -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
+                    CODE_PATH=${env.WORKSPACE}/ProyectLP2 docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
                     mvn -Dspring.datasource.url='jdbc:mysql://mysql_cine_app:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\
                         -Dspring.datasource.password=${DB_PASSWORD} \\
@@ -88,11 +90,11 @@ pipeline {
             }
         }
 
-        // ETAPA NUEVA: Detener los servicios de prueba
+        // ETAPA CORREGIDA: Usa el archivo de compose principal para detener los servicios
         stage('Stop Test Services') {
             steps {
                 echo '🛑 === INICIO: DETENIENDO SERVICIOS DE TEST ==='
-                sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test down -v"
+                sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v"
                 echo '✅ === FIN: SERVICIOS DE TEST DETENIDOS ==='
             }
         }
@@ -124,10 +126,10 @@ pipeline {
                 echo '🚀 === INICIO: PROCESO DE DESPLIEGUE FINAL ==='
                 script {
                     echo '1️⃣ Limpiando despliegue anterior...'
-                    sh "docker-compose -p ${DOCKER_PROJECT_NAME} down -v --remove-orphans || true"
+                    sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME} down -v --remove-orphans || true"
 
                     echo '2️⃣ Construyendo y levantando servicios...'
-                    sh "docker-compose -p ${DOCKER_PROJECT_NAME} up -d --build"
+                    sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME} up -d --build"
 
                     echo '3️⃣ Inicializando base de datos...'
                     sleep(30)
@@ -149,7 +151,8 @@ pipeline {
         always {
             echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
             junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
-            sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test down -v || true"
+            // Aseguramos que se usen los archivos correctos para limpiar todo
+            sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v || true"
         }
         success {
             echo '🎉 ✓ Pipeline completado exitosamente'

@@ -80,8 +80,11 @@ pipeline {
                 // Copiamos el script al contexto de build para que el Dockerfile.test lo pueda usar
                 sh 'cp wait-for-it.sh ProyectLP2/'
                 
+                // Forzamos la reconstrucción de la imagen de test para asegurar que los cambios se apliquen
+                sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test build --no-cache test-runner"
+
                 sh """
-                    docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --build --rm test-runner \\
+                    docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
                     /bin/sh -c "/usr/local/bin/wait-for-it.sh ${DB_CONTAINER_NAME} 3306 -- \\
                     mvn -Dspring.datasource.url='jdbc:mysql://${DB_CONTAINER_NAME}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
                         -Dspring.datasource.username=${DB_USER} \\

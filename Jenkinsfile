@@ -54,12 +54,18 @@ pipeline {
                 echo '🐳 === INICIO: LEVANTANDO BASE DE DATOS PARA TESTS ==='
                 sh "docker-compose -p ${DOCKER_PROJECT_NAME}-test up -d mysql_cine_app"
                 echo '⏳ Esperando que la base de datos esté lista...'
-                // CORRECCIÓN: Usar el nombre del contenedor y pasar las credenciales correctamente
+                // CORRECCIÓN FINAL: Obtener dinámicamente el ID del contenedor para la espera
                 sh '''
-                timeout 120s bash -c 'until docker exec cine_app-test-mysql_cine_app-1 mysqladmin ping -u"${DB_USER}" -p"${DB_PASSWORD}" --silent; do
-                    echo "Esperando a la base de datos...";
-                    sleep 2;
-                done'
+                    set -e
+                    CONTAINER_ID=$(docker-compose -p cine_app-test ps -q mysql_cine_app)
+                    if [ -z "$CONTAINER_ID" ]; then
+                        echo "Error: No se pudo encontrar el contenedor de la base de datos."
+                        exit 1
+                    fi
+                    timeout 120s bash -c "until docker exec $CONTAINER_ID mysqladmin ping -u'root' -p'admin123' --silent; do
+                        echo 'Esperando a la base de datos...';
+                        sleep 2;
+                    done"
                 '''
                 echo '✅ === FIN: BASE DE DATOS PARA TESTS LISTA ==='
             }

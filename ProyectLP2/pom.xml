@@ -206,6 +206,7 @@
 						<include>**/*Tests.java</include>
 					</includes>
 					<!--<testFailureIgnore>true</testFailureIgnore>-->
+                    <forkedProcessExitTimeoutInSeconds>30</forkedProcessExitTimeoutInSeconds>
 				</configuration>
 			</plugin>
 

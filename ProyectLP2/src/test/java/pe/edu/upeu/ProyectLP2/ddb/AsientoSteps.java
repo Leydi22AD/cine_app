@@ -30,40 +30,45 @@ public class AsientoSteps {
 
     @Dado("que la base de datos de pruebas está activa y limpia")
     public void limpiarBaseDeDatos() {
-        // Llamar a los endpoints públicos para eliminar todos los recursos conocidos
-        String[] endpoints = new String[]{
+        // El orden de eliminación es crucial para evitar errores de integridad referencial.
+        // Se elimina de "hijo" a "padre".
+        String[] endpointsEnOrdenDeLimpieza = new String[]{
                 "http://localhost:8082/api/v1/tickets",
                 "http://localhost:8082/api/v1/funciones",
                 "http://localhost:8082/api/v1/asientos",
-                "http://localhost:8082/api/v1/salas",
                 "http://localhost:8082/api/v1/peliculas",
+                "http://localhost:8082/api/v1/salas",
                 "http://localhost:8082/api/v1/usuarios"
         };
 
-        for (String endpoint : endpoints) {
+        for (String endpoint : endpointsEnOrdenDeLimpieza) {
             try {
-                ResponseEntity<List> listRes = restTemplate.getForEntity(endpoint, List.class);
+                // Obtenemos todos los IDs de los recursos
+                ResponseEntity<List<Map<String, Object>>> listRes = restTemplate.exchange(
+                        endpoint,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+                );
+
                 if (listRes.getBody() != null) {
-                    for (Object item : listRes.getBody()) {
-                        try {
-                            if (item instanceof Map) {
-                                Map m = (Map) item;
-                                // intentar identificar un id común
-                                Object id = m.get("idTicket");
-                                if (id == null) id = m.get("idFuncion");
-                                if (id == null) id = m.get("idAsiento");
-                                if (id == null) id = m.get("idSala");
-                                if (id == null) id = m.get("idPelicula");
-                                if (id == null) id = m.get("idUsuario");
-                                if (id != null) {
-                                    String deleteUrl = endpoint + "/" + id;
-                                    try {
-                                        restTemplate.delete(deleteUrl);
-                                    } catch (Exception ignore) {
-                                    }
-                                }
+                    for (Map<String, Object> item : listRes.getBody()) {
+                        // Intentar identificar un id común
+                        Object id = item.get("id"); // El más común
+                        if (id == null) id = item.get("idTicket");
+                        if (id == null) id = item.get("idFuncion");
+                        if (id == null) id = item.get("idAsiento");
+                        if (id == null) id = item.get("idSala");
+                        if (id == null) id = item.get("idPelicula");
+                        if (id == null) id = item.get("idUsuario");
+
+                        if (id != null) {
+                            String deleteUrl = endpoint + "/" + id;
+                            try {
+                                restTemplate.delete(deleteUrl);
+                            } catch (Exception e) {
+                                // Ignorar si la eliminación falla (p.ej., por dependencias que se limpiarán después)
                             }
-                        } catch (Exception ignore) {
                         }
                     }
                 }
@@ -75,6 +80,7 @@ public class AsientoSteps {
         // Reset estado local
         statusCodeResult = 0;
         asientosResultados = null;
+        createdSalaId = null;
     }
 
     @Dado("que se registra una nueva sala con ID {int}, con {int} filas y {int} columnas")

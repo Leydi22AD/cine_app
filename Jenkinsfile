@@ -21,14 +21,16 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
-                // Optimización: Clonación superficial y timeout extendido
-                checkout([
-                    $class: 'GitSCM',
-                    branches: scm.branches,
-                    userRemoteConfigs: scm.userRemoteConfigs,
-                    extensions: [[$class: 'CloneOption', shallow: true, noTags: true, depth: 1, timeout: 60]]
-                ])
+                timeout(time: 30, unit: 'MINUTES') {
+                    echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
+                    // Optimización: Clonación superficial
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: scm.branches,
+                        userRemoteConfigs: scm.userRemoteConfigs,
+                        extensions: [[$class: 'CloneOption', shallow: true, noTags: true, depth: 1]]
+                    ])
+                }
             }
         }
 
@@ -36,7 +38,7 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🔨 === INICIO: CONSTRUCCIÓN DEL BACKEND ==='
-                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn clean verify'
                     echo '✅ === FIN: CONSTRUCCIÓN DEL BACKEND COMPLETADA ==='
                 }
             }

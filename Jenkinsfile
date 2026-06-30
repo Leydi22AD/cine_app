@@ -22,13 +22,12 @@ pipeline {
         stage('Clone') {
             steps {
                 echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
-                cleanWs()
                 // Optimización: Clonación superficial y timeout extendido
                 checkout([
                     $class: 'GitSCM',
                     branches: scm.branches,
                     userRemoteConfigs: scm.userRemoteConfigs,
-                    extensions: [[$class: 'CloneOption', shallow: true, noTags: true, depth: 1, timeout: 30]]
+                    extensions: [[$class: 'CloneOption', shallow: true, noTags: true, depth: 1, timeout: 60]]
                 ])
             }
         }

@@ -21,138 +21,109 @@ public class TicketSteps {
     private final String baseUrl = "http://localhost:8082/api/v1/tickets";
     private int statusCodeResult;
 
+    private Long createdFuncionId;
+    private Long createdAsientoId;
+    private Long createdSalaId;
+    private Long createdPeliculaId;
+
     @Dado("que el sistema de ventas se encuentra limpio y preparado")
     public void prepararEntornoVentas() {
+        // Clean up existing data to ensure isolated tests
+        // This is a simplified cleanup, in a real app you might need to delete in a specific order due to foreign key constraints
+        // Assuming DELETE endpoints exist for all resources to clear the state
+        try {
+            restTemplate.delete(baseUrl);
+            restTemplate.delete("http://localhost:8082/api/v1/funciones");
+            restTemplate.delete("http://localhost:8082/api/v1/asientos");
+            restTemplate.delete("http://localhost:8082/api/v1/salas");
+            restTemplate.delete("http://localhost:8082/api/v1/peliculas");
+        } catch (HttpClientErrorException e) {
+            // Ignore if resource not found or other client errors during cleanup
+            System.err.println("Error during cleanup: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error during cleanup: " + e.getMessage());
+        }
     }
 
     @Dado("que la función {int} está disponible y el asiento {int} se encuentra {string}")
-    public void configurarAsientoYFuncion(int idFuncion, int idAsiento, String estado) {
+    public void configurarAsientoYFuncion(int funcionNum, int asientoNum, String estado) {
+        try {
+            // 1. Create a Pelicula
+            Map<String, Object> peliculaBody = new HashMap<>();
+            peliculaBody.put("titulo", "Test Movie " + System.currentTimeMillis());
+            peliculaBody.put("descripcion", "Description for Test Movie");
+            peliculaBody.put("duracion", 120);
+            peliculaBody.put("genero", "Action");
+            peliculaBody.put("idioma", "English");
+            peliculaBody.put("formato", "2D");
+            peliculaBody.put("director", "Test Director");
+            peliculaBody.put("poster", "poster.jpg");
+            peliculaBody.put("trailer", "trailer.mp4");
+            ResponseEntity<Map> peliculaResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/peliculas", peliculaBody, Map.class);
+            createdPeliculaId = extractLongFromMap(peliculaResponse.getBody(), "id", "idPelicula");
+
+            // 2. Create a Sala
+            Map<String, Object> salaBody = new HashMap<>();
+            salaBody.put("numero", 100 + (int) System.currentTimeMillis() % 100); // Unique room number
+            salaBody.put("filas", 5);
+            salaBody.put("columnas", 10);
+            ResponseEntity<Map> salaResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/salas", salaBody, Map.class);
+            createdSalaId = extractLongFromMap(salaResponse.getBody(), "id", "idSala");
+
+            // 3. Create a Funcion
+            Map<String, Object> funcionBody = new HashMap<>();
+            funcionBody.put("id_pelicula", createdPeliculaId);
+            funcionBody.put("id_sala", createdSalaId);
+            funcionBody.put("fecha", "2030-12-31T19:00:00");
+            funcionBody.put("precio", 10.50);
+            ResponseEntity<Map> funcionResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/funciones", funcionBody, Map.class);
+            createdFuncionId = extractLongFromMap(funcionResponse.getBody(), "id", "idFuncion");
+
+            // 4. Fetch seats for the created Sala and update the state of a specific one
+            ResponseEntity<List> asientosSalaResponse = restTemplate.getForEntity("http://localhost:8082/api/v1/asientos/sala/" + createdSalaId, List.class);
+            List<Map> asientos = asientosSalaResponse.getBody();
+
+            if (asientos != null && !asientos.isEmpty()) {
+                // Find the asiento corresponding to asientoNum (assuming asientoNum is 1-based index for simplicity)
+                // If asientoNum is just a placeholder, we'll use the first seat.
+                Map<String, Object> asientoToUpdate = asientos.get(0); // Pick the first seat
+                createdAsientoId = extractLongFromMap(asientoToUpdate, "id", "idAsiento");
+
+                // Update the state of the asiento
+                asientoToUpdate.put("estado", estado);
+                // Use PUT for update
+                restTemplate.put("http://localhost:8082/api/v1/asientos/" + createdAsientoId, asientoToUpdate);
+            } else {
+                // Fallback: if no seats are auto-generated, create one.
+                Map<String, Object> asientoBody = new HashMap<>();
+                asientoBody.put("id_sala", createdSalaId);
+                asientoBody.put("fila", 1);
+                asientoBody.put("columna", 1);
+                asientoBody.put("estado", estado);
+                ResponseEntity<Map> asientoResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/asientos", asientoBody, Map.class);
+                createdAsientoId = extractLongFromMap(asientoResponse.getBody(), "id", "idAsiento");
+            }
+        } catch (HttpClientErrorException e) {
+            System.err.println("HTTP Client Error during setup: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            statusCodeResult = e.getStatusCode().value(); // Set status code to reflect setup failure
+        } catch (Exception e) {
+            System.err.println("Unexpected Error during setup: " + e.getMessage());
+            statusCodeResult = 500; // Set status code to reflect setup failure
+        }
     }
 
     @Cuando("el cliente con ID {int} realiza la compra del ticket con precio {double}")
     public void comprarTicketExitoso(int clienteId, double precio) {
         try {
-            ResponseEntity<List> funcionesRes = restTemplate.getForEntity("http://localhost:8082/api/v1/funciones", List.class);
-            ResponseEntity<List> asientosRes = restTemplate.getForEntity("http://localhost:8082/api/v1/asientos", List.class);
-
-            Long funcionId = null;
-            Long asientoId = null;
-
-            // Strategy 1: try to find a LIBRE asiento that belongs to the same sala as a funcion
-            if (funcionesRes.getBody() != null && asientosRes.getBody() != null) {
-                for (Object fObj : funcionesRes.getBody()) {
-                    if (!(fObj instanceof Map)) continue;
-                    Map f = (Map) fObj;
-                    Long salaId = extractSalaIdFromFuncion(f);
-                    if (salaId == null) continue;
-
-                    for (Object aObj : asientosRes.getBody()) {
-                        if (!(aObj instanceof Map)) continue;
-                        Map a = (Map) aObj;
-                        Long aSalaId = extractSalaIdFromAsiento(a);
-                        String estadoAsiento = a.get("estado") != null ? a.get("estado").toString() : null;
-                        if (aSalaId != null && aSalaId.equals(salaId) && "LIBRE".equalsIgnoreCase(estadoAsiento)) {
-                            funcionId = extractLongFromMap(f, "id", "idFuncion");
-                            asientoId = extractLongFromMap(a, "id", "idAsiento");
-                            break;
-                        }
-                    }
-                    if (funcionId != null) break;
-                }
-            }
-
-            // Strategy 2: if not found, try to find any asiento (prefer LIBRE) in the sala of any funcion
-            if (funcionId == null || asientoId == null) {
-                if (funcionesRes.getBody() != null) {
-                    for (Object fObj : funcionesRes.getBody()) {
-                        if (!(fObj instanceof Map)) continue;
-                        Map f = (Map) fObj;
-                        Long salaId = extractSalaIdFromFuncion(f);
-                        if (salaId == null) continue;
-
-                        // try to fetch seats by sala endpoint (more reliable)
-                        List salaAsientos = null;
-                        try {
-                            ResponseEntity<List> res = restTemplate.getForEntity("http://localhost:8082/api/v1/asientos/sala/" + salaId, List.class);
-                            salaAsientos = res.getBody();
-                        } catch (Exception ignore) {
-                            // fallback to global list already fetched
-                            salaAsientos = asientosRes.getBody();
-                        }
-
-                        if (salaAsientos == null) continue;
-
-                        // prefer LIBRE, else take any (use loops to avoid raw-stream generics issues)
-                        Long foundSeat = null;
-                        for (Object oa2 : salaAsientos) {
-                            if (!(oa2 instanceof Map)) continue;
-                            Map m = (Map) oa2;
-                            Long aSala2 = extractSalaIdFromAsiento(m);
-                            String est = m.get("estado") != null ? m.get("estado").toString() : null;
-                            if (aSala2 != null && aSala2.equals(salaId) && "LIBRE".equalsIgnoreCase(est)) {
-                                foundSeat = extractLongFromMap(m, "id", "idAsiento");
-                                break;
-                            }
-                        }
-                        if (foundSeat != null) {
-                            funcionId = extractLongFromMap(f, "id", "idFuncion");
-                            asientoId = foundSeat;
-                            break;
-                        }
-                        // if no libre, pick any seat in that sala
-                        for (Object oa2 : salaAsientos) {
-                            if (!(oa2 instanceof Map)) continue;
-                            Map m = (Map) oa2;
-                            Long aSala2 = extractSalaIdFromAsiento(m);
-                            if (aSala2 != null && aSala2.equals(salaId)) {
-                                foundSeat = extractLongFromMap(m, "id", "idAsiento");
-                                break;
-                            }
-                        }
-                        if (foundSeat != null) {
-                            funcionId = extractLongFromMap(f, "id", "idFuncion");
-                            asientoId = foundSeat;
-                            break;
-                        }
-
-                    }
-                }
-            }
-
-            // Strategy 3: final fallback - pick first funcion and first asiento from lists (avoid hardcoded 1 and 12)
-            if (funcionId == null || asientoId == null) {
-                if (funcionesRes.getBody() != null && !funcionesRes.getBody().isEmpty()) {
-                    Map f = (Map) funcionesRes.getBody().get(0);
-                    funcionId = extractLongFromMap(f, "id", "idFuncion");
-                    Long salaId = extractSalaIdFromFuncion(f);
-                    if ((asientoId == null) && asientosRes.getBody() != null && !asientosRes.getBody().isEmpty()) {
-                        // try to find a seat in same sala first
-                        for (Object aObj : asientosRes.getBody()) {
-                            if (!(aObj instanceof Map)) continue;
-                            Map a = (Map) aObj;
-                            Long aSala = extractSalaIdFromAsiento(a);
-                            if (salaId != null && aSala != null && aSala.equals(salaId)) {
-                                asientoId = extractLongFromMap(a, "id", "idAsiento");
-                                break;
-                            }
-                        }
-                        if (asientoId == null) {
-                            Map a = (Map) asientosRes.getBody().get(0);
-                            asientoId = extractLongFromMap(a, "id", "idAsiento");
-                        }
-                    }
-                }
-            }
-
-            // If still null, return 500 to fail clearly
-            if (funcionId == null || asientoId == null) {
-                statusCodeResult = 500;
+            // Use the IDs created in the @Dado step
+            if (createdFuncionId == null || createdAsientoId == null) {
+                statusCodeResult = 500; // Indicate setup failure
                 return;
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("id_funcion", funcionId);
-            body.put("id_asiento", asientoId);
+            body.put("id_funcion", createdFuncionId);
+            body.put("id_asiento", createdAsientoId);
             body.put("id_usuario", (long) clienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
@@ -171,51 +142,16 @@ public class TicketSteps {
     @Cuando("el cliente con ID {int} intenta realizar la compra del ticket con precio {double}")
     public void intentarCompraAsientoOcupado(int clienteId, double precio) {
         try {
-            ResponseEntity<List> funcionesRes = restTemplate.getForEntity("http://localhost:8082/api/v1/funciones", List.class);
-            ResponseEntity<List> asientosRes = restTemplate.getForEntity("http://localhost:8082/api/v1/asientos", List.class);
-
-            Long funcionId = null;
-            Long asientoId = null;
-
-            if (funcionesRes.getBody() != null && !funcionesRes.getBody().isEmpty() && asientosRes.getBody() != null) {
-                Map f = (Map) funcionesRes.getBody().get(0);
-                funcionId = extractLongFromMap(f, "id", "idFuncion");
-
-                // Intentamos buscar un asiento que YA tenga cualquier estado diferente a LIBRE
-                for (Object aObj : asientosRes.getBody()) {
-                    if (!(aObj instanceof Map)) continue;
-                    Map a = (Map) aObj;
-                    String est = a.get("estado") != null ? a.get("estado").toString() : "";
-                    if (!"LIBRE".equalsIgnoreCase(est) && !"".equals(est)) {
-                        asientoId = extractLongFromMap(a, "id", "idAsiento");
-                        break;
-                    }
-                }
-
-                // Si todos están libres, forzamos la ocupación del primero de la lista para simular el error
-                if (asientoId == null && !asientosRes.getBody().isEmpty()) {
-                    Map a = (Map) asientosRes.getBody().get(0);
-                    asientoId = extractLongFromMap(a, "id", "idAsiento");
-
-                    // Hacemos una compra previa fantasma para ocuparlo de verdad en el sistema
-                    Map<String, Object> preocuparBody = new HashMap<>();
-                    preocuparBody.put("id_funcion", funcionId);
-                    preocuparBody.put("id_asiento", asientoId);
-                    preocuparBody.put("id_usuario", (long) clienteId);
-                    try {
-                        restTemplate.postForEntity(baseUrl + "/crear", preocuparBody, String.class);
-                    } catch (Exception ignored) {}
-                }
-            }
-
-            if (funcionId == null || asientoId == null) {
-                statusCodeResult = 500;
+            // Ensure the seat is OCCUPIED for this scenario
+            // The 'configurarAsientoYFuncion' should have set it to "OCUPADO"
+            if (createdFuncionId == null || createdAsientoId == null) {
+                statusCodeResult = 500; // Indicate setup failure
                 return;
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("id_funcion", funcionId);
-            body.put("id_asiento", asientoId);
+            body.put("id_funcion", createdFuncionId);
+            body.put("id_asiento", createdAsientoId);
             body.put("id_usuario", (long) clienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);

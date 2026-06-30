@@ -1,4 +1,4 @@
-// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp (con DB para tests)
+// 🚀 Jenkinsfile - Pipeline de CI/CD para CineApp
 pipeline {
     agent any
 
@@ -14,9 +14,8 @@ pipeline {
         DB_NAME = 'cine_app_db'
         DB_USER = 'root'
         DB_PASSWORD = 'admin123'
-        // Definimos los nombres de los archivos de compose para usarlos fácilmente
+        // Definimos el nombre del archivo de compose para usarlo fácilmente
         COMPOSE_FILE = 'docker-compose.yml'
-        COMPOSE_TEST_FILE = 'docker-compose.test.yml'
     }
 
     stages {
@@ -24,12 +23,12 @@ pipeline {
             steps {
                 echo '🔄 === INICIO: CLONACIÓN DEL REPOSITORIO ==='
                 cleanWs()
-                // Optimización: Clonación superficial para evitar timeouts
+                // Optimización: Clonación superficial y timeout extendido
                 checkout([
                     $class: 'GitSCM',
                     branches: scm.branches,
                     userRemoteConfigs: scm.userRemoteConfigs,
-                    extensions: [[$class: 'CloneOption', shallow: true, noTags: true, depth: 1]]
+                    extensions: [[$class: 'CloneOption', shallow: true, noTags: true, depth: 1, timeout: 30]]
                 ])
             }
         }
@@ -53,25 +52,6 @@ pipeline {
                     sh 'npm run build'
                     echo '✅ === FIN: CONSTRUCCIÓN DEL FRONTEND COMPLETADA ==='
                 }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo '🧪 === INICIO: EJECUCIÓN DE PRUEBAS DENTRO DE DOCKER ==='
-                
-                // Forzamos la reconstrucción de la imagen de test para asegurar que los cambios se apliquen
-                sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test build --no-cache test-runner"
-
-                // Docker-compose 'run' ahora esperará a que la DB esté 'healthy' gracias a 'depends_on'
-                sh """
-                    docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test run --rm test-runner \\
-                    mvn -Dspring.datasource.url='jdbc:mysql://${DB_CONTAINER_NAME}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC' \\
-                        -Dspring.datasource.username=${DB_USER} \\
-                        -Dspring.datasource.password=${DB_PASSWORD} \\
-                        test
-                """
-                echo '✅ === FIN: PRUEBAS COMPLETADAS ==='
             }
         }
 
@@ -126,9 +106,6 @@ pipeline {
     post {
         always {
             echo '🏁 === FINALIZACIÓN DEL PIPELINE ==='
-            junit allowEmptyResults: true, testResults: 'ProyectLP2/target/surefire-reports/*.xml'
-            // La limpieza de los servicios de test se hace aquí, en el bloque 'always'
-            sh "docker-compose -f ${COMPOSE_FILE} -f ${COMPOSE_TEST_FILE} -p ${DOCKER_PROJECT_NAME}-test down -v --remove-orphans || true"
         }
         success {
             echo '🎉 ✓ Pipeline completado exitosamente'

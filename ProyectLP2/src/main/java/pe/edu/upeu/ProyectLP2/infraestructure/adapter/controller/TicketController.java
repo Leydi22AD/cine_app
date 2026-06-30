@@ -44,8 +44,9 @@ public class TicketController {
         if (!"LIBRE".equalsIgnoreCase(asiento.getEstado())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-        // FIX: Use IDs directly to avoid NullPointerException from lazy-loaded entities
-        if (!asiento.getIdSala().equals(funcion.getIdSala())) {
+        
+        // FIX: Correctly compare Sala IDs from domain objects
+        if (asiento.getSala() == null || funcion.getSala() == null || !asiento.getSala().getIdSala().equals(funcion.getSala().getIdSala())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 

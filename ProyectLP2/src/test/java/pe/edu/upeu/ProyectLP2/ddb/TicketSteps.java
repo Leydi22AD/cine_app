@@ -151,9 +151,9 @@ public class TicketSteps {
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("funcionId", funcionId);
-            body.put("asientoId", asientoId);
-            body.put("clienteId", (long) clienteId);
+            body.put("id_funcion", funcionId);
+            body.put("id_asiento", asientoId);
+            body.put("id_usuario", (long) clienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
             statusCodeResult = response.getStatusCode().value();
@@ -199,9 +199,9 @@ public class TicketSteps {
 
                     // Hacemos una compra previa fantasma para ocuparlo de verdad en el sistema
                     Map<String, Object> preocuparBody = new HashMap<>();
-                    preocuparBody.put("funcionId", funcionId);
-                    preocuparBody.put("asientoId", asientoId);
-                    preocuparBody.put("clienteId", (long) clienteId);
+                    preocuparBody.put("id_funcion", funcionId);
+                    preocuparBody.put("id_asiento", asientoId);
+                    preocuparBody.put("id_usuario", (long) clienteId);
                     try {
                         restTemplate.postForEntity(baseUrl + "/crear", preocuparBody, String.class);
                     } catch (Exception ignored) {}
@@ -214,9 +214,9 @@ public class TicketSteps {
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("funcionId", funcionId);
-            body.put("asientoId", asientoId);
-            body.put("clienteId", (long) clienteId);
+            body.put("id_funcion", funcionId);
+            body.put("id_asiento", asientoId);
+            body.put("id_usuario", (long) clienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
             statusCodeResult = response.getStatusCode().value();

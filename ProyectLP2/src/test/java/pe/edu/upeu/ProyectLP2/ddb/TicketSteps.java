@@ -72,9 +72,10 @@ public class TicketSteps {
 
             // 3. Create a Funcion
             Map<String, Object> funcionBody = new HashMap<>();
-            funcionBody.put("id_pelicula", createdPeliculaId);
-            funcionBody.put("id_sala", createdSalaId);
-            funcionBody.put("fecha", "2030-12-31T19:00:00");
+            funcionBody.put("peliculaId", createdPeliculaId);
+            funcionBody.put("salaId", createdSalaId);
+            funcionBody.put("fecha", "2030-12-31");
+            funcionBody.put("horario", "19:00:00");
             funcionBody.put("precio", 10.50);
             ResponseEntity<Map> funcionResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/funciones", funcionBody, Map.class);
             createdFuncionId = extractLongFromMap(funcionResponse.getBody(), "id", "idFuncion");
@@ -122,9 +123,9 @@ public class TicketSteps {
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("id_funcion", createdFuncionId);
-            body.put("id_asiento", createdAsientoId);
-            body.put("id_usuario", (long) clienteId);
+            body.put("funcionId", createdFuncionId);
+            body.put("asientoId", createdAsientoId);
+            body.put("clienteId", (long) clienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
             statusCodeResult = response.getStatusCode().value();
@@ -150,9 +151,9 @@ public class TicketSteps {
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("id_funcion", createdFuncionId);
-            body.put("id_asiento", createdAsientoId);
-            body.put("id_usuario", (long) clienteId);
+            body.put("funcionId", createdFuncionId);
+            body.put("asientoId", createdAsientoId);
+            body.put("clienteId", (long) clienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
             statusCodeResult = response.getStatusCode().value();

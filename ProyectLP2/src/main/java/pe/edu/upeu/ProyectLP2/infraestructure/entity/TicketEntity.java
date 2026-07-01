@@ -1,5 +1,6 @@
 package pe.edu.upeu.ProyectLP2.infraestructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public class TicketEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_funcion", nullable = false)
+    @JsonBackReference
     private FuncionEntity funcion;
 
     @ManyToOne(fetch = FetchType.EAGER)

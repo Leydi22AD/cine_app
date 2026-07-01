@@ -1,6 +1,6 @@
 package pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper;
 
-
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
@@ -8,16 +8,15 @@ import pe.edu.upeu.ProyectLP2.infraestructure.entity.FuncionEntity;
 
 import java.util.List;
 
-
-@Mapper(componentModel = "spring", uses = {SalaMapper.class, PeliculaMapper.class})
+@Mapper(componentModel = "spring", uses = {PeliculaMapper.class, SalaMapper.class})
 public interface FuncionMapper {
-    @Mapping(target = "tickets", ignore = true)
+
+    @Mapping(source = "pelicula", target = "pelicula")
+    @Mapping(source = "sala", target = "sala")
     Funcion toDomainModel(FuncionEntity entity);
 
-    @Mapping(target = "tickets", ignore = true)
-    FuncionEntity toEntity(Funcion domain);
-
     List<Funcion> toDomainModelList(List<FuncionEntity> entities);
+
+    @InheritInverseConfiguration
+    FuncionEntity toEntity(Funcion domainModel);
 }
-
-

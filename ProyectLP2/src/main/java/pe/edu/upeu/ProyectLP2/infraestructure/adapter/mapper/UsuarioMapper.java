@@ -16,6 +16,6 @@ public interface UsuarioMapper {
     List<Usuario> toDomainModelList(List<UsuarioEntity> entities);
 
     @Mapping(source = "correo", target = "email")
-    @Mapping(target = "tickets", ignore = true)
+    // La anotación @Mapping para 'tickets' ha sido eliminada porque era incorrecta.
     UsuarioEntity toEntity(Usuario domainModel);
 }

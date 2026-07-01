@@ -1,5 +1,6 @@
 package pe.edu.upeu.ProyectLP2.infraestructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +22,7 @@ public class AsientoEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_sala", nullable = false)
+    @JsonBackReference
     private SalaEntity sala;
 
     public AsientoEntity() {

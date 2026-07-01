@@ -1,5 +1,6 @@
 package pe.edu.upeu.ProyectLP2.infraestructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class SalaEntity {
     private Integer columnas;
 
     @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<AsientoEntity> asientos = new ArrayList<>();
 
     public SalaEntity() {

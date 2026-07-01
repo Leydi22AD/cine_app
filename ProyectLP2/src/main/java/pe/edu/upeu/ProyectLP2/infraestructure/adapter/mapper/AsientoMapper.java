@@ -6,6 +6,8 @@ import org.mapstruct.factory.Mappers;
 import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
 import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
 
+import java.util.List;
+
 @Mapper
 public interface AsientoMapper {
     AsientoMapper INSTANCE = Mappers.getMapper(AsientoMapper.class);
@@ -15,7 +17,7 @@ public interface AsientoMapper {
     @Mapping(source = "columna", target = "columna")
     @Mapping(source = "estado", target = "estado")
     @Mapping(source = "sala", target = "sala")
-    Asiento toDomain(AsientoEntity entity);
+    Asiento toDomainModel(AsientoEntity entity);
 
     @Mapping(source = "idAsiento", target = "idAsiento")
     @Mapping(source = "fila", target = "fila")
@@ -23,4 +25,6 @@ public interface AsientoMapper {
     @Mapping(source = "estado", target = "estado")
     @Mapping(source = "sala", target = "sala")
     AsientoEntity toEntity(Asiento domain);
+
+    List<Asiento> toDomainModelList(List<AsientoEntity> entities);
 }

@@ -25,6 +25,7 @@ public class TicketSteps {
     private Long createdAsientoId;
     private Long createdSalaId;
     private Long createdPeliculaId;
+    private Long createdClienteId;
 
     @Dado("que el sistema de ventas se encuentra limpio y preparado")
     public void prepararEntornoVentas() {
@@ -37,6 +38,7 @@ public class TicketSteps {
             restTemplate.delete("http://localhost:8082/api/v1/asientos");
             restTemplate.delete("http://localhost:8082/api/v1/salas");
             restTemplate.delete("http://localhost:8082/api/v1/peliculas");
+            restTemplate.delete("http://localhost:8082/api/v1/usuarios");
         } catch (HttpClientErrorException e) {
             // Ignore if resource not found or other client errors during cleanup
             System.err.println("Error during cleanup: " + e.getMessage());
@@ -80,7 +82,15 @@ public class TicketSteps {
             ResponseEntity<Map> funcionResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/funciones", funcionBody, Map.class);
             createdFuncionId = extractLongFromMap(funcionResponse.getBody(), "id", "idFuncion");
 
-            // 4. Fetch seats for the created Sala and update the state of a specific one
+            // 4. Create a Usuario
+            Map<String, Object> usuarioBody = new HashMap<>();
+            usuarioBody.put("nombre", "Test User");
+            usuarioBody.put("email", "testuser" + System.currentTimeMillis() + "@example.com");
+            usuarioBody.put("password", "password");
+            ResponseEntity<Map> usuarioResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/auth/register", usuarioBody, Map.class);
+            createdClienteId = extractLongFromMap(usuarioResponse.getBody(), "id", "idUsuario");
+
+            // 5. Fetch seats for the created Sala and update the state of a specific one
             ResponseEntity<List> asientosSalaResponse = restTemplate.getForEntity("http://localhost:8082/api/v1/asientos/sala/" + createdSalaId, List.class);
             List<Map> asientos = asientosSalaResponse.getBody();
 
@@ -117,7 +127,7 @@ public class TicketSteps {
     public void comprarTicketExitoso(int clienteId, double precio) {
         try {
             // Use the IDs created in the @Dado step
-            if (createdFuncionId == null || createdAsientoId == null) {
+            if (createdFuncionId == null || createdAsientoId == null || createdClienteId == null) {
                 statusCodeResult = 500; // Indicate setup failure
                 return;
             }
@@ -125,7 +135,7 @@ public class TicketSteps {
             Map<String, Object> body = new HashMap<>();
             body.put("funcionId", createdFuncionId);
             body.put("asientoId", createdAsientoId);
-            body.put("clienteId", (long) clienteId);
+            body.put("clienteId", createdClienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
             statusCodeResult = response.getStatusCode().value();
@@ -145,7 +155,7 @@ public class TicketSteps {
         try {
             // Ensure the seat is OCCUPIED for this scenario
             // The 'configurarAsientoYFuncion' should have set it to "OCUPADO"
-            if (createdFuncionId == null || createdAsientoId == null) {
+            if (createdFuncionId == null || createdAsientoId == null || createdClienteId == null) {
                 statusCodeResult = 500; // Indicate setup failure
                 return;
             }
@@ -153,7 +163,7 @@ public class TicketSteps {
             Map<String, Object> body = new HashMap<>();
             body.put("funcionId", createdFuncionId);
             body.put("asientoId", createdAsientoId);
-            body.put("clienteId", (long) clienteId);
+            body.put("clienteId", createdClienteId);
 
             response = restTemplate.postForEntity(baseUrl + "/crear", body, String.class);
             statusCodeResult = response.getStatusCode().value();

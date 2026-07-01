@@ -32,7 +32,6 @@ public class TicketController {
         this.usuarioUseCase = usuarioUseCase;
     }
 
-    // Crear ticket (soporta POST en '/api/v1/tickets' y '/api/v1/tickets/crear')
     @PostMapping(value = {"", "/crear"})
     public ResponseEntity<TicketDto.TicketResponse> crearTicket(@RequestBody TicketDto.TicketRequest request) {
         var funcion = funcionUseCase.obtenerFuncionPorId(request.funcionId())
@@ -41,31 +40,22 @@ public class TicketController {
         var asiento = asientoUseCase.obtenerAsientoPorId(request.asientoId())
                 .orElseThrow(() -> new IllegalArgumentException("Asiento no existe"));
 
-        if (!"LIBRE".equalsIgnoreCase(asiento.getEstado())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        
-        // FIX: Correctly compare Sala IDs from domain objects
-        if (asiento.getSala() == null || funcion.getSala() == null || !asiento.getSala().getIdSala().equals(funcion.getSala().getIdSala())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        var cliente = usuarioUseCase.obtenerUsuarioPorId(request.clienteId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no existe"));
 
         var ticket = new Ticket();
         ticket.setFuncion(funcion);
         ticket.setAsiento(asiento);
-
-        var cliente = usuarioUseCase.obtenerUsuarioPorId(request.clienteId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no existe"));
         ticket.setCliente(cliente);
-
         ticket.setPrecioUnitario(funcion.getPrecio());
         ticket.setFechaCompra(LocalDateTime.now());
 
-        // marcar ocupado
+        var creado = ticketUseCase.crearTicket(ticket);
+
+        // Marcar asiento como ocupado DESPUÉS de crear el ticket
         asiento.setEstado("OCUPADO");
         asientoUseCase.actualizarAsiento(asiento.getIdAsiento(), asiento);
 
-        var creado = ticketUseCase.crearTicket(ticket);
         return new ResponseEntity<>(mapToTicketResponse(creado), HttpStatus.CREATED);
     }
 

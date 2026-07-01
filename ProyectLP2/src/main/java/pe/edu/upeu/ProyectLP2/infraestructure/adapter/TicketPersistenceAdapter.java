@@ -47,13 +47,18 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
         entity.setAsiento(asiento);
         entity.setCliente(cliente);
 
-        TicketEntity saved = ticketRepository.save(entity);
-        return ticketMapper.toDomainModel(saved);
+        TicketEntity savedEntity = ticketRepository.save(entity);
+
+        // Usamos el nuevo método para cargar todos los detalles y evitar LazyInitializationException
+        TicketEntity fullEntity = ticketRepository.findTicketDetailsById(savedEntity.getIdTicket())
+                .orElseThrow(() -> new EntityNotFoundException("Error al recuperar el ticket recién guardado."));
+
+        return ticketMapper.toDomainModel(fullEntity);
     }
 
     @Override
     public Optional<Ticket> findById(Long id) {
-        return ticketRepository.findById(id).map(ticketMapper::toDomainModel);
+        return ticketRepository.findTicketDetailsById(id).map(ticketMapper::toDomainModel);
     }
 
     @Override
@@ -78,8 +83,10 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
         existing.setCliente(usuarioRepository.findById(ticket.getCliente().getIdUsuario())
                 .orElseThrow(() -> new EntityNotFoundException("Cliente no encontrado")));
 
-        TicketEntity updated = ticketRepository.save(existing);
-        return Optional.of(ticketMapper.toDomainModel(updated));
+        ticketRepository.save(existing);
+
+        // Devolvemos la entidad completamente cargada
+        return ticketRepository.findTicketDetailsById(id).map(ticketMapper::toDomainModel);
     }
 
     @Override

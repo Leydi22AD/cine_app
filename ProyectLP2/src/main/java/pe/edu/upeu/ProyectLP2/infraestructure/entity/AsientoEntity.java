@@ -19,7 +19,7 @@ public class AsientoEntity {
     @Column(nullable = false)
     private String estado;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_sala", nullable = false)
     private SalaEntity sala;
 

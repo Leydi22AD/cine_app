@@ -1,5 +1,6 @@
 package pe.edu.upeu.ProyectLP2.infraestructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class PeliculaEntity {
     private String trailer;
 
     @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<FuncionEntity> funciones;
 
     public PeliculaEntity() {

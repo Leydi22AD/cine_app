@@ -1,5 +1,6 @@
 package pe.edu.upeu.ProyectLP2.infraestructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -16,6 +17,7 @@ public class FuncionEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_pelicula", nullable = false)
+    @JsonBackReference
     private PeliculaEntity pelicula;
 
     @ManyToOne(fetch = FetchType.EAGER)

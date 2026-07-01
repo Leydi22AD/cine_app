@@ -15,7 +15,7 @@ public interface TicketMapper {
     Ticket toDomainModel(TicketEntity entity);
 
     @Mapping(target = "asiento", ignore = true)
-    @Mapping(target = "usuario", ignore = true)
+    @Mapping(target = "cliente", ignore = true)
     TicketEntity toEntity(Ticket ticket);
 
     List<Ticket> toDomainModelList(List<TicketEntity> entities);

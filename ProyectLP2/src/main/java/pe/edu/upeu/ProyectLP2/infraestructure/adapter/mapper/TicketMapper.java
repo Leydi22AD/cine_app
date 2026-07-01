@@ -12,6 +12,7 @@ import java.util.List;
 public interface TicketMapper {
 
     @Mapping(target = "funcion", ignore = true)
+    @Mapping(target = "cliente", ignore = true)
     Ticket toDomainModel(TicketEntity entity);
 
     @Mapping(target = "asiento", ignore = true)

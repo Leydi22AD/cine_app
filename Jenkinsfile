@@ -38,7 +38,7 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🧪 === INICIO: PRUEBAS DEL BACKEND ==='
-                    sh 'mvn test'
+                    sh 'mvn clean test'
                     echo '✅ === FIN: PRUEBAS DEL BACKEND COMPLETADAS ==='
                 }
             }
@@ -73,7 +73,7 @@ pipeline {
                     withSonarQubeEnv('sonarqube') {
                         sh 'mvn sonar:sonar'
                     }
-                    echo '✅ === FIN: ANÁLISIS DE CALIDAD COMPLETADO ==='
+                    echo '✅ === FIN: ANÁLisis de calidad completado ==='
                 }
             }
         }

@@ -109,12 +109,24 @@ public class TicketController {
 
     // --- Mapeador auxiliar ---
     private TicketDto.TicketResponse mapToTicketResponse(Ticket ticket) {
+        TicketDto.SalaResponse salaResponse = new TicketDto.SalaResponse(
+                ticket.getFuncion().getSala().getIdSala(),
+                ticket.getFuncion().getSala().getNumero()
+        );
+
         TicketDto.FuncionResponse funcionResponse = new TicketDto.FuncionResponse(
                 ticket.getFuncion().getIdFuncion(),
                 ticket.getFuncion().getPelicula(),
-                ticket.getFuncion().getSala(),
+                salaResponse,
                 ticket.getFuncion().getFecha(),
                 ticket.getFuncion().getPrecio()
+        );
+
+        TicketDto.AsientoResponse asientoResponse = new TicketDto.AsientoResponse(
+                ticket.getAsiento().getIdAsiento(),
+                ticket.getAsiento().getFila(),
+                ticket.getAsiento().getColumna(),
+                ticket.getAsiento().getEstado()
         );
 
         return new TicketDto.TicketResponse(
@@ -122,7 +134,7 @@ public class TicketController {
                 ticket.getPrecioUnitario(),
                 ticket.getFechaCompra(),
                 funcionResponse,
-                ticket.getAsiento(),
+                asientoResponse,
                 ticket.getCliente()
         );
     }

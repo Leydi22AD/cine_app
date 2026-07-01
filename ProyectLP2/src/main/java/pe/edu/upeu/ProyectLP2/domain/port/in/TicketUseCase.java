@@ -22,4 +22,6 @@ public interface TicketUseCase {
     List<Ticket> listarTicketsPorFuncion(Long funcionId); // tickets filtrados por función
 
     boolean anularTicket(Long id);                      // anular / eliminar                    // anular / eliminar
+
+    void deleteAllTickets();
 }

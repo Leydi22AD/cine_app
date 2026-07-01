@@ -29,21 +29,10 @@ public class TicketSteps {
 
     @Dado("que el sistema de ventas se encuentra limpio y preparado")
     public void prepararEntornoVentas() {
-        // Clean up existing data to ensure isolated tests
-        // This is a simplified cleanup, in a real app you might need to delete in a specific order due to foreign key constraints
-        // Assuming DELETE endpoints exist for all resources to clear the state
         try {
             restTemplate.delete(baseUrl);
-            restTemplate.delete("http://localhost:8082/api/v1/funciones");
-            restTemplate.delete("http://localhost:8082/api/v1/asientos");
-            restTemplate.delete("http://localhost:8082/api/v1/salas");
-            restTemplate.delete("http://localhost:8082/api/v1/peliculas");
-            restTemplate.delete("http://localhost:8082/api/v1/usuarios");
         } catch (HttpClientErrorException e) {
-            // Ignore if resource not found or other client errors during cleanup
-            System.err.println("Error during cleanup: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Unexpected error during cleanup: " + e.getMessage());
+            System.err.println("Error during cleanup: " + e.getStatusCode() + " : " + e.getResponseBodyAsString());
         }
     }
 

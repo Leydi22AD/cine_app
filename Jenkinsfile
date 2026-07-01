@@ -34,6 +34,16 @@ pipeline {
             }
         }
 
+        stage('Test Backend') {
+            steps {
+                dir('ProyectLP2') {
+                    echo '🧪 === INICIO: PRUEBAS DEL BACKEND ==='
+                    sh 'mvn test'
+                    echo '✅ === FIN: PRUEBAS DEL BACKEND COMPLETADAS ==='
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 dir('ProyectLP2') {

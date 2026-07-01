@@ -97,6 +97,12 @@ public class TicketController {
         return ResponseEntity.notFound().build();
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll() {
+        ticketUseCase.deleteAllTickets();
+        return ResponseEntity.noContent().build();
+    }
+
     // --- Mapeador auxiliar ---
     private TicketDto.TicketResponse mapToTicketResponse(Ticket ticket) {
         TicketDto.SalaResponse salaResponse = new TicketDto.SalaResponse(

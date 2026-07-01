@@ -80,4 +80,9 @@ public class TicketUseCaseImpl implements TicketUseCase {
                 })
                 .orElse(false);
     }
+
+    @Override
+    public void deleteAllTickets() {
+        ticketRepositoryPort.deleteAll();
+    }
 }

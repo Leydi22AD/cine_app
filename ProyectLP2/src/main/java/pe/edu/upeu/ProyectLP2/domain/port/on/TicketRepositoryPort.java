@@ -13,4 +13,5 @@ public interface TicketRepositoryPort {
     List<Ticket> findByFuncionId(Long funcionId);
     Optional<Ticket> update(Long id, Ticket ticket);
     void deleteById(Long id);
+    void deleteAll();
 }

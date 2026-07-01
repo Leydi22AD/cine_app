@@ -1,31 +1,20 @@
 package pe.edu.upeu.ProyectLP2.domain.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import pe.edu.upeu.ProyectLP2.infraestructure.entity.PeliculaEntity;
-import pe.edu.upeu.ProyectLP2.infraestructure.entity.SalaEntity;
-import pe.edu.upeu.ProyectLP2.infraestructure.entity.TicketEntity;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@JsonIgnoreProperties({"sala", "pelicula"})
 public class Funcion {
 
     private Long idFuncion;
-
     private Pelicula pelicula;
-
-    @JsonIgnore
     private Sala sala;
-
     private LocalDateTime fecha;
-
     private BigDecimal precio;
 
+    @JsonManagedReference
     private List<Ticket> Tickets;
 
     public Funcion() {

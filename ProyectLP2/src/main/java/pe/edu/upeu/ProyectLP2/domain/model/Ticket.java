@@ -1,12 +1,16 @@
 package pe.edu.upeu.ProyectLP2.domain.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Ticket {
 
     private Long idTicket;
+
+    @JsonBackReference
     private Funcion funcion;
     private Asiento asiento;
     private Usuario cliente;

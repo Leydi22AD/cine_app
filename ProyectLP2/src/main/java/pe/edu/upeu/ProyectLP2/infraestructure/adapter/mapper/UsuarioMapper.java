@@ -11,19 +11,20 @@ import java.util.List;
 public interface UsuarioMapper {
 
     /**
-     * Mapea una entidad UsuarioEntity a un modelo de dominio Usuario.
+     * Mapea la entidad (con el campo 'email') al modelo de dominio (con el campo 'correo').
      */
+    @Mapping(source = "email", target = "correo")
     Usuario toDomainModel(UsuarioEntity entity);
 
     /**
-     * Mapea una lista de entidades UsuarioEntity a una lista de modelos de dominio Usuario.
+     * Mapea una lista de entidades a una lista de modelos de dominio.
      */
     List<Usuario> toDomainModelList(List<UsuarioEntity> entities);
 
     /**
-     * Mapea un modelo de dominio Usuario a una entidad UsuarioEntity.
-     * Se ignora la propiedad 'tickets' para evitar ciclos de mapeo en relaciones bidireccionales.
+     * Mapea el modelo de dominio (con 'correo') a la entidad (con 'email').
+     * No es necesario ignorar 'tickets' porque no existe en la entidad de destino.
      */
-    @Mapping(target = "tickets", ignore = true)
+    @Mapping(source = "correo", target = "email")
     UsuarioEntity toEntity(Usuario domainModel);
 }

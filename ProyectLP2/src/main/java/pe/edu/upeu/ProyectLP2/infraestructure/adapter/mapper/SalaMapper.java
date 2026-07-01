@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = AsientoMapper.class)
 public interface SalaMapper {
 
+    @Mapping(target = "asientos", ignore = true)
     Sala toDomainModel(SalaEntity entity);
 
     @Mapping(target = "asientos", ignore = true)

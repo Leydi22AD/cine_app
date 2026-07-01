@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
 
-    // Buscar todos los tickets por función
     List<TicketEntity> findByFuncion_IdFuncion(Long funcionId);
 
     /**
@@ -18,11 +17,11 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
      * Esto evita la LazyInitializationException en las capas superiores.
      */
     @Query("SELECT t FROM TicketEntity t " +
-           "JOIN FETCH t.funcion f " +
-           "JOIN FETCH f.sala s " +
-           "JOIN FETCH f.pelicula p " +
-           "JOIN FETCH t.asiento a " +
-           "JOIN FETCH t.cliente c " +
-           "WHERE t.idTicket = :id")
+            "JOIN FETCH t.funcion f " +
+            "JOIN FETCH f.sala s " +
+            "JOIN FETCH f.pelicula p " +
+            "JOIN FETCH t.asiento a " +
+            "JOIN FETCH t.cliente c " +
+            "WHERE t.idTicket = :id")
     Optional<TicketEntity> findTicketDetailsById(@Param("id") Long id);
 }

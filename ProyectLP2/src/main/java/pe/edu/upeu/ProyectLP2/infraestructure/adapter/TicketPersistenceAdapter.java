@@ -22,7 +22,6 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
     private final AsientoRepository asientoRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     public TicketPersistenceAdapter(TicketRepository ticketRepository, TicketMapper ticketMapper, FuncionRepository funcionRepository, AsientoRepository asientoRepository, UsuarioRepository usuarioRepository) {
         this.ticketRepository = ticketRepository;
         this.ticketMapper = ticketMapper;
@@ -49,7 +48,7 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
 
         TicketEntity savedEntity = ticketRepository.save(entity);
 
-        // Usamos el nuevo método para cargar todos los detalles y evitar LazyInitializationException
+        // **LA SOLUCIÓN CLAVE**: Usamos el nuevo método para cargar todos los detalles.
         TicketEntity fullEntity = ticketRepository.findTicketDetailsById(savedEntity.getIdTicket())
                 .orElseThrow(() -> new EntityNotFoundException("Error al recuperar el ticket recién guardado."));
 
@@ -58,6 +57,7 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
 
     @Override
     public Optional<Ticket> findById(Long id) {
+        // Usamos la consulta optimizada también para las búsquedas por ID.
         return ticketRepository.findTicketDetailsById(id).map(ticketMapper::toDomainModel);
     }
 
@@ -68,22 +68,15 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
 
     @Override
     public Optional<Ticket> update(Long id, Ticket ticket) {
-        TicketEntity existing = ticketRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
+        if (!ticketRepository.existsById(id)) {
+            return Optional.empty();
+        }
 
-        existing.setPrecioUnitario(ticket.getPrecioUnitario());
+        // Mapeamos a la entidad para guardar
+        TicketEntity entityToUpdate = ticketMapper.toEntity(ticket);
+        entityToUpdate.setIdTicket(id); // Aseguramos el ID
 
-        // Actualizar relaciones
-        existing.setFuncion(funcionRepository.findById(ticket.getFuncion().getIdFuncion())
-                .orElseThrow(() -> new EntityNotFoundException("Función no encontrada")));
-
-        existing.setAsiento(asientoRepository.findById(ticket.getAsiento().getIdAsiento())
-                .orElseThrow(() -> new EntityNotFoundException("Asiento no encontrado")));
-
-        existing.setCliente(usuarioRepository.findById(ticket.getCliente().getIdUsuario())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente no encontrado")));
-
-        ticketRepository.save(existing);
+        ticketRepository.save(entityToUpdate);
 
         // Devolvemos la entidad completamente cargada
         return ticketRepository.findTicketDetailsById(id).map(ticketMapper::toDomainModel);

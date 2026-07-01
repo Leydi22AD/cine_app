@@ -7,13 +7,12 @@ import pe.edu.upeu.ProyectLP2.infraestructure.entity.SalaEntity;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = AsientoMapper.class)
 public interface SalaMapper {
 
-    @Mapping(target = "asientos", ignore = true) // si Sala (domain) tiene asientos
     Sala toDomainModel(SalaEntity entity);
 
-    @Mapping(target = "asientos", ignore = true) // si SalaEntity también la tiene
+    @Mapping(target = "asientos", ignore = true)
     SalaEntity toEntity(Sala domain);
 
     List<Sala> toDomainModelList(List<SalaEntity> entities);

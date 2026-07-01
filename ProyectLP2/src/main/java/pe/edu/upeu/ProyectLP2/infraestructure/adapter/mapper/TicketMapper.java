@@ -10,7 +10,13 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses= { FuncionMapper.class, AsientoMapper.class, UsuarioMapper.class, PeliculaMapper.class })
 public interface TicketMapper {
+
+    @Mapping(target = "funcion", ignore = true)
     Ticket toDomainModel(TicketEntity entity);
+
+    @Mapping(target = "asiento", ignore = true)
+    @Mapping(target = "usuario", ignore = true)
     TicketEntity toEntity(Ticket ticket);
+
     List<Ticket> toDomainModelList(List<TicketEntity> entities);
 }

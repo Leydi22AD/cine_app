@@ -8,7 +8,7 @@ import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = SalaMapper.class)
 public interface AsientoMapper {
     AsientoMapper INSTANCE = Mappers.getMapper(AsientoMapper.class);
 

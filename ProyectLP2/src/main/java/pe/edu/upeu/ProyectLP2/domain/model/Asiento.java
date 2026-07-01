@@ -1,10 +1,14 @@
 package pe.edu.upeu.ProyectLP2.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 public class Asiento {
     private Long idAsiento;
     private Integer fila;
     private Integer columna;
     private String estado;
+    
+    @JsonBackReference
     private Sala sala;
 
     public Asiento() {

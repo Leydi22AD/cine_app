@@ -1,17 +1,17 @@
 package pe.edu.upeu.ProyectLP2.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.List;
 
-@JsonIgnoreProperties({"asientos", "cine", "funciones"})
 public class Sala {
 
     private Long idSala;
     private Integer numero;
     private Integer filas;
     private Integer columnas;
+    
+    @JsonManagedReference
     private List<Asiento> asientos;
 
     public Sala() {

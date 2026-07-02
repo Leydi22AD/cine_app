@@ -36,6 +36,8 @@ pipeline {
 
         stage('Test Backend') {
             steps {
+                echo '🧹 === Limpiando contenedores anteriores para liberar puertos ==='
+                sh "docker-compose -f ${COMPOSE_FILE} -p ${DOCKER_PROJECT_NAME} down || true"
                 dir('ProyectLP2') {
                     echo '🧪 === INICIO: PRUEBAS DEL BACKEND ==='
                     sh 'mvn clean test'
@@ -48,7 +50,7 @@ pipeline {
             steps {
                 dir('ProyectLP2') {
                     echo '🔨 === INICIO: CONSTRUCCIÓN DEL BACKEND ==='
-                    sh 'mvn clean verify'
+                    sh 'mvn package -DskipTests'
                     echo '✅ === FIN: CONSTRUCCIÓN DEL BACKEND COMPLETADA ==='
                 }
             }

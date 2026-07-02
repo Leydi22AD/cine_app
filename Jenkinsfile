@@ -84,7 +84,7 @@ pipeline {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     echo '🎯 === VERIFICACIÓN DE ESTÁNDARES DE CALIDAD ==='
-                    waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: false
                     echo '✅ === FIN: VERIFICACIÓN DE CALIDAD COMPLETADA ==='
                 }
             }

@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: cine_app_backend
     ports:
-      - "8080:8080"
+      - "8082:8082"
     depends_on:
       mysql_cine_app:
         condition: service_healthy

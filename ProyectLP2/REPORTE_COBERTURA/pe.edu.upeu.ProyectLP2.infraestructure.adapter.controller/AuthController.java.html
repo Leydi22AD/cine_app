@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.edu.upeu.ProyectLP2.domain.model.Usuario;
 import pe.edu.upeu.ProyectLP2.domain.port.on.UsuarioRepositoryPort;
 import pe.edu.upeu.ProyectLP2.infraestructure.adapter.controller.dto.AuthDto;
-import pe.edu.upeu.ProyectLP2.infrastructure.security.JwtService;
+import pe.edu.upeu.ProyectLP2.infraestructure.security.JwtService;
 import pe.edu.upeu.ProyectLP2.infraestructure.entity.Rol;
 
 import java.util.Optional;
@@ -83,32 +83,32 @@ public class AuthController {
             // Verificar si el usuario ya existe
 <span class="fc" id="L84">            Optional&lt;Usuario&gt; usuarioExistente = usuarioRepositoryPort.findByEmail(request.email());</span>
 <span class="pc bpc" id="L85" title="1 of 2 branches missed.">            if (usuarioExistente.isPresent()) {</span>
-<span class="fc" id="L86">                System.out.println(&quot;[REGISTRO] Email ya existe: &quot; + request.email());</span>
-<span class="fc" id="L87">                return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+<span class="nc" id="L86">                System.out.println(&quot;[REGISTRO] Email ya existe: &quot; + request.email());</span>
+<span class="nc" id="L87">                return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
             }
 
-<span class="nc" id="L90">            System.out.println(&quot;[REGISTRO] Email disponible, creando usuario...&quot;);</span>
+<span class="fc" id="L90">            System.out.println(&quot;[REGISTRO] Email disponible, creando usuario...&quot;);</span>
             
             // Crear nuevo usuario - SIEMPRE con rol CLIENTE
-<span class="nc" id="L93">            Usuario nuevoUsuario = new Usuario();</span>
-<span class="nc" id="L94">            nuevoUsuario.setNombre(request.nombre());</span>
-<span class="nc" id="L95">            nuevoUsuario.setEmail(request.email());</span>
-<span class="nc" id="L96">            nuevoUsuario.setPassword(passwordEncoder.encode(request.password()));</span>
-<span class="nc" id="L97">            nuevoUsuario.setRol(Rol.CLIENTE); // SIEMPRE CLIENTE al registrarse</span>
+<span class="fc" id="L93">            Usuario nuevoUsuario = new Usuario();</span>
+<span class="fc" id="L94">            nuevoUsuario.setNombre(request.nombre());</span>
+<span class="fc" id="L95">            nuevoUsuario.setEmail(request.email());</span>
+<span class="fc" id="L96">            nuevoUsuario.setPassword(passwordEncoder.encode(request.password()));</span>
+<span class="fc" id="L97">            nuevoUsuario.setRol(Rol.CLIENTE); // SIEMPRE CLIENTE al registrarse</span>
             
             // Guardar usuario
-<span class="nc" id="L100">            Usuario usuarioGuardado = usuarioRepositoryPort.save(nuevoUsuario);</span>
-<span class="nc" id="L101">            System.out.println(&quot;[REGISTRO] Usuario guardado con ID: &quot; + usuarioGuardado.getIdUsuario());</span>
+<span class="fc" id="L100">            Usuario usuarioGuardado = usuarioRepositoryPort.save(nuevoUsuario);</span>
+<span class="fc" id="L101">            System.out.println(&quot;[REGISTRO] Usuario guardado con ID: &quot; + usuarioGuardado.getIdUsuario());</span>
 
             // Generar token
-<span class="nc" id="L104">            UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());</span>
-<span class="nc" id="L105">            String token = jwtService.generateToken(userDetails);</span>
+<span class="fc" id="L104">            UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());</span>
+<span class="fc" id="L105">            String token = jwtService.generateToken(userDetails);</span>
 
             // Crear respuesta
-<span class="nc" id="L108">            AuthDto.UsuarioResponse usuarioResponse = AuthDto.UsuarioResponse.fromDomain(usuarioGuardado);</span>
-<span class="nc" id="L109">            AuthDto.AuthResponse authResponse = new AuthDto.AuthResponse(token, usuarioResponse);</span>
+<span class="fc" id="L108">            AuthDto.UsuarioResponse usuarioResponse = AuthDto.UsuarioResponse.fromDomain(usuarioGuardado);</span>
+<span class="fc" id="L109">            AuthDto.AuthResponse authResponse = new AuthDto.AuthResponse(token, usuarioResponse);</span>
 
-<span class="nc" id="L111">            return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);</span>
+<span class="fc" id="L111">            return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);</span>
 <span class="nc" id="L112">        } catch (Exception e) {</span>
 <span class="nc" id="L113">            System.err.println(&quot;[REGISTRO ERROR] &quot; + e.getMessage());</span>
 <span class="nc" id="L114">            e.printStackTrace();</span>

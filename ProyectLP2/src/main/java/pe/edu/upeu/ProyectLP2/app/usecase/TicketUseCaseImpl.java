@@ -28,7 +28,7 @@ public class TicketUseCaseImpl implements TicketUseCase {
             boolean yaOcupado = ticketsExistentes.stream()
                     .anyMatch(t -> t.getAsiento() != null && asientoId.equals(t.getAsiento().getIdAsiento()));
 
-            if (yaOcupado) {
+            if (yaOcupado || "OCUPADO".equalsIgnoreCase(ticket.getAsiento().getEstado())) {
                 throw new AsientoAlreadyExistsException("El asiento ya está ocupado.");
             }
         } else {

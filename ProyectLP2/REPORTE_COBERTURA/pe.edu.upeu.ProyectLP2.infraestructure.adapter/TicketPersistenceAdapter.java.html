@@ -8,6 +8,7 @@ import pe.edu.upeu.ProyectLP2.infraestructure.adapter.mapper.TicketMapper;
 import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
 import pe.edu.upeu.ProyectLP2.infraestructure.entity.FuncionEntity;
 import pe.edu.upeu.ProyectLP2.infraestructure.entity.TicketEntity;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.UsuarioEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,6 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
     private final FuncionRepository funcionRepository;
     private final AsientoRepository asientoRepository;
     private final UsuarioRepository usuarioRepository;
-
 
 <span class="fc" id="L25">    public TicketPersistenceAdapter(TicketRepository ticketRepository, TicketMapper ticketMapper, FuncionRepository funcionRepository, AsientoRepository asientoRepository, UsuarioRepository usuarioRepository) {</span>
 <span class="fc" id="L26">        this.ticketRepository = ticketRepository;</span>
@@ -38,54 +38,63 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
 <span class="fc" id="L38">        AsientoEntity asiento = asientoRepository.findById(ticket.getAsiento().getIdAsiento())</span>
 <span class="pc" id="L39">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Asiento no encontrado&quot;));</span>
 
+<span class="fc" id="L41">        UsuarioEntity cliente = usuarioRepository.findById(ticket.getCliente().getIdUsuario())</span>
+<span class="pc" id="L42">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Cliente no encontrado&quot;));</span>
 
-<span class="fc" id="L42">        TicketEntity entity = ticketMapper.toEntity(ticket);</span>
-<span class="fc" id="L43">        entity.setFuncion(funcion);</span>
-<span class="fc" id="L44">        entity.setAsiento(asiento);</span>
+<span class="fc" id="L44">        TicketEntity entity = ticketMapper.toEntity(ticket);</span>
+<span class="fc" id="L45">        entity.setFuncion(funcion);</span>
+<span class="fc" id="L46">        entity.setAsiento(asiento);</span>
+<span class="fc" id="L47">        entity.setCliente(cliente);</span>
 
-<span class="fc" id="L46">        TicketEntity saved = ticketRepository.save(entity);</span>
-<span class="fc" id="L47">        return ticketMapper.toDomainModel(saved);    }</span>
+<span class="fc" id="L49">        TicketEntity savedEntity = ticketRepository.save(entity);</span>
+
+        // **LA SOLUCIÓN CLAVE**: Usamos el nuevo método para cargar todos los detalles.
+<span class="fc" id="L52">        TicketEntity fullEntity = ticketRepository.findTicketDetailsById(savedEntity.getIdTicket())</span>
+<span class="pc" id="L53">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Error al recuperar el ticket recién guardado.&quot;));</span>
+
+<span class="fc" id="L55">        return ticketMapper.toDomainModel(fullEntity);</span>
+    }
 
     @Override
     public Optional&lt;Ticket&gt; findById(Long id) {
-<span class="nc" id="L51">        return ticketRepository.findById(id).map(ticketMapper::toDomainModel);</span>
+        // Usamos la consulta optimizada también para las búsquedas por ID.
+<span class="nc" id="L61">        return ticketRepository.findTicketDetailsById(id).map(ticketMapper::toDomainModel);</span>
     }
 
     @Override
     public List&lt;Ticket&gt; findAll() {
-<span class="fc" id="L56">        return ticketMapper.toDomainModelList(ticketRepository.findAll());</span>
+<span class="fc" id="L66">        return ticketMapper.toDomainModelList(ticketRepository.findAll());</span>
     }
 
     @Override
     public Optional&lt;Ticket&gt; update(Long id, Ticket ticket) {
-<span class="nc" id="L61">        TicketEntity existing = ticketRepository.findById(id)</span>
-<span class="nc" id="L62">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Ticket no encontrado&quot;));</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (!ticketRepository.existsById(id)) {</span>
+<span class="nc" id="L72">            return Optional.empty();</span>
+        }
 
-<span class="nc" id="L64">        existing.setPrecioUnitario(ticket.getPrecioUnitario());</span>
+        // Mapeamos a la entidad para guardar
+<span class="nc" id="L76">        TicketEntity entityToUpdate = ticketMapper.toEntity(ticket);</span>
+<span class="nc" id="L77">        entityToUpdate.setIdTicket(id); // Aseguramos el ID</span>
 
-        // Actualizar relaciones
-<span class="nc" id="L67">        existing.setFuncion(funcionRepository.findById(ticket.getFuncion().getIdFuncion())</span>
-<span class="nc" id="L68">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Función no encontrada&quot;)));</span>
+<span class="nc" id="L79">        ticketRepository.save(entityToUpdate);</span>
 
-<span class="nc" id="L70">        existing.setAsiento(asientoRepository.findById(ticket.getAsiento().getIdAsiento())</span>
-<span class="nc" id="L71">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Asiento no encontrado&quot;)));</span>
-
-<span class="nc" id="L73">        existing.setCliente(usuarioRepository.findById(ticket.getCliente().getIdUsuario())</span>
-<span class="nc" id="L74">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Cliente no encontrado&quot;)));</span>
-
-<span class="nc" id="L76">        TicketEntity updated = ticketRepository.save(existing);</span>
-<span class="nc" id="L77">        return Optional.of(ticketMapper.toDomainModel(updated));</span>
+        // Devolvemos la entidad completamente cargada
+<span class="nc" id="L82">        return ticketRepository.findTicketDetailsById(id).map(ticketMapper::toDomainModel);</span>
     }
 
     @Override
     public List&lt;Ticket&gt; findByFuncionId(Long funcionId) {
-<span class="fc" id="L82">        return ticketMapper.toDomainModelList(ticketRepository.findByFuncion_IdFuncion(funcionId));</span>
+<span class="fc" id="L87">        return ticketMapper.toDomainModelList(ticketRepository.findByFuncion_IdFuncion(funcionId));</span>
     }
 
     @Override
     public void deleteById(Long id) {
-<span class="nc" id="L87">        ticketRepository.deleteById(id);</span>
+<span class="nc" id="L92">        ticketRepository.deleteById(id);</span>
+<span class="nc" id="L93">    }</span>
 
-<span class="nc" id="L89">    }</span>
+    @Override
+    public void deleteAll() {
+<span class="fc" id="L97">        ticketRepository.deleteAll();</span>
+<span class="fc" id="L98">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

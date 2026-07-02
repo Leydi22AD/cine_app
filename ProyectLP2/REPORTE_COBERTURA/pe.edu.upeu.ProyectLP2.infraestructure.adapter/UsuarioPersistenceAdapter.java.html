@@ -29,13 +29,13 @@ public class UsuarioPersistenceAdapter implements UsuarioRepositoryPort {
     public Usuario save(Usuario usuario) {
 
         // Convertimos el objeto de dominio a entidad de persistencia.
-<span class="nc" id="L32">        UsuarioEntity usuarioEntity = usuarioMapper.toEntity(usuario);</span>
+<span class="fc" id="L32">        UsuarioEntity usuarioEntity = usuarioMapper.toEntity(usuario);</span>
 
         // Guardamos en la BD usando el repositorio JPA.
-<span class="nc" id="L35">        UsuarioEntity savedUsuario = usuarioRepository.save(usuarioEntity);</span>
+<span class="fc" id="L35">        UsuarioEntity savedUsuario = usuarioRepository.save(usuarioEntity);</span>
 
         // Convertimos la entidad guardada de nuevo a dominio y la retornamos.
-<span class="nc" id="L38">        return usuarioMapper.toDomainModel(savedUsuario);</span>
+<span class="fc" id="L38">        return usuarioMapper.toDomainModel(savedUsuario);</span>
 
     }
 

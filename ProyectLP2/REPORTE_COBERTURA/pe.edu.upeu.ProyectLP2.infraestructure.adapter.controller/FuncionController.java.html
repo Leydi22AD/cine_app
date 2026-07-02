@@ -142,8 +142,8 @@ public class FuncionController {
     // ✅ Eliminar función
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; eliminarFuncion(@PathVariable Long id) {
-<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (funcionUseCase.eliminarFuncion(id)) {</span>
-<span class="nc" id="L146">            return ResponseEntity.noContent().build(); // 204 No Content</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (funcionUseCase.eliminarFuncion(id)) {</span>
+<span class="fc" id="L146">            return ResponseEntity.noContent().build(); // 204 No Content</span>
         }
 <span class="nc" id="L148">        return ResponseEntity.notFound().build(); // 404 Not Found</span>
     }

@@ -10,7 +10,7 @@ import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
 
 @Generated(
     value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
-    date = &quot;2026-06-12T13:59:30-0500&quot;,
+    date = &quot;2026-07-01T20:27:21-0500&quot;,
     comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)&quot;
 )
 @Component
@@ -37,18 +37,18 @@ import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
     }
 
     @Override
-    public AsientoEntity toEntity(Asiento asiento) {
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if ( asiento == null ) {</span>
+    public AsientoEntity toEntity(Asiento domain) {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if ( domain == null ) {</span>
 <span class="nc" id="L42">            return null;</span>
         }
 
 <span class="fc" id="L45">        AsientoEntity asientoEntity = new AsientoEntity();</span>
 
-<span class="fc" id="L47">        asientoEntity.setIdAsiento( asiento.getIdAsiento() );</span>
-<span class="fc" id="L48">        asientoEntity.setFila( asiento.getFila() );</span>
-<span class="fc" id="L49">        asientoEntity.setEstado( asiento.getEstado() );</span>
-<span class="fc" id="L50">        asientoEntity.setColumna( asiento.getColumna() );</span>
-<span class="fc" id="L51">        asientoEntity.setSala( salaMapper.toEntity( asiento.getSala() ) );</span>
+<span class="fc" id="L47">        asientoEntity.setIdAsiento( domain.getIdAsiento() );</span>
+<span class="fc" id="L48">        asientoEntity.setFila( domain.getFila() );</span>
+<span class="fc" id="L49">        asientoEntity.setColumna( domain.getColumna() );</span>
+<span class="fc" id="L50">        asientoEntity.setEstado( domain.getEstado() );</span>
+<span class="fc" id="L51">        asientoEntity.setSala( salaMapper.toEntity( domain.getSala() ) );</span>
 
 <span class="fc" id="L53">        return asientoEntity;</span>
     }

@@ -77,7 +77,13 @@ public class TicketSteps {
             usuarioBody.put("email", "testuser" + System.currentTimeMillis() + "@example.com");
             usuarioBody.put("password", "password");
             ResponseEntity<Map> usuarioResponse = restTemplate.postForEntity("http://localhost:8082/api/v1/auth/register", usuarioBody, Map.class);
-            createdClienteId = extractLongFromMap(usuarioResponse.getBody(), "id", "idUsuario");
+            Map responseBody = usuarioResponse.getBody();
+            if (responseBody != null && responseBody.containsKey("usuario")) {
+                Map userMap = (Map) responseBody.get("usuario");
+                createdClienteId = extractLongFromMap(userMap, "id", "idUsuario");
+            } else {
+                createdClienteId = extractLongFromMap(responseBody, "id", "idUsuario");
+            }
 
             // 5. Fetch seats for the created Sala and update the state of a specific one
             ResponseEntity<List> asientosSalaResponse = restTemplate.getForEntity("http://localhost:8082/api/v1/asientos/sala/" + createdSalaId, List.class);

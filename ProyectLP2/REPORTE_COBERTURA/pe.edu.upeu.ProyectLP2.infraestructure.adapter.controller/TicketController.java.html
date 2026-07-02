@@ -32,88 +32,106 @@ public class TicketController {
 <span class="fc" id="L32">        this.usuarioUseCase = usuarioUseCase;</span>
 <span class="fc" id="L33">    }</span>
 
-    // Crear ticket (soporta POST en '/api/v1/tickets' y '/api/v1/tickets/crear')
     @PostMapping(value = {&quot;&quot;, &quot;/crear&quot;})
     public ResponseEntity&lt;TicketDto.TicketResponse&gt; crearTicket(@RequestBody TicketDto.TicketRequest request) {
-<span class="fc" id="L38">        var funcion = funcionUseCase.obtenerFuncionPorId(request.funcionId())</span>
-<span class="pc" id="L39">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Función no existe&quot;));</span>
+<span class="fc" id="L37">        var funcion = funcionUseCase.obtenerFuncionPorId(request.funcionId())</span>
+<span class="pc" id="L38">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Función no existe&quot;));</span>
 
-<span class="fc" id="L41">        var asiento = asientoUseCase.obtenerAsientoPorId(request.asientoId())</span>
-<span class="pc" id="L42">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Asiento no existe&quot;));</span>
+<span class="fc" id="L40">        var asiento = asientoUseCase.obtenerAsientoPorId(request.asientoId())</span>
+<span class="pc" id="L41">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Asiento no existe&quot;));</span>
 
-<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (!&quot;LIBRE&quot;.equalsIgnoreCase(asiento.getEstado())) {</span>
-<span class="fc" id="L45">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
-        }
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (!asiento.getSala().getIdSala().equals(funcion.getSala().getIdSala())) {</span>
-<span class="nc" id="L48">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();</span>
-        }
+<span class="fc" id="L43">        var cliente = usuarioUseCase.obtenerUsuarioPorId(request.clienteId())</span>
+<span class="pc" id="L44">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Usuario no existe&quot;));</span>
 
-<span class="fc" id="L51">        var ticket = new Ticket();</span>
-<span class="fc" id="L52">        ticket.setFuncion(funcion);</span>
-<span class="fc" id="L53">        ticket.setAsiento(asiento);</span>
+<span class="fc" id="L46">        var ticket = new Ticket();</span>
+<span class="fc" id="L47">        ticket.setFuncion(funcion);</span>
+<span class="fc" id="L48">        ticket.setAsiento(asiento);</span>
+<span class="fc" id="L49">        ticket.setCliente(cliente);</span>
+<span class="fc" id="L50">        ticket.setPrecioUnitario(funcion.getPrecio());</span>
+<span class="fc" id="L51">        ticket.setFechaCompra(LocalDateTime.now());</span>
 
-<span class="fc" id="L55">        var cliente = usuarioUseCase.obtenerUsuarioPorId(request.clienteId())</span>
-<span class="pc" id="L56">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Usuario no existe&quot;));</span>
-<span class="fc" id="L57">        ticket.setCliente(cliente);</span>
+<span class="fc" id="L53">        var creado = ticketUseCase.crearTicket(ticket);</span>
 
-<span class="fc" id="L59">        ticket.setPrecioUnitario(funcion.getPrecio());</span>
-<span class="fc" id="L60">        ticket.setFechaCompra(LocalDateTime.now());</span>
+        // Marcar asiento como ocupado DESPUÉS de crear el ticket
+<span class="fc" id="L56">        asiento.setEstado(&quot;OCUPADO&quot;);</span>
+<span class="fc" id="L57">        asientoUseCase.actualizarAsiento(asiento.getIdAsiento(), asiento);</span>
 
-        // marcar ocupado
-<span class="fc" id="L63">        asiento.setEstado(&quot;OCUPADO&quot;);</span>
-<span class="fc" id="L64">        asientoUseCase.actualizarAsiento(asiento.getIdAsiento(), asiento);</span>
-
-<span class="fc" id="L66">        var creado = ticketUseCase.crearTicket(ticket);</span>
-<span class="fc" id="L67">        return new ResponseEntity&lt;&gt;(mapToTicketResponse(creado), HttpStatus.CREATED);</span>
+<span class="fc" id="L59">        return new ResponseEntity&lt;&gt;(mapToTicketResponse(creado), HttpStatus.CREATED);</span>
     }
 
 
     // Listar todos los tickets
     @GetMapping
     public ResponseEntity&lt;List&lt;TicketDto.TicketResponse&gt;&gt; listarTodosLosTickets() {
-<span class="fc" id="L74">        List&lt;TicketDto.TicketResponse&gt; tickets = ticketUseCase.listarTickets()</span>
-<span class="fc" id="L75">                .stream()</span>
-<span class="fc" id="L76">                .map(this::mapToTicketResponse)</span>
-<span class="fc" id="L77">                .collect(Collectors.toList());</span>
-<span class="fc" id="L78">        return ResponseEntity.ok(tickets);</span>
+<span class="fc" id="L66">        List&lt;TicketDto.TicketResponse&gt; tickets = ticketUseCase.listarTickets()</span>
+<span class="fc" id="L67">                .stream()</span>
+<span class="fc" id="L68">                .map(this::mapToTicketResponse)</span>
+<span class="fc" id="L69">                .collect(Collectors.toList());</span>
+<span class="fc" id="L70">        return ResponseEntity.ok(tickets);</span>
     }
 
     // Listar tickets por función
     @GetMapping(&quot;/funcion/{funcionId}&quot;)
     public ResponseEntity&lt;List&lt;TicketDto.TicketResponse&gt;&gt; listarTicketsPorFuncion(@PathVariable Long funcionId) {
-<span class="nc" id="L84">        List&lt;TicketDto.TicketResponse&gt; tickets = ticketUseCase.listarTicketsPorFuncion(funcionId)</span>
-<span class="nc" id="L85">                .stream()</span>
-<span class="nc" id="L86">                .map(this::mapToTicketResponse)</span>
-<span class="nc" id="L87">                .collect(Collectors.toList());</span>
-<span class="nc" id="L88">        return ResponseEntity.ok(tickets);</span>
+<span class="nc" id="L76">        List&lt;TicketDto.TicketResponse&gt; tickets = ticketUseCase.listarTicketsPorFuncion(funcionId)</span>
+<span class="nc" id="L77">                .stream()</span>
+<span class="nc" id="L78">                .map(this::mapToTicketResponse)</span>
+<span class="nc" id="L79">                .collect(Collectors.toList());</span>
+<span class="nc" id="L80">        return ResponseEntity.ok(tickets);</span>
     }
 
     // Obtener por ID
     @GetMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;TicketDto.TicketResponse&gt; obtenerTicketPorId(@PathVariable Long id) {
-<span class="nc" id="L94">        return ticketUseCase.obtenerTicketPorId(id)</span>
-<span class="nc" id="L95">                .map(t -&gt; ResponseEntity.ok(mapToTicketResponse(t)))</span>
-<span class="nc" id="L96">                .orElse(ResponseEntity.notFound().build());</span>
+<span class="nc" id="L86">        return ticketUseCase.obtenerTicketPorId(id)</span>
+<span class="nc" id="L87">                .map(t -&gt; ResponseEntity.ok(mapToTicketResponse(t)))</span>
+<span class="nc" id="L88">                .orElse(ResponseEntity.notFound().build());</span>
     }
 
     // Eliminar
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; eliminarTicket(@PathVariable Long id) {
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (ticketUseCase.anularTicket(id)) {</span>
-<span class="nc" id="L103">            return ResponseEntity.noContent().build();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (ticketUseCase.anularTicket(id)) {</span>
+<span class="nc" id="L95">            return ResponseEntity.noContent().build();</span>
         }
-<span class="nc" id="L105">        return ResponseEntity.notFound().build();</span>
+<span class="nc" id="L97">        return ResponseEntity.notFound().build();</span>
+    }
+
+    @DeleteMapping
+    public ResponseEntity&lt;Void&gt; deleteAll() {
+<span class="fc" id="L102">        ticketUseCase.deleteAllTickets();</span>
+<span class="fc" id="L103">        return ResponseEntity.noContent().build();</span>
     }
 
     // --- Mapeador auxiliar ---
     private TicketDto.TicketResponse mapToTicketResponse(Ticket ticket) {
-<span class="fc" id="L110">        return new TicketDto.TicketResponse(</span>
-<span class="fc" id="L111">                ticket.getIdTicket(),</span>
-<span class="fc" id="L112">                ticket.getPrecioUnitario(),</span>
-<span class="fc" id="L113">                ticket.getFechaCompra(),</span>
-<span class="fc" id="L114">                ticket.getFuncion(),</span>
-<span class="fc" id="L115">                ticket.getAsiento(),</span>
-<span class="fc" id="L116">                ticket.getCliente()</span>
+<span class="fc" id="L108">        TicketDto.SalaResponse salaResponse = new TicketDto.SalaResponse(</span>
+<span class="fc" id="L109">                ticket.getFuncion().getSala().getIdSala(),</span>
+<span class="fc" id="L110">                ticket.getFuncion().getSala().getNumero()</span>
+        );
+
+<span class="fc" id="L113">        TicketDto.FuncionResponse funcionResponse = new TicketDto.FuncionResponse(</span>
+<span class="fc" id="L114">                ticket.getFuncion().getIdFuncion(),</span>
+<span class="fc" id="L115">                ticket.getFuncion().getPelicula(),</span>
+                salaResponse,
+<span class="fc" id="L117">                ticket.getFuncion().getFecha(),</span>
+<span class="fc" id="L118">                ticket.getFuncion().getPrecio()</span>
+        );
+
+<span class="fc" id="L121">        TicketDto.AsientoResponse asientoResponse = new TicketDto.AsientoResponse(</span>
+<span class="fc" id="L122">                ticket.getAsiento().getIdAsiento(),</span>
+<span class="fc" id="L123">                ticket.getAsiento().getFila(),</span>
+<span class="fc" id="L124">                ticket.getAsiento().getColumna(),</span>
+<span class="fc" id="L125">                ticket.getAsiento().getEstado()</span>
+        );
+
+<span class="fc" id="L128">        return new TicketDto.TicketResponse(</span>
+<span class="fc" id="L129">                ticket.getIdTicket(),</span>
+<span class="fc" id="L130">                ticket.getPrecioUnitario(),</span>
+<span class="fc" id="L131">                ticket.getFechaCompra(),</span>
+                funcionResponse,
+                asientoResponse,
+<span class="fc" id="L134">                ticket.getCliente()</span>
         );
     }
 }

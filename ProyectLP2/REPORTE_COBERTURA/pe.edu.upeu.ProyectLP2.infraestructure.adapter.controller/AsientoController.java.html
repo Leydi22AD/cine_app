@@ -84,25 +84,25 @@ public class AsientoController {
             @PathVariable Long id,
             @RequestBody AsientoDto.AsientoRequest request) {
 
-<span class="nc" id="L87">        Sala sala = new Sala();</span>
-<span class="nc" id="L88">        sala.setIdSala(request.salaId());</span>
+<span class="fc" id="L87">        Sala sala = new Sala();</span>
+<span class="fc" id="L88">        sala.setIdSala(request.salaId());</span>
 
-<span class="nc" id="L90">        Asiento asiento = new Asiento();</span>
-<span class="nc" id="L91">        asiento.setFila(request.fila());</span>
-<span class="nc" id="L92">        asiento.setColumna(request.columna());</span>
-<span class="nc" id="L93">        asiento.setEstado(request.estado());</span>
-<span class="nc" id="L94">        asiento.setSala(sala);</span>
+<span class="fc" id="L90">        Asiento asiento = new Asiento();</span>
+<span class="fc" id="L91">        asiento.setFila(request.fila());</span>
+<span class="fc" id="L92">        asiento.setColumna(request.columna());</span>
+<span class="fc" id="L93">        asiento.setEstado(request.estado());</span>
+<span class="fc" id="L94">        asiento.setSala(sala);</span>
 
-<span class="nc" id="L96">        return asientoUseCase.actualizarAsiento(id, asiento)</span>
-<span class="nc" id="L97">                .map(a -&gt; ResponseEntity.ok(mapToAsientoResponse(a)))</span>
-<span class="nc" id="L98">                .orElse(ResponseEntity.notFound().build());</span>
+<span class="fc" id="L96">        return asientoUseCase.actualizarAsiento(id, asiento)</span>
+<span class="fc" id="L97">                .map(a -&gt; ResponseEntity.ok(mapToAsientoResponse(a)))</span>
+<span class="fc" id="L98">                .orElse(ResponseEntity.notFound().build());</span>
     }
 
     // ✅ Eliminar asiento
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; deleteAsiento(@PathVariable Long id) {
-<span class="nc" id="L104">        boolean eliminado = asientoUseCase.eliminarAsiento(id);</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        return eliminado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();</span>
+<span class="fc" id="L104">        boolean eliminado = asientoUseCase.eliminarAsiento(id);</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        return eliminado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();</span>
     }
 
     // 🔧 Mapeador auxiliar (modelo → DTO)

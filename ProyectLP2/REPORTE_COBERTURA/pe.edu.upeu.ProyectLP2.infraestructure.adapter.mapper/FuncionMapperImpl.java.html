@@ -5,68 +5,168 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pe.edu.upeu.ProyectLP2.domain.model.Asiento;
 import pe.edu.upeu.ProyectLP2.domain.model.Funcion;
+import pe.edu.upeu.ProyectLP2.domain.model.Ticket;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.AsientoEntity;
 import pe.edu.upeu.ProyectLP2.infraestructure.entity.FuncionEntity;
+import pe.edu.upeu.ProyectLP2.infraestructure.entity.TicketEntity;
 
 @Generated(
     value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
-    date = &quot;2026-06-12T13:59:29-0500&quot;,
+    date = &quot;2026-07-01T20:27:21-0500&quot;,
     comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)&quot;
 )
 @Component
-<span class="fc" id="L17">public class FuncionMapperImpl implements FuncionMapper {</span>
+<span class="fc" id="L21">public class FuncionMapperImpl implements FuncionMapper {</span>
 
+    @Autowired
+    private PeliculaMapper peliculaMapper;
     @Autowired
     private SalaMapper salaMapper;
     @Autowired
-    private PeliculaMapper peliculaMapper;
+    private UsuarioMapper usuarioMapper;
 
     @Override
     public Funcion toDomainModel(FuncionEntity entity) {
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        if ( entity == null ) {</span>
-<span class="nc" id="L27">            return null;</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if ( entity == null ) {</span>
+<span class="nc" id="L33">            return null;</span>
         }
 
-<span class="fc" id="L30">        Funcion funcion = new Funcion();</span>
+<span class="fc" id="L36">        Funcion funcion = new Funcion();</span>
 
-<span class="fc" id="L32">        funcion.setIdFuncion( entity.getIdFuncion() );</span>
-<span class="fc" id="L33">        funcion.setPelicula( peliculaMapper.toDomainModel( entity.getPelicula() ) );</span>
-<span class="fc" id="L34">        funcion.setSala( salaMapper.toDomainModel( entity.getSala() ) );</span>
-<span class="fc" id="L35">        funcion.setFecha( entity.getFecha() );</span>
-<span class="fc" id="L36">        funcion.setPrecio( entity.getPrecio() );</span>
+<span class="fc" id="L38">        funcion.setPelicula( peliculaMapper.toDomainModel( entity.getPelicula() ) );</span>
+<span class="fc" id="L39">        funcion.setSala( salaMapper.toDomainModel( entity.getSala() ) );</span>
+<span class="fc" id="L40">        funcion.setTickets( ticketEntityListToTicketList( entity.getTickets() ) );</span>
+<span class="fc" id="L41">        funcion.setIdFuncion( entity.getIdFuncion() );</span>
+<span class="fc" id="L42">        funcion.setFecha( entity.getFecha() );</span>
+<span class="fc" id="L43">        funcion.setPrecio( entity.getPrecio() );</span>
 
-<span class="fc" id="L38">        return funcion;</span>
-    }
-
-    @Override
-    public FuncionEntity toEntity(Funcion domain) {
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if ( domain == null ) {</span>
-<span class="nc" id="L44">            return null;</span>
-        }
-
-<span class="fc" id="L47">        FuncionEntity funcionEntity = new FuncionEntity();</span>
-
-<span class="fc" id="L49">        funcionEntity.setIdFuncion( domain.getIdFuncion() );</span>
-<span class="fc" id="L50">        funcionEntity.setPelicula( peliculaMapper.toEntity( domain.getPelicula() ) );</span>
-<span class="fc" id="L51">        funcionEntity.setSala( salaMapper.toEntity( domain.getSala() ) );</span>
-<span class="fc" id="L52">        funcionEntity.setFecha( domain.getFecha() );</span>
-<span class="fc" id="L53">        funcionEntity.setPrecio( domain.getPrecio() );</span>
-
-<span class="fc" id="L55">        return funcionEntity;</span>
+<span class="fc" id="L45">        return funcion;</span>
     }
 
     @Override
     public List&lt;Funcion&gt; toDomainModelList(List&lt;FuncionEntity&gt; entities) {
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if ( entities == null ) {</span>
-<span class="nc" id="L61">            return null;</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if ( entities == null ) {</span>
+<span class="nc" id="L51">            return null;</span>
         }
 
-<span class="fc" id="L64">        List&lt;Funcion&gt; list = new ArrayList&lt;Funcion&gt;( entities.size() );</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        for ( FuncionEntity funcionEntity : entities ) {</span>
-<span class="fc" id="L66">            list.add( toDomainModel( funcionEntity ) );</span>
-<span class="fc" id="L67">        }</span>
+<span class="fc" id="L54">        List&lt;Funcion&gt; list = new ArrayList&lt;Funcion&gt;( entities.size() );</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for ( FuncionEntity funcionEntity : entities ) {</span>
+<span class="fc" id="L56">            list.add( toDomainModel( funcionEntity ) );</span>
+<span class="fc" id="L57">        }</span>
 
-<span class="fc" id="L69">        return list;</span>
+<span class="fc" id="L59">        return list;</span>
+    }
+
+    @Override
+    public FuncionEntity toEntity(Funcion domainModel) {
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if ( domainModel == null ) {</span>
+<span class="nc" id="L65">            return null;</span>
+        }
+
+<span class="fc" id="L68">        FuncionEntity funcionEntity = new FuncionEntity();</span>
+
+<span class="fc" id="L70">        funcionEntity.setPelicula( peliculaMapper.toEntity( domainModel.getPelicula() ) );</span>
+<span class="fc" id="L71">        funcionEntity.setSala( salaMapper.toEntity( domainModel.getSala() ) );</span>
+<span class="fc" id="L72">        funcionEntity.setTickets( ticketListToTicketEntityList( domainModel.getTickets() ) );</span>
+<span class="fc" id="L73">        funcionEntity.setIdFuncion( domainModel.getIdFuncion() );</span>
+<span class="fc" id="L74">        funcionEntity.setFecha( domainModel.getFecha() );</span>
+<span class="fc" id="L75">        funcionEntity.setPrecio( domainModel.getPrecio() );</span>
+
+<span class="fc" id="L77">        return funcionEntity;</span>
+    }
+
+    protected Asiento asientoEntityToAsiento(AsientoEntity asientoEntity) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if ( asientoEntity == null ) {</span>
+<span class="nc" id="L82">            return null;</span>
+        }
+
+<span class="nc" id="L85">        Asiento asiento = new Asiento();</span>
+
+<span class="nc" id="L87">        asiento.setIdAsiento( asientoEntity.getIdAsiento() );</span>
+<span class="nc" id="L88">        asiento.setFila( asientoEntity.getFila() );</span>
+<span class="nc" id="L89">        asiento.setColumna( asientoEntity.getColumna() );</span>
+<span class="nc" id="L90">        asiento.setEstado( asientoEntity.getEstado() );</span>
+<span class="nc" id="L91">        asiento.setSala( salaMapper.toDomainModel( asientoEntity.getSala() ) );</span>
+
+<span class="nc" id="L93">        return asiento;</span>
+    }
+
+    protected Ticket ticketEntityToTicket(TicketEntity ticketEntity) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if ( ticketEntity == null ) {</span>
+<span class="nc" id="L98">            return null;</span>
+        }
+
+<span class="nc" id="L101">        Ticket ticket = new Ticket();</span>
+
+<span class="nc" id="L103">        ticket.setIdTicket( ticketEntity.getIdTicket() );</span>
+<span class="nc" id="L104">        ticket.setFuncion( toDomainModel( ticketEntity.getFuncion() ) );</span>
+<span class="nc" id="L105">        ticket.setAsiento( asientoEntityToAsiento( ticketEntity.getAsiento() ) );</span>
+<span class="nc" id="L106">        ticket.setCliente( usuarioMapper.toDomainModel( ticketEntity.getCliente() ) );</span>
+<span class="nc" id="L107">        ticket.setPrecioUnitario( ticketEntity.getPrecioUnitario() );</span>
+<span class="nc" id="L108">        ticket.setFechaCompra( ticketEntity.getFechaCompra() );</span>
+
+<span class="nc" id="L110">        return ticket;</span>
+    }
+
+    protected List&lt;Ticket&gt; ticketEntityListToTicketList(List&lt;TicketEntity&gt; list) {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if ( list == null ) {</span>
+<span class="fc" id="L115">            return null;</span>
+        }
+
+<span class="fc" id="L118">        List&lt;Ticket&gt; list1 = new ArrayList&lt;Ticket&gt;( list.size() );</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        for ( TicketEntity ticketEntity : list ) {</span>
+<span class="nc" id="L120">            list1.add( ticketEntityToTicket( ticketEntity ) );</span>
+<span class="nc" id="L121">        }</span>
+
+<span class="fc" id="L123">        return list1;</span>
+    }
+
+    protected AsientoEntity asientoToAsientoEntity(Asiento asiento) {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if ( asiento == null ) {</span>
+<span class="nc" id="L128">            return null;</span>
+        }
+
+<span class="nc" id="L131">        AsientoEntity asientoEntity = new AsientoEntity();</span>
+
+<span class="nc" id="L133">        asientoEntity.setIdAsiento( asiento.getIdAsiento() );</span>
+<span class="nc" id="L134">        asientoEntity.setFila( asiento.getFila() );</span>
+<span class="nc" id="L135">        asientoEntity.setEstado( asiento.getEstado() );</span>
+<span class="nc" id="L136">        asientoEntity.setColumna( asiento.getColumna() );</span>
+<span class="nc" id="L137">        asientoEntity.setSala( salaMapper.toEntity( asiento.getSala() ) );</span>
+
+<span class="nc" id="L139">        return asientoEntity;</span>
+    }
+
+    protected TicketEntity ticketToTicketEntity(Ticket ticket) {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        if ( ticket == null ) {</span>
+<span class="nc" id="L144">            return null;</span>
+        }
+
+<span class="nc" id="L147">        TicketEntity ticketEntity = new TicketEntity();</span>
+
+<span class="nc" id="L149">        ticketEntity.setIdTicket( ticket.getIdTicket() );</span>
+<span class="nc" id="L150">        ticketEntity.setFuncion( toEntity( ticket.getFuncion() ) );</span>
+<span class="nc" id="L151">        ticketEntity.setAsiento( asientoToAsientoEntity( ticket.getAsiento() ) );</span>
+<span class="nc" id="L152">        ticketEntity.setCliente( usuarioMapper.toEntity( ticket.getCliente() ) );</span>
+<span class="nc" id="L153">        ticketEntity.setPrecioUnitario( ticket.getPrecioUnitario() );</span>
+<span class="nc" id="L154">        ticketEntity.setFechaCompra( ticket.getFechaCompra() );</span>
+
+<span class="nc" id="L156">        return ticketEntity;</span>
+    }
+
+    protected List&lt;TicketEntity&gt; ticketListToTicketEntityList(List&lt;Ticket&gt; list) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if ( list == null ) {</span>
+<span class="fc" id="L161">            return null;</span>
+        }
+
+<span class="fc" id="L164">        List&lt;TicketEntity&gt; list1 = new ArrayList&lt;TicketEntity&gt;( list.size() );</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        for ( Ticket ticket : list ) {</span>
+<span class="nc" id="L166">            list1.add( ticketToTicketEntity( ticket ) );</span>
+<span class="nc" id="L167">        }</span>
+
+<span class="fc" id="L169">        return list1;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

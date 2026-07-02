@@ -30,7 +30,22 @@
 		<java.version>21</java.version>
 		<jjwt.version>0.12.5</jjwt.version>
 		<surefireArgLine></surefireArgLine>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
+		<!-- SonarQube Configurations -->
+		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/REPORTE_COBERTURA/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.coverage.exclusions>
+			**/domain/model/**,
+			**/infraestructure/adapter/controller/dto/**,
+			**/infraestructure/entity/**,
+			**/domain/exception/**,
+			**/infraestructure/adapter/mapper/**,
+			**/infraestructure/security/**,
+			**/infraestructure/config/**,
+			**/infraestructure/adapter/controller/**,
+			**/infraestructure/adapter/*PersistenceAdapter.java,
+			**/ProyectLp2Application.java
+		</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencies>
